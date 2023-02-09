@@ -7,6 +7,8 @@ import android.os.Bundle;
 
 import si.sintal.sintaltehnika.ui.main.MainFragment;
 
+import static java.security.AccessController.getContext;
+
 public class MainActivity extends AppCompatActivity {
 
     private static final String[] REQUIRED_SDK_PERMISSIONS = new String[] {

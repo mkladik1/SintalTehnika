@@ -1,2 +1,4 @@
+include ':jboss-common-jdbc-wrapper'
+include ':mysql-connector-java-8.0.29'
 include ':app'
 rootProject.name = "SintalTehnika"
