@@ -29,16 +29,32 @@ public class SNPagerAdapter  extends FragmentStateAdapter {
     }
 
 
-    public static void setParameters(int uid, int nid, int nsid, int sid, String un, String opis, int sd)
+    public static void setParameters(int uid)
     {
 
         userID = uid;
-        nalogaID = nid;
+       /* nalogaID = nid;
         nsID = nsid;
         sistemID = sid;
         userName = un;
         pregledOpis = opis;
         senderID = sd;
+
+        */
+    }
+
+    public static int getParameters()
+    {
+
+        return userID;
+       /* nalogaID = nid;
+        nsID = nsid;
+        sistemID = sid;
+        userName = un;
+        pregledOpis = opis;
+        senderID = sd;
+
+        */
     }
 
     @Override

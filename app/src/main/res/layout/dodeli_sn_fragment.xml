@@ -5,6 +5,7 @@
     android:id="@+id/dodali_s_n"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:background="#DCDCDC"
     tools:context=".ui.main.DodaliSNFragment">
 
     <LinearLayout
@@ -22,8 +23,8 @@
 
         <LinearLayout
             android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:gravity="right"
+            android:layout_height="wrap_content"
+            android:gravity="end"
             android:orientation="vertical">
 
             <Button
@@ -32,16 +33,87 @@
                 android:layout_height="wrap_content"
                 android:text="Nazaj" />
 
-            <ScrollView
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical">
+
+            <LinearLayout
                 android:layout_width="match_parent"
-                android:layout_height="match_parent">
+                android:layout_height="wrap_content"
+                android:orientation="horizontal">
 
-                <LinearLayout
-                    android:layout_width="match_parent"
+                <TextView
+                    android:id="@+id/textView21"
+                    android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:orientation="vertical" />
-            </ScrollView>
+                    android:layout_weight="1"
+                    android:text="Datum:" />
 
+                <EditText
+                    android:id="@+id/etDatumSN_dodeli"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:inputType="date"
+                    android:maxLines="1" />
+
+                <TextView
+                    android:id="@+id/textView"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:text="Status:" />
+
+                <Spinner
+                    android:id="@+id/spinner_status_SN_dodeli"
+                    android:layout_width="wrap_content"
+                    android:layout_height="match_parent"
+                    android:entries="@array/status_sn"
+                    android:layout_weight="1" />
+
+            </LinearLayout>
+
+        </LinearLayout>
+
+        <ScrollView
+            android:id="@+id/dodeli_seznam_sn"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:fillViewport="true" >
+
+            <ListView
+                android:id="@+id/seznamSNDodelitve"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content" />
+        </ScrollView>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:gravity="bottom"
+            android:orientation="horizontal">
+
+            <TextView
+                android:id="@+id/textView31"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Serviser:" />
+
+            <Spinner
+                android:id="@+id/spinner_user_SN_dodeli"
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                android:layout_weight="10" />
+
+            <Button
+                android:id="@+id/bSpremeniServiserja"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Spremeni serviserja" />
         </LinearLayout>
 
 

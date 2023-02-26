@@ -15,7 +15,10 @@ import android.os.Bundle;
 import androidx.annotation.Nullable;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+
+import si.sintal.sintaltehnika.ui.main.ServisniNalog;
 
 public class DatabaseHandler extends SQLiteOpenHelper {
     private static final int DATABASE_VERSION = 1;
@@ -66,6 +69,56 @@ public class DatabaseHandler extends SQLiteOpenHelper {
             "  user_id int(11) NOT NULL" +
             ");";
         mDatabase.execSQL(CREATE_TEHNIKA_DELAVCI);
+
+        String CREATE_TEHNIKA_SN = "CREATE TABLE IF NOT EXISTS sintal_teh_sn ( " +
+                "id int(11) NOT NULL, " +
+        "DELOVNI_NALOG varchar(20) NOT NULL, " +
+        "NAZIV TEXT NULL, " +
+        "OE varchar(20) NULL, " +
+        "DATUM_ZACETEK datetime NULL, " +
+        "DATUM_KONEC datetime  NULL, " +
+        "OPIS TEXT  NULL, " +
+        "KLIENT TEXT  NULL, " +
+        "TIP_DEL_NAL varchar(2)  NULL, " +
+        "STATUS_AKT varchar(1)  NULL, " +
+        "XUSER varchar(6)  NULL, " +
+        "XDATETIME datetime  NULL, " +
+        "VRSTA_DN varchar(10)  NULL, " +
+        "STATUS_DN varchar(2)  NULL, " +
+        "PLANIRANE_URE decimal(15,4)  NULL, " +
+        "DELOVNI_NALOG_IZV varchar(20)  NULL, " +
+        "OBJEKT_FAKT varchar(20)  NULL, " +
+        "ODGOVORNA_OSEBA varchar(50)  NULL, " +
+        "IZDAJATELJ_NALOGA varchar(30)  NULL, " +
+        "TIP_NAROCILA varchar(2)  NULL, " +
+        "TIP_VZDRZEVANJA varchar(2)  NULL, " +
+        "KODA_OBJEKTA varchar(30)  NULL, " +
+        "NAV_ERROR varchar(80)  NULL, " +
+        "NAV_PRIPADNOST varchar(10)  NULL, " +
+        "NAV_KODA_OBJ varchar(10)  NULL, " +
+        "PRIPADNOST varchar(50)  NULL, " +
+        "PRIPADNOST_VNC varchar(30)  NULL, " +
+        "NAV_STATUS_PODIZV varchar(20)  NULL, " +
+        "NAV_KLIENT varchar(20)  NULL, " +
+        "NAV_OBJEKT_FAKT varchar(20)  NULL, " +
+        "VODJA_NALOGA varchar(100)  NULL, " +
+        "NAROCNIK_NAZIV TEXT  NULL, " +
+        "NAROCNIK_NASLOV TEXT  NULL, " +
+        "NAROCNIK_POSTNA_ST varchar(10)  NULL, " +
+        "NAROCNIK_KRAJ TEXT  NULL, " +
+        "NAROCNIK_IME_SEKTORJA TEXT  NULL, " +
+        "NAROCNIK_ULICA TEXT  NULL, " +
+        "NAROCNIK_HISNA_ST varchar(10)  NULL, " +
+        "OZNACI INT  DEFAULT 0 " +
+        ") " ;
+        mDatabase.execSQL(CREATE_TEHNIKA_SN);
+
+        String CREATE_TEHNIKA_UPO_DELAVEC = "CREATE TABLE IF NOT EXISTS " +
+        " sintal_teh_upo_delavci (" +
+        "  user_id int NOT NULL," +
+        "  tehnik_id int NOT NULL" +
+        ")";
+        mDatabase.execSQL(CREATE_TEHNIKA_UPO_DELAVEC);
         mDatabase.close();
 
     }
@@ -134,6 +187,192 @@ public class DatabaseHandler extends SQLiteOpenHelper {
         //return myList;
     }
 
+    public void deleteUpdateupoTehnik() {
+        mDatabase = this.getWritableDatabase();
+        mDatabase.execSQL("delete from sintal_teh_upo_delavci");
+        mDatabase.close();
+
+    }
+
+    public void insertUpdateupoTehnik(String userID, String tehnikID ) {
+
+        //ArrayList<NadzorXML> myList=new ArrayList<NadzorXML>();
+        //List<Nadzor> myList=new ArrayList<Nadzor>();
+        mDatabase = this.getWritableDatabase();
+        String GET_USER = "SELECT * FROM sintal_teh_upo_delavci";
+        mCursor = mDatabase.rawQuery(GET_USER,null);
+        //NadzorXML n;
+        if (mCursor != null)
+        {
+            mCursor.moveToFirst();
+
+        }
+
+        if (userID.equals("") && tehnikID.equals(""))
+        {}
+        else {
+            ContentValues values = new ContentValues();
+            values.put("user_ID", userID);
+            values.put("tehnik_id", tehnikID);
+
+            mDatabase.insert("sintal_teh_upo_delavci", null, values);
+        }
+            mCursor.close();
+
+        //mDatabase.execSQL(INSERT_INTO_USERS_TABLE);
+            mDatabase.close();
+
+        //return myList;
+    }
+
+
+
+    public void insertUpdateSN(String id,
+                               String DELOVNI_NALOG,
+                               String NAZIV,
+                               String OE,
+                               String DATUM_ZACETEK,
+                               String DATUM_KONEC,
+                               String OPIS,
+                               String KLIENT,
+                               String TIP_DEL_NAL,
+                               String STATUS_AKT,
+                               String XUSER,
+                               String XDATETIME,
+                               String VRSTA_DN,
+                               String STATUS_DN,
+                               String PLANIRANE_URE,
+                               String DELOVNI_NALOG_IZV,
+                               String OBJEKT_FAKT,
+                               String ODGOVORNA_OSEBA,
+                               String IZDAJATELJ_NALOGA,
+                               String TIP_NAROCILA,
+                               String TIP_VZDRZEVANJA,
+                               String KODA_OBJEKTA,
+                               String NAV_ERROR,
+                               String NAV_PRIPADNOST,
+                               String NAV_KODA_OBJ,
+                               String PRIPADNOST,
+                               String PRIPADNOST_VNC,
+                               String NAV_STATUS_PODIZV,
+                               String NAV_KLIENT,
+                               String NAV_OBJEKT_FAKT,
+                               String VODJA_NALOGA,
+                               String NAROCNIK_NAZIV,
+                               String NAROCNIK_NASLOV,
+                               String NAROCNIK_POSTNA_ST,
+                               String NAROCNIK_KRAJ,
+                               String NAROCNIK_IME_SEKTORJA,
+                               String NAROCNIK_ULICA,
+                               String NAROCNIK_HISNA_ST
+    ) {
+
+        //ArrayList<NadzorXML> myList=new ArrayList<NadzorXML>();
+        //List<Nadzor> myList=new ArrayList<Nadzor>();
+        mDatabase = this.getWritableDatabase();
+        String GET_USER = "SELECT * FROM sintal_teh_sn where id ="+ id;
+        mCursor = mDatabase.rawQuery(GET_USER,null);
+        //NadzorXML n;
+        if (mCursor != null)
+        {
+            mCursor.moveToFirst();
+        }
+        if (mCursor.moveToFirst()) {
+            //String UPDATE_USER ="";
+            ContentValues values = new ContentValues();
+            //values.put("id", id);
+            values.put("DELOVNI_NALOG", DELOVNI_NALOG);
+            values.put("NAZIV", NAZIV);
+            values.put("OE", OE);
+            values.put("DATUM_ZACETEK", DATUM_ZACETEK);
+            values.put("DATUM_KONEC", DATUM_KONEC);
+            values.put("OPIS", OPIS);
+            values.put("KLIENT", KLIENT);
+            values.put("TIP_DEL_NAL", TIP_DEL_NAL);
+            values.put("STATUS_AKT", STATUS_AKT);
+            values.put("XUSER", XUSER);
+            values.put("XDATETIME", XDATETIME);
+            values.put("VRSTA_DN", VRSTA_DN);
+            values.put("STATUS_DN", STATUS_DN);
+            values.put("PLANIRANE_URE", PLANIRANE_URE);
+            values.put("DELOVNI_NALOG_IZV", DELOVNI_NALOG_IZV);
+            values.put("OBJEKT_FAKT", OBJEKT_FAKT);
+            values.put("ODGOVORNA_OSEBA", ODGOVORNA_OSEBA);
+            values.put("IZDAJATELJ_NALOGA", IZDAJATELJ_NALOGA);
+            values.put("TIP_NAROCILA", TIP_NAROCILA);
+            values.put("TIP_VZDRZEVANJA", TIP_VZDRZEVANJA);
+            values.put("KODA_OBJEKTA", KODA_OBJEKTA);
+            values.put("NAV_ERROR", NAV_ERROR);
+            values.put("NAV_PRIPADNOST", NAV_PRIPADNOST);
+            values.put("NAV_KODA_OBJ", NAV_KODA_OBJ);
+            values.put("PRIPADNOST", PRIPADNOST);
+            values.put("PRIPADNOST_VNC", PRIPADNOST_VNC);
+            values.put("NAV_STATUS_PODIZV", NAV_STATUS_PODIZV);
+            values.put("NAV_KLIENT", NAV_KLIENT);
+            values.put("NAV_OBJEKT_FAKT", NAV_OBJEKT_FAKT);
+            values.put("VODJA_NALOGA", VODJA_NALOGA);
+            values.put("NAROCNIK_NAZIV", NAROCNIK_NAZIV);
+            values.put("NAROCNIK_NASLOV", NAROCNIK_NASLOV);
+            values.put("NAROCNIK_POSTNA_ST", NAROCNIK_POSTNA_ST);
+            values.put("NAROCNIK_KRAJ", NAROCNIK_KRAJ);
+            values.put("NAROCNIK_IME_SEKTORJA", NAROCNIK_IME_SEKTORJA);
+            values.put("NAROCNIK_ULICA", NAROCNIK_ULICA);
+            values.put("NAROCNIK_HISNA_ST",NAROCNIK_HISNA_ST);
+            mDatabase.update("sintal_teh_sn", values, "id=?", new String[]{id});
+
+        }
+        else
+        {
+            ContentValues values = new ContentValues();
+            values.put("id", id);
+            values.put("DELOVNI_NALOG", DELOVNI_NALOG);
+            values.put("NAZIV", NAZIV);
+            values.put("OE", OE);
+            values.put("DATUM_ZACETEK", DATUM_ZACETEK);
+            values.put("DATUM_KONEC", DATUM_KONEC);
+            values.put("OPIS", OPIS);
+            values.put("KLIENT", KLIENT);
+            values.put("TIP_DEL_NAL", TIP_DEL_NAL);
+            values.put("STATUS_AKT", STATUS_AKT);
+            values.put("XUSER", XUSER);
+            values.put("XDATETIME", XDATETIME);
+            values.put("VRSTA_DN", VRSTA_DN);
+            values.put("STATUS_DN", STATUS_DN);
+            values.put("PLANIRANE_URE", PLANIRANE_URE);
+            values.put("DELOVNI_NALOG_IZV", DELOVNI_NALOG_IZV);
+            values.put("OBJEKT_FAKT", OBJEKT_FAKT);
+            values.put("ODGOVORNA_OSEBA", ODGOVORNA_OSEBA);
+            values.put("IZDAJATELJ_NALOGA", IZDAJATELJ_NALOGA);
+            values.put("TIP_NAROCILA", TIP_NAROCILA);
+            values.put("TIP_VZDRZEVANJA", TIP_VZDRZEVANJA);
+            values.put("KODA_OBJEKTA", KODA_OBJEKTA);
+            values.put("NAV_ERROR", NAV_ERROR);
+            values.put("NAV_PRIPADNOST", NAV_PRIPADNOST);
+            values.put("NAV_KODA_OBJ", NAV_KODA_OBJ);
+            values.put("PRIPADNOST", PRIPADNOST);
+            values.put("PRIPADNOST_VNC", PRIPADNOST_VNC);
+            values.put("NAV_STATUS_PODIZV", NAV_STATUS_PODIZV);
+            values.put("NAV_KLIENT", NAV_KLIENT);
+            values.put("NAV_OBJEKT_FAKT", NAV_OBJEKT_FAKT);
+            values.put("VODJA_NALOGA", VODJA_NALOGA);
+            values.put("NAROCNIK_NAZIV", NAROCNIK_NAZIV);
+            values.put("NAROCNIK_NASLOV", NAROCNIK_NASLOV);
+            values.put("NAROCNIK_POSTNA_ST", NAROCNIK_POSTNA_ST);
+            values.put("NAROCNIK_KRAJ", NAROCNIK_KRAJ);
+            values.put("NAROCNIK_IME_SEKTORJA", NAROCNIK_IME_SEKTORJA);
+            values.put("NAROCNIK_ULICA", NAROCNIK_ULICA);
+            values.put("NAROCNIK_HISNA_ST",NAROCNIK_HISNA_ST);
+            //values.put("OZNACI",OZNACI);
+            mDatabase.insert("sintal_teh_sn",null, values);
+        }
+        mCursor.close();
+
+        //mDatabase.execSQL(INSERT_INTO_USERS_TABLE);
+        mDatabase.close();
+
+        //return myList;
+    }
+
 
     public List<String> getTehnikiInString() {
         List<String> userList = new ArrayList<String>();
@@ -146,13 +385,244 @@ public class DatabaseHandler extends SQLiteOpenHelper {
         // looping through all rows and adding to list
         if (mCursor.moveToFirst()) {
             do {
-                userList.add(mCursor.getString(1) +", " + mCursor.getString(0));
+                userList.add(mCursor.getString(1));// +", " + mCursor.getString(0));
             } while (mCursor.moveToNext());
         }
         mCursor.close();
         mDatabase.close();
         // return contact list
         return userList;
+    }
+
+    public List<String> getTehnikiUporabnikInString(String user_id) {
+        List<String> userList = new ArrayList<String>();
+        // Select All Query
+        String selectQuery = "select * from sintal_teh_delavci std left join sintal_teh_upo_delavci stud on std.tehnik_id = stud.tehnik_id  where stud.user_id = "+ user_id;
+
+        mDatabase = this.getReadableDatabase();
+        mCursor = mDatabase.rawQuery(selectQuery, null);
+
+        // looping through all rows and adding to list
+        if (mCursor.moveToFirst()) {
+            do {
+                userList.add(mCursor.getString(1));// +", " + mCursor.getString(0));
+            } while (mCursor.moveToNext());
+        }
+        mCursor.close();
+        mDatabase.close();
+        // return contact list
+        return userList;
+    }
+
+    public ArrayList<HashMap<String, String>> GetSeznamSN(String datum, String vodja_sn){
+
+        ArrayList<HashMap<String, String>> seznamSN = new ArrayList<>();
+        String query = "SELECT  * FROM sintal_teh_sn where datum_zacetek = '" + datum + "' and vodja_sn = 'Null'";
+        if (vodja_sn.equals("-1"))
+        {
+            query = "SELECT  * FROM sintal_teh_sn where strftime('%d.%m.%Y', DATUM_ZACETEK) = '" + datum + "' and VODJA_NALOGA = 'null'";
+        }
+        else {
+            query = "SELECT  * FROM sintal_teh_sn where strftime('%d.%m.%Y', DATUM_ZACETEK) = '" + datum + "' and VODJA_NALOGA <> 'null'";
+        }
+        mDatabase = this.getReadableDatabase();
+        mCursor = mDatabase.rawQuery(query, null);
+        while (mCursor.moveToNext()){
+            HashMap<String,String> sn = new HashMap<>();
+            sn.put("stevilka_sn",mCursor.getString(mCursor.getColumnIndex("DELOVNI_NALOG")));
+            sn.put("datum_zacetek",mCursor.getString(mCursor.getColumnIndex("DATUM_ZACETEK")));
+            sn.put("narocnik",mCursor.getString(mCursor.getColumnIndex("NAROCNIK_NAZIV")));
+            sn.put("opis",mCursor.getString(mCursor.getColumnIndex("OPIS")));
+            sn.put("vodja_naloga",mCursor.getString(mCursor.getColumnIndex("VODJA_NALOGA")));
+            seznamSN.add(sn);
+        }
+
+        mCursor.close();
+        mDatabase.close();
+        return  seznamSN;
+    }
+
+    public void updateSNServiser(String id, String serviser) {
+        String GET_USER = "SELECT * FROM sintal_teh_sn where id =" + id;
+        mDatabase = this.getReadableDatabase();
+        mCursor = mDatabase.rawQuery(GET_USER, null);
+        //NadzorXML n;
+        if (mCursor != null) {
+            mCursor.moveToFirst();
+        }
+        if (mCursor.moveToFirst()) {
+            //String UPDATE_USER ="";
+            ContentValues values = new ContentValues();
+            //values.put("id", id);
+
+            values.put("VODJA_NALOGA", serviser);
+            mDatabase.update("sintal_teh_sn", values, "id=?", new String[]{id});
+
+        }
+        mCursor.close();
+        mDatabase.close();
+    }
+
+    public void updateSNOznaci(String id, int izberi) {
+        String GET_USER = "SELECT * FROM sintal_teh_sn where id =" + id;
+        mDatabase = this.getReadableDatabase();
+        mCursor = mDatabase.rawQuery(GET_USER, null);
+        //NadzorXML n;
+        if (mCursor != null) {
+            mCursor.moveToFirst();
+        }
+        if (mCursor.moveToFirst()) {
+            //String UPDATE_USER ="";
+            ContentValues values = new ContentValues();
+            //values.put("id", id);
+
+            values.put("OZNACI", izberi);
+            mDatabase.update("sintal_teh_sn", values, "id=?", new String[]{id});
+
+        }
+        mCursor.close();
+        mDatabase.close();
+    }
+
+    public void updateSNOznaciDatum(String datum) {
+        String GET_USER = "SELECT * FROM sintal_teh_sn where strftime('%d.%m.%Y', DATUM_ZACETEK) ='" + datum+"'";
+        mDatabase = this.getReadableDatabase();
+        mCursor = mDatabase.rawQuery(GET_USER, null);
+        //NadzorXML n;
+        if (mCursor != null) {
+            mCursor.moveToFirst();
+        }
+        if (mCursor.moveToFirst()) {
+            //String UPDATE_USER ="";
+            ContentValues values = new ContentValues();
+            //values.put("id", id);
+
+            values.put("OZNACI", 0);
+            mDatabase.update("sintal_teh_sn", values, "strftime('%d.%m.%Y', DATUM_ZACETEK)=?", new String[]{datum});
+
+        }
+        mCursor.close();
+        mDatabase.close();
+    }
+
+    public ArrayList<ServisniNalog> GetSeznamSNDodelitev(String datum, String vodja_sn){
+
+        ArrayList<ServisniNalog> list = new ArrayList<ServisniNalog>();
+        String query = "SELECT  * FROM sintal_teh_sn where datum_zacetek = '" + datum + "' and vodja_sn = 'Null'";
+        if (vodja_sn.equals("-1"))
+        {
+            query = "SELECT  * FROM sintal_teh_sn where strftime('%d.%m.%Y', DATUM_ZACETEK) = '" + datum + "' and VODJA_NALOGA = ''";
+        }
+        else {
+            query = "SELECT  * FROM sintal_teh_sn where strftime('%d.%m.%Y', DATUM_ZACETEK) = '" + datum + "' and VODJA_NALOGA <> ''";
+        }
+        mDatabase = this.getReadableDatabase();
+        mCursor = mDatabase.rawQuery(query, null);
+        while (mCursor.moveToNext()){
+            ServisniNalog sn = new ServisniNalog();
+            sn.setid(mCursor.getInt(mCursor.getColumnIndex("id")));
+            sn.setDelovniNalog(mCursor.getString(mCursor.getColumnIndex("DELOVNI_NALOG")));
+            sn.setDatumZacetek(mCursor.getString(mCursor.getColumnIndex("DATUM_ZACETEK")));
+            sn.setOpis(mCursor.getString(mCursor.getColumnIndex("OPIS")));
+            sn.setNarocnikNaziv(mCursor.getString(mCursor.getColumnIndex("NAROCNIK_NAZIV")));
+            sn.setNarocnikNaslov(mCursor.getString(mCursor.getColumnIndex("NAROCNIK_NASLOV")));
+            sn.setVodjaNaloga(mCursor.getString(mCursor.getColumnIndex("VODJA_NALOGA")));
+            sn.setOznacen(mCursor.getInt(mCursor.getColumnIndex("OZNACI")));
+            sn.setOdgovornaOseba(mCursor.getString(mCursor.getColumnIndex("ODGOVORNA_OSEBA")));
+            //sn.setOznacen(0);
+            list.add(sn);
+        }
+
+        mCursor.close();
+        mDatabase.close();
+        return  list;
+    }
+
+    public ArrayList<ServisniNalog> GetSeznamSNUporabnik(String datum, String vodja_sn){
+
+        ArrayList<ServisniNalog> list = new ArrayList<ServisniNalog>();
+        String query = "SELECT  * FROM sintal_teh_sn where datum_zacetek = '" + datum + "' and vodja_sn = 'Null'";
+        query = "SELECT  * FROM sintal_teh_sn where strftime('%d.%m.%Y', DATUM_ZACETEK) = '" + datum + "' and VODJA_NALOGA = '"+vodja_sn+"'";
+
+        mDatabase = this.getReadableDatabase();
+        mCursor = mDatabase.rawQuery(query, null);
+        while (mCursor.moveToNext()){
+            ServisniNalog sn = new ServisniNalog();
+            sn.setid(mCursor.getInt(mCursor.getColumnIndex("id")));
+            sn.setDelovniNalog(mCursor.getString(mCursor.getColumnIndex("DELOVNI_NALOG")));
+            sn.setDatumZacetek(mCursor.getString(mCursor.getColumnIndex("DATUM_ZACETEK")));
+            sn.setOpis(mCursor.getString(mCursor.getColumnIndex("OPIS")));
+            sn.setNarocnikNaziv(mCursor.getString(mCursor.getColumnIndex("NAROCNIK_NAZIV")));
+            sn.setNarocnikNaslov(mCursor.getString(mCursor.getColumnIndex("NAROCNIK_NASLOV")));
+            sn.setVodjaNaloga(mCursor.getString(mCursor.getColumnIndex("VODJA_NALOGA")));
+            sn.setOznacen(mCursor.getInt(mCursor.getColumnIndex("OZNACI")));
+            sn.setOdgovornaOseba(mCursor.getString(mCursor.getColumnIndex("ODGOVORNA_OSEBA")));
+            //sn.setOznacen(0);
+            list.add(sn);
+        }
+
+        mCursor.close();
+        mDatabase.close();
+        return  list;
+    }
+
+    public ServisniNalog vrniSN(int idSN){
+
+        ServisniNalog sn = new ServisniNalog();
+        String query = "SELECT  * FROM sintal_teh_sn where id ="+idSN+"";
+
+        mDatabase = this.getReadableDatabase();
+        mCursor = mDatabase.rawQuery(query, null);
+        while (mCursor.moveToNext()){
+            //ServisniNalog sn = new ServisniNalog();
+            sn.setid(mCursor.getInt(mCursor.getColumnIndex("id")));
+            sn.setDelovniNalog(mCursor.getString(mCursor.getColumnIndex("DELOVNI_NALOG")));
+            sn.setDatumZacetek(mCursor.getString(mCursor.getColumnIndex("DATUM_ZACETEK")));
+            sn.setOpis(mCursor.getString(mCursor.getColumnIndex("OPIS")));
+            sn.setNarocnikNaziv(mCursor.getString(mCursor.getColumnIndex("NAROCNIK_NAZIV")));
+            sn.setNarocnikNaslov(mCursor.getString(mCursor.getColumnIndex("NAROCNIK_NASLOV")));
+            sn.setVodjaNaloga(mCursor.getString(mCursor.getColumnIndex("VODJA_NALOGA")));
+            sn.setOznacen(mCursor.getInt(mCursor.getColumnIndex("OZNACI")));
+            sn.setOdgovornaOseba(mCursor.getString(mCursor.getColumnIndex("ODGOVORNA_OSEBA")));
+            //sn.setOznacen(0);
+
+        }
+
+        mCursor.close();
+        mDatabase.close();
+        return  sn;
+    }
+
+    public HashMap<Integer,String> getSNInString(String datum, String vodja_sn) {
+        HashMap<Integer, String> SNList = new HashMap<>();
+        // Select All Query
+        String selectQuery = "";
+        if (vodja_sn.equals("-1"))
+        {
+            selectQuery = "SELECT  * FROM sintal_teh_sn where datum_zacetek " + datum + " and vodja_sn = 'Null'";
+        }
+        else {
+            selectQuery = "SELECT  * FROM sintal_teh_sn where datum_zacetek " + datum + " and vodja_sn <> 'Null'";
+        }
+
+
+        mDatabase = this.getReadableDatabase();
+        mCursor = mDatabase.rawQuery(selectQuery, null);
+
+        mCursor.getCount();
+
+        // looping through all rows and adding to list
+        if (mCursor.moveToFirst()) {
+            do {
+                mCursor.getColumnNames();
+                SNList.put(Integer.valueOf(mCursor.getInt(0)), mCursor.getString(31)+" - " +mCursor.getString(33)
+                        + " - " +mCursor.getString(6)+", "+mCursor.getString(1));
+            }while (mCursor.moveToNext() );
+        }
+        mCursor.close();
+        mDatabase.close();
+
+        return SNList;
     }
 
     public void insertUpdateUser(String userID, String upIme, String ime, String priimek, String prijava, String email, String admin_dostop, String servis, String montaza, String vzdrzevanje ) {

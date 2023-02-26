@@ -11,7 +11,8 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/Theme.SintalTehnika">
-        <activity android:name=".DodaliSNActivity"></activity>
+        <activity android:name=".DialogPodatkiOSNActivity"></activity>
+        <activity android:name=".DodaliSNActivity" />
         <activity android:name=".ui.main.DodeliSNActivity" />
         <activity android:name=".NastavitveActivity" />
         <activity android:name=".ui.main.NastavitveActivity" />

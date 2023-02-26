@@ -5,6 +5,7 @@
     android:id="@+id/servis"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:background="#DCDCDC"
     tools:context=".ui.main.ServisFragment">
 
     <LinearLayout
@@ -22,8 +23,7 @@
                 android:id="@+id/bSNToGlavno"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Nazaj"
-                />
+                android:text="Nazaj" />
         </LinearLayout>
 
         <RelativeLayout
