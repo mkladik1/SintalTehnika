@@ -1,8 +1,9 @@
 <resources>
     <string name="app_name">Sintal Teh</string>
     <string-array name="status_sn">
-        <item>nedodeljeni</item>
-        <item>dodeljeni</item>
+        <item>NEDODELJENI</item>
+        <item>DODELJENI</item>
+        <item>STORNO</item>
     </string-array>
 
 </resources>

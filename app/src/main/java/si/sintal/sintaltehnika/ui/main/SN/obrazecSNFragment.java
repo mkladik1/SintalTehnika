@@ -54,10 +54,43 @@ public class obrazecSNFragment extends Fragment {
         SN = db.vrniSN(STSN);
         TextView test = (TextView) getView().findViewById(R.id.idObrazecSN);
         test.setText(Integer.toString(SN.getid()));
-        test = (TextView) getView().findViewById(R.id.tvStevilkaSN);
-        test.setText(SN.getDelovniNalog());
         test = (TextView) getView().findViewById(R.id.tvSNNarocnikNaziv);
         test.setText(SN.getNarocnikNaziv());
+        test = (TextView) getView().findViewById(R.id.tvStevilkaSN);
+        test.setText(SN.getDelovniNalog());
+        test = (TextView) getView().findViewById(R.id.tvSNNarocnikNaslov);
+        test.setText(SN.getNarocnikKraj()+", "+SN.getNarocnikNaslov());
+
+        //test = (TextView) getView().findViewById(R.id.tvSNNarocnikKraj);
+        //test.setText(SN.getNarocnikKraj());
+        test = (TextView) getView().findViewById(R.id.tvSNImeSektorja);
+        test.setText(SN.getNarocnikSektor());
+        test = (TextView) getView().findViewById(R.id.tvSNAdSekt);
+        test.setText(SN.getKodaObjekta());
+        test = (TextView) getView().findViewById(R.id.tvSNImeSekNaslov);
+        test.setText(SN.getSektroNaslov());
+
+        //test = (TextView) getView().findViewById(R.id.tvSNImeSekNaslov);
+        //test.setText(SN.getNarocnikUlica());
+        //test = (TextView) getView().findViewById(R.id.tvSNImeSekHisnaSt);
+        //test.setText(SN.getNarocnikHisnaSt());
+        //test = (TextView) getView().findViewById(R.id.tvSNImeSekKraj);
+        //test.setText(SN.getNarocnikKraj());
+
+        test = (TextView) getView().findViewById(R.id.tvSNKontaktnaOseba);
+        test.setText(SN.getOdgovornaOseba());
+        test = (TextView) getView().findViewById(R.id.tvSNTelefon);
+        test.setText("");
+
+        test = (TextView) getView().findViewById(R.id.tvSNNarocil);
+        test.setText(SN.getOdgovornaOseba());
+        test = (TextView) getView().findViewById(R.id.tvSNNarocilTelefon);
+        test.setText("");
+
+        test = (TextView) getView().findViewById(R.id.tvSNPripadnost);
+        test.setText(SN.getPripadnostNaziv());
+
+
         //methodA(); // this is called ...
     }
 

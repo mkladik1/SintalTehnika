@@ -57,14 +57,6 @@ public class SeznamUpoSNAdapter extends ArrayAdapter<ServisniNalog> implements F
         return seznamSNjev.size();
     }
 
-    public void setNarocnikNaziv(String nazivNar) {
-        nazivNar = narocnikNaziv;
-    }
-
-    public void setID(int SNid) {
-        SNid = id;
-    }
-
 
     @Override
     public long getItemId(int i) {
@@ -84,12 +76,11 @@ public class SeznamUpoSNAdapter extends ArrayAdapter<ServisniNalog> implements F
 
     public View getView(final int position, View convertView, ViewGroup parent) {
 
-        SeznamUpoSNAdapter.ViewHolder holder = null;
+        ViewHolder holder = null;
         if (convertView == null) {
             inflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
             convertView = inflater.inflate(R.layout.seznamuposn, null);
-
-            holder = new SeznamUpoSNAdapter.ViewHolder();
+            holder = new ViewHolder();
             holder.stSNja = (TextView) convertView.findViewById(R.id.labelstevilkaSN);
             holder.idSNja = (TextView) convertView.findViewById(R.id.labelidSN);
             holder.nazivNarocnikSNja = (TextView) convertView.findViewById(R.id.labelSNNarocnik);
@@ -101,7 +92,7 @@ public class SeznamUpoSNAdapter extends ArrayAdapter<ServisniNalog> implements F
             convertView.setTag(holder);
 
         } else {
-            holder = (SeznamUpoSNAdapter.ViewHolder) convertView.getTag();
+            holder = (ViewHolder) convertView.getTag();
         }
 
         ServisniNalog n = seznamSNjev.get(position);
@@ -117,45 +108,6 @@ public class SeznamUpoSNAdapter extends ArrayAdapter<ServisniNalog> implements F
         holder.nazivNarocnikSNja.setText(n.getNarocnikNaziv().toString()+", "+n.getNarocnikNaslov().toString());
         holder.opisNapakeSNja.setText(n.getOpis().toString());
 
-
-        /*
-        holder.cbOznacen.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
-
-            @Override
-            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
-                // TODO Auto-generated method stub
-
-                if (buttonView.isChecked()) {
-                    //if (n.getOznacen() == 1) {
-                    //n.setOznacen(1);
-                    DatabaseHandler db = new DatabaseHandler(getContext());
-                    db.updateSNOznaci(Integer.toString(n.getid()), 1);
-                    db.close();
-                    n.setOznacen(1);
-                    //}
-                }
-                else {
-                    //if (n.getOznacen() == 0) {
-                    //n.setOznacen(0);
-                    DatabaseHandler db = new DatabaseHandler(getContext());
-                    db.updateSNOznaci(Integer.toString(n.getid()), 0);
-                    db.close();
-                    n.setOznacen(0);
-                    //}
-                }
-                //notifyDataSetChanged();
-
-            }
-        });
-
-        if (n.getOznacen() == 1)
-        {
-            holder.cbOznacen.setChecked(true);
-        }
-        else {
-            holder.cbOznacen.setChecked(false);
-        }
- */
         Button bIzpolniSN = (Button) convertView.findViewById(R.id.bIzpolniSN);
         bIzpolniSN.setOnClickListener(new View.OnClickListener() {
                 @Override

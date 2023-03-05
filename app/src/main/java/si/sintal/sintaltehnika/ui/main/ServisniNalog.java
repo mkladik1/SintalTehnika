@@ -19,17 +19,22 @@ public class ServisniNalog {
     String izdajatelj;
     int tipNarocila;
     int tipVzdrzevanja;
-    String kodaObejkta;
+    String kodaObjekta;
     String pripadnost;
     String pripadnostNaziv;
     String vodjaNaloga;
     String narocnikNaziv;
     String narocnikNaslov;
-    String narocnikPosta;
-    String narocnikKraj;
-    String narocnikSektor;
     String narocnikUlica;
+    String narocnikKraj;
     String narocnikHisnaSt;
+    String narocnikSektor;
+    String sektroNaslov;
+    String sektorPostnaSt;
+
+
+
+
     int oznacen;
 
     public int getid() {
@@ -108,9 +113,7 @@ public class ServisniNalog {
         return narocnikNaslov;
     }
 
-    public void setNarocnikNaslov(String newNarocnikNaslov) {
-        this.narocnikNaslov = newNarocnikNaslov;
-    }
+    public void setNarocnikNaslov(String newNarocnikNaslov) { this.narocnikNaslov = newNarocnikNaslov; }
 
     public String getOdgovornaOseba() {
         return odgovornaOseba;
@@ -127,5 +130,67 @@ public class ServisniNalog {
     public void setOznacen(int newOznacen) {
         this.oznacen = newOznacen;
     }
+
+    public void setNarocnikKraj(String newNarocnikKraj) {
+        this.narocnikKraj = newNarocnikKraj;
+    }
+
+    public String getNarocnikKraj()
+    {
+        return narocnikKraj;
+    }
+
+    public void setNarocnikSektor(String newNarocnikSektor) { this.narocnikSektor = newNarocnikSektor; }
+
+    public String getNarocnikSektor()  { return narocnikSektor; }
+
+    public void setNarocnikUlica(String newNarocnikUlica) { this.narocnikUlica = newNarocnikUlica; }
+
+    public String getNarocnikUlica()  { return narocnikUlica; }
+
+    public void setNarocnikHisnaSt(String newNarocnikHisnaSt) { this.narocnikHisnaSt = newNarocnikHisnaSt; }
+
+    public String getNarocnikHisnaSt()  { return narocnikHisnaSt; }
+
+    public void setKodaObjekta(String newKodaObjekta) { this.kodaObjekta = newKodaObjekta; }
+
+    public String getKodaObjekta()  { return kodaObjekta; }
+
+    public void setPripadnostNaziv(String newPripadnostNaziv) { this.pripadnostNaziv = newPripadnostNaziv; }
+
+    public String getPripadnostNaziv()  { return pripadnostNaziv; }
+
+    public void setIzdajatelj(String newIzdajatelj) { this.izdajatelj = newIzdajatelj; }
+
+    public String getIzdajatelj()  { return izdajatelj; }
+
+    public void setStatus(String newStatus) { this.status = newStatus; }
+
+    public String getStatus()  { return status; }
+
+    public void setTipNarocila(int newTipNarocila) { this.tipNarocila = newTipNarocila; }
+
+    public int getTipNarocila()  { return tipNarocila; }
+
+    public void setTipVzdrzevanja(int newTipVzdrzevanja) { this.tipVzdrzevanja = newTipVzdrzevanja; }
+
+    public int getTipVzdzevanja()  { return tipVzdrzevanja; }
+
+    public void setSektroNaslov(String newSektorNaslov) { this.sektroNaslov = newSektorNaslov; }
+
+    public String getSektroNaslov() {return sektroNaslov;}
+
+    public void setSektorPostnaSt(String newSektorPostnaSt) { this.sektorPostnaSt = newSektorPostnaSt; }
+
+    public String getSektorPostnaSt() {return sektorPostnaSt;}
+
+    public void setPripadnost(String newPripadnost) {this.pripadnost = newPripadnost;}
+    public String getPripadnost(){return pripadnost;}
+
+
+
+
+
+
 
 }

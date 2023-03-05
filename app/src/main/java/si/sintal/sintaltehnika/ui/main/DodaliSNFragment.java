@@ -9,6 +9,7 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 
+import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -24,8 +25,13 @@ import android.widget.SimpleAdapter;
 import android.widget.Spinner;
 import android.widget.Toast;
 
+import java.io.BufferedReader;
+import java.io.InputStreamReader;
+import java.net.HttpURLConnection;
+import java.net.URL;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Base64;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
@@ -50,9 +56,11 @@ public class DodaliSNFragment extends Fragment {
     //static ListView seznamDNdodelitve;
     static DatabaseHandler db;
     static ArrayList<ServisniNalog> dodeliSNje;
-    private DodelitevSNAdapter adapterSeznamSNjev;
-    private ListView listView;
-    private Spinner status_sn;
+    public DodelitevSNAdapter adapterSeznamSNjev;
+    public ListView listView;
+    public Spinner status_sn;
+    public Spinner pripadnost_sn;
+    public Spinner serviser_sn;
 
     public static DodaliSNFragment newInstance() {
         return new DodaliSNFragment();
@@ -93,28 +101,61 @@ public class DodaliSNFragment extends Fragment {
         SimpleDateFormat sdf = new SimpleDateFormat("dd.MM.yyyy");
         String currentDateandTime = sdf.format(new Date());
         EditText etSN = (EditText) v_dodeli_sn.findViewById(R.id.etDatumSN_dodeli);
+        etSN.setOnKeyListener(new View.OnKeyListener() {
+            public boolean onKey(View v, int keyCode, KeyEvent event) {
+                if (event.getAction() == KeyEvent.ACTION_DOWN && keyCode == KeyEvent.KEYCODE_ENTER) {
+                    String text = status_sn.getSelectedItem().toString();
+                    String spVal = "";
+                    if (text.equals("NEDODELJENI"))
+                    {
+                        spVal = "-1";
+                    }
+                    else if (text.equals("DODELJENI"))
+                    {
+                        spVal = "0;";
+
+                    }
+                    else if (text.equals("STORNO"))
+                    {
+                        spVal = "1";
+                    }
+                        dodeliSNje = db.GetSeznamSNDodelitev(etSN.getText().toString(), spVal);
+                        adapterSeznamSNjev = new DodelitevSNAdapter(getActivity(), dodeliSNje);
+                        listView.setAdapter(adapterSeznamSNjev);
+                        //listView.setChoiceMode(ListView.CHOICE_MODE_SINGLE);
+                        adapterSeznamSNjev.notifyDataSetChanged();
+
+                    return true;
+                }
+                return false;
+            }
+        });
         etSN.setOnFocusChangeListener(new View.OnFocusChangeListener() {
             @Override
             public void onFocusChange(View v, boolean hasFocus) {
                 //Toast.makeText(getContext(),((EditText) v).getId() + " has focus - " + hasFocus, Toast.LENGTH_LONG).show();
                 String text = status_sn.getSelectedItem().toString();
-                if (text.equals("nedodeljeni"))
+                String spVal = "";
+                if (text.equals("NEDODELJENI"))
                 {
-                    dodeliSNje = db.GetSeznamSNDodelitev(etSN.getText().toString(), "-1");
-                    adapterSeznamSNjev = new DodelitevSNAdapter(getActivity(), dodeliSNje);
-                    listView.setAdapter(adapterSeznamSNjev);
-                    //listView.setChoiceMode(ListView.CHOICE_MODE_SINGLE);
-                    adapterSeznamSNjev.notifyDataSetChanged();
+                    spVal = "-1";
+                }
+                else if (text.equals("DODELJENI"))
+                {
+                    spVal = "0;";
+
+                }
+                else if (text.equals("STORNO"))
+                {
+                    spVal = "1";
                 }
 
-                else
-                {
-                    dodeliSNje = db.GetSeznamSNDodelitev(etSN.getText().toString(), "0");
+                    dodeliSNje = db.GetSeznamSNDodelitev(etSN.getText().toString(), spVal);
                     adapterSeznamSNjev = new DodelitevSNAdapter(getActivity(), dodeliSNje);
                     listView.setAdapter(adapterSeznamSNjev);
                     //listView.setChoiceMode(ListView.CHOICE_MODE_SINGLE);
                     adapterSeznamSNjev.notifyDataSetChanged();
-                }
+
             }
         });
         etSN.setText(currentDateandTime);
@@ -127,14 +168,18 @@ public class DodaliSNFragment extends Fragment {
                 // your code here
                 String text = status_sn.getSelectedItem().toString();
                 String spVal = "";
-                if (text.equals("nedodeljeni"))
+                if (text.equals("NEDODELJENI"))
                 {
                     spVal = "-1";
                 }
-                else
+                else if (text.equals("DODELJENI"))
                 {
-                    spVal = "0;";
+                    spVal = "0";
 
+                }
+                else if (text.equals("STORNO"))
+                {
+                    spVal = "1";
                 }
                 db.updateSNOznaciDatum(etSN.getText().toString());
                 dodeliSNje = db.GetSeznamSNDodelitev(etSN.getText().toString(), spVal);
@@ -152,23 +197,34 @@ public class DodaliSNFragment extends Fragment {
         });
 
 
-        List<String> lables = db.getTehnikiInString();
-        final ArrayAdapter<String> dataAdapter = new ArrayAdapter<String>(getActivity(),android.R.layout.test_list_item,lables);
-        dataAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-        Spinner spinner = (Spinner) v_dodeli_sn.findViewById(R.id.spinner_user_SN_dodeli);
-        spinner.setAdapter(dataAdapter);
 
         String text = status_sn.getSelectedItem().toString();
         String spVal = "";
-        if (text.equals("nedodeljeni"))
+        if (text.equals("NEDODELJENI"))
         {
             spVal = "-1";
         }
-        else
+        else if (text.equals("DODELJENI"))
         {
-            spVal = "0;";
+            spVal = "0";
 
         }
+        else if (text.equals("STORNO"))
+        {
+            spVal = "1";
+        }
+
+        serviser_sn = (Spinner) v_dodeli_sn.findViewById(R.id.spinner_user_SN_dodeli);
+        List<String> lables = db.getTehnikiInString();
+        final ArrayAdapter<String> dataAdapter = new ArrayAdapter<String>(getActivity(),android.R.layout.test_list_item,lables);
+        dataAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+        serviser_sn.setAdapter(dataAdapter);
+
+        pripadnost_sn = (Spinner) v_dodeli_sn.findViewById(R.id.spinner_pripadnost_SN_dodeli);
+        List<String> lables2 = db.getPripadnostInString();
+        final ArrayAdapter<String> dataAdapter2 = new ArrayAdapter<String>(getActivity(),android.R.layout.test_list_item,lables2);
+        dataAdapter2.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+        pripadnost_sn.setAdapter(dataAdapter2);
 
         db.updateSNOznaciDatum(etSN.getText().toString());
         dodeliSNje = db.GetSeznamSNDodelitev(etSN.getText().toString(), spVal);
@@ -189,21 +245,27 @@ public class DodaliSNFragment extends Fragment {
                     if (dodeliSNje.get(i).getOznacen() == 1)
                     {
                         stevec = stevec + 1;
-                        db.updateSNServiser(Integer.toString(dodeliSNje.get(i).getid()),spinner.getSelectedItem().toString());
+                        db.updateSNServiser(Integer.toString(dodeliSNje.get(i).getid()),serviser_sn.getSelectedItem().toString());
+                        updateVodjaMySql(Integer.toString(dodeliSNje.get(i).getid()),serviser_sn.getSelectedItem().toString());
+
                     }
                 }
                 if (stevec > 0)
                 {
                     String text = status_sn.getSelectedItem().toString();
                     String spVal = "";
-                    if (text.equals("nedodeljeni"))
+                    if (text.equals("NEDODELJENI"))
                     {
                         spVal = "-1";
                     }
-                    else
+                    else if (text.equals("DODELJENI"))
                     {
-                        spVal = "0;";
+                        spVal = "0";
 
+                    }
+                    else if (text.equals("STORNO"))
+                    {
+                        spVal = "1";
                     }
                     dodeliSNje = db.GetSeznamSNDodelitev(etSN.getText().toString(), spVal);
                     adapterSeznamSNjev = new DodelitevSNAdapter(getActivity(), dodeliSNje);
@@ -234,6 +296,41 @@ n
 
 
         return v_dodeli_sn;
+    }
+
+    public void updateVodjaMySql(String id, String vodja)
+    {
+        String result = null;
+        try {
+            String myUrl = "https://www.sintal.si/tehnika/updateSNVodjaNaloga.php?SNid="+id+"&vodjaNaloga="+vodja;
+            URL url = new URL(myUrl);
+            HttpURLConnection conn = (HttpURLConnection) url.openConnection();
+            String username ="sintal_teh";
+            String password = "mCuSTArQ*PdWAH#7-getSN";
+            String userpass = username + ":" + password;
+            String basicAuth = "Basic " + new String(Base64.getEncoder().encode(userpass.getBytes()));
+            conn.setRequestProperty ("Authorization", basicAuth);
+            conn.connect();
+
+            if (conn.getResponseCode() == HttpURLConnection.HTTP_OK) {
+                InputStreamReader inputStreamReader = new InputStreamReader(conn.getInputStream());
+                BufferedReader reader = new BufferedReader(inputStreamReader);
+                StringBuilder stringBuilder = new StringBuilder();
+                String temp;
+
+                while ((temp = reader.readLine()) != null) {
+                    stringBuilder.append(temp);
+                }
+                result = stringBuilder.toString();
+            }else  {
+                result = "error";
+            }
+            conn.disconnect();
+
+        } catch (Exception  e) {
+            e.printStackTrace();
+        }
+
     }
 
     @Override

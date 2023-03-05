@@ -95,7 +95,7 @@ public class seznamSNFragment extends Fragment {
         listView = (ListView) v.findViewById(R.id.seznamSNUpoLV);
         listView.setAdapter(adapterSeznamUpoSNjev);
         //listView.setChoiceMode(ListView.CHOICE_MODE_MULTIPLE);
-        adapterSeznamUpoSNjev.notifyDataSetChanged();
+        //adapterSeznamUpoSNjev.notifyDataSetChanged();
 
         return v;
     }

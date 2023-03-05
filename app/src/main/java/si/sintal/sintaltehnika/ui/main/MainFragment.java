@@ -24,6 +24,7 @@ import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.util.ArrayList;
+import java.util.Base64;
 
 import si.sintal.sintaltehnika.DatabaseHandler;
 import si.sintal.sintaltehnika.GlavnoOkno;
@@ -119,6 +120,11 @@ public class MainFragment extends Fragment {
             try {
                 URL url = new URL("https://www.sintal.si/tehnika/getUsers.php");
                 HttpURLConnection conn = (HttpURLConnection) url.openConnection();
+                String username ="sintal_teh";
+                String password = "mCuSTArQ*PdWAH#7-getUsers";
+                String userpass = username + ":" + password;
+                String basicAuth = "Basic " + new String(Base64.getEncoder().encode(userpass.getBytes()));
+                conn.setRequestProperty ("Authorization", basicAuth);
                 conn.connect();
 
                 if (conn.getResponseCode() == HttpURLConnection.HTTP_OK) {

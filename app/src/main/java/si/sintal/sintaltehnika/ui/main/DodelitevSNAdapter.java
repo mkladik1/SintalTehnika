@@ -3,6 +3,7 @@ package si.sintal.sintaltehnika.ui.main;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
+import android.provider.ContactsContract;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -61,14 +62,6 @@ public class DodelitevSNAdapter extends ArrayAdapter<ServisniNalog> implements F
         return seznamSNjev.size();
     }
 
-    public void setNarocnikNaziv(String nazivNar) {
-        nazivNar = narocnikNaziv;
-    }
-
-    public void setID(int SNid) {
-        SNid = id;
-    }
-
 
     @Override
     public long getItemId(int i) {
@@ -117,7 +110,7 @@ public class DodelitevSNAdapter extends ArrayAdapter<ServisniNalog> implements F
             holder.stSNja.setText(n.getDelovniNalog().toString()+"; "+n.getVodjaNaloga().toString());
         }
 
-        holder.idSNja.setText(Integer.toString(n.getid()));
+        holder.idSNja.setText(n.getPripadnost() +" - " +n.getPripadnostNaziv() +", "+    Integer.toString(n.getid()));
         holder.nazivNarocnikSNja.setText(n.getNarocnikNaziv().toString()+", "+n.getNarocnikNaslov().toString());
         holder.opisNapakeSNja.setText(n.getOpis().toString());
 
@@ -159,6 +152,16 @@ public class DodelitevSNAdapter extends ArrayAdapter<ServisniNalog> implements F
         else {
             holder.cbOznacen.setChecked(false);
         }
+
+        Button bStornoSN = (Button) convertView.findViewById(R.id.bStornirajSN);
+        bStornoSN.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                    DatabaseHandler db = new DatabaseHandler(getContext());
+                    db.updateSNStatusAkt(Integer.toString(n.getid()),"S");
+                    notifyDataSetChanged();
+            }});
+
 
         Button bPodatkiOSN = (Button) convertView.findViewById(R.id.bPodatkiSN);
         bPodatkiOSN.setOnClickListener(new View.OnClickListener() {
