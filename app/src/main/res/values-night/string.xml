@@ -1,0 +1,9 @@
+<resources>
+    <string name="hello_world">Hello world!</string>
+    <string name="action_settings">Settings</string>
+    <string name="hint_sign">Get Signature</string>
+    <string name="dialog_title">Podpišite se spodaj</string>
+    <string name="hint_cancel">Prekliči</string>
+    <string name="hint_clear">Počisti vsebino</string>
+    <string name="hint_save">Shrani</string>
+</resources>

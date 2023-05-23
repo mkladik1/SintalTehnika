@@ -3,6 +3,7 @@ package si.sintal.sintaltehnika.ui.main;
 import androidx.lifecycle.ViewModelProvider;
 
 import android.content.Intent;
+import android.os.AsyncTask;
 import android.os.Bundle;
 
 import androidx.annotation.NonNull;
@@ -30,11 +31,14 @@ import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.text.SimpleDateFormat;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Base64;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Locale;
 
 import si.sintal.sintaltehnika.DatabaseHandler;
 import si.sintal.sintaltehnika.GlavnoOkno;
@@ -98,7 +102,7 @@ public class DodaliSNFragment extends Fragment {
             }
         });
 
-        SimpleDateFormat sdf = new SimpleDateFormat("dd.MM.yyyy");
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
         String currentDateandTime = sdf.format(new Date());
         EditText etSN = (EditText) v_dodeli_sn.findViewById(R.id.etDatumSN_dodeli);
         etSN.setOnKeyListener(new View.OnKeyListener() {
@@ -106,20 +110,24 @@ public class DodaliSNFragment extends Fragment {
                 if (event.getAction() == KeyEvent.ACTION_DOWN && keyCode == KeyEvent.KEYCODE_ENTER) {
                     String text = status_sn.getSelectedItem().toString();
                     String spVal = "";
+                    String status_akt = "";
                     if (text.equals("NEDODELJENI"))
                     {
                         spVal = "-1";
+                        status_akt = "A";
                     }
                     else if (text.equals("DODELJENI"))
                     {
-                        spVal = "0;";
+                        spVal = "0";
+                        status_akt = "D";
 
                     }
                     else if (text.equals("STORNO"))
                     {
                         spVal = "1";
+                        status_akt = "S";
                     }
-                        dodeliSNje = db.GetSeznamSNDodelitev(etSN.getText().toString(), spVal);
+                        dodeliSNje = db.GetSeznamSNDodelitev(spVal,status_akt);
                         adapterSeznamSNjev = new DodelitevSNAdapter(getActivity(), dodeliSNje);
                         listView.setAdapter(adapterSeznamSNjev);
                         //listView.setChoiceMode(ListView.CHOICE_MODE_SINGLE);
@@ -136,21 +144,26 @@ public class DodaliSNFragment extends Fragment {
                 //Toast.makeText(getContext(),((EditText) v).getId() + " has focus - " + hasFocus, Toast.LENGTH_LONG).show();
                 String text = status_sn.getSelectedItem().toString();
                 String spVal = "";
+                String status_akt = "";
                 if (text.equals("NEDODELJENI"))
                 {
                     spVal = "-1";
+                    status_akt = "A";
                 }
                 else if (text.equals("DODELJENI"))
                 {
-                    spVal = "0;";
+                    spVal = "0";
+                    status_akt = "D";
 
                 }
                 else if (text.equals("STORNO"))
                 {
                     spVal = "1";
+                    status_akt = "S";
                 }
 
-                    dodeliSNje = db.GetSeznamSNDodelitev(etSN.getText().toString(), spVal);
+                    //dodeliSNje = db.GetSeznamSNDodelitev(etSN.getText().toString(), spVal);
+                    dodeliSNje = db.GetSeznamSNDodelitev( spVal,status_akt);
                     adapterSeznamSNjev = new DodelitevSNAdapter(getActivity(), dodeliSNje);
                     listView.setAdapter(adapterSeznamSNjev);
                     //listView.setChoiceMode(ListView.CHOICE_MODE_SINGLE);
@@ -168,21 +181,26 @@ public class DodaliSNFragment extends Fragment {
                 // your code here
                 String text = status_sn.getSelectedItem().toString();
                 String spVal = "";
+                String status_akt = "";
                 if (text.equals("NEDODELJENI"))
                 {
                     spVal = "-1";
+                    status_akt = "A";
                 }
                 else if (text.equals("DODELJENI"))
                 {
                     spVal = "0";
+                    status_akt = "D";
 
                 }
                 else if (text.equals("STORNO"))
                 {
                     spVal = "1";
+                    status_akt = "S";
                 }
-                db.updateSNOznaciDatum(etSN.getText().toString());
-                dodeliSNje = db.GetSeznamSNDodelitev(etSN.getText().toString(), spVal);
+                //db.updateSNOznaciId(etSN.getText().toString());
+                //dodeliSNje = db.GetSeznamSNDodelitev(etSN.getText().toString(), spVal);
+                dodeliSNje = db.GetSeznamSNDodelitev( spVal, status_akt);
                 adapterSeznamSNjev = new DodelitevSNAdapter(getActivity(), dodeliSNje);
                 listView.setAdapter(adapterSeznamSNjev);
                 //listView.setChoiceMode(ListView.CHOICE_MODE_SINGLE);
@@ -200,18 +218,22 @@ public class DodaliSNFragment extends Fragment {
 
         String text = status_sn.getSelectedItem().toString();
         String spVal = "";
+        String status_akt = "";
         if (text.equals("NEDODELJENI"))
         {
             spVal = "-1";
+            status_akt = "A";
         }
         else if (text.equals("DODELJENI"))
         {
             spVal = "0";
+            status_akt = "D";
 
         }
         else if (text.equals("STORNO"))
         {
             spVal = "1";
+            status_akt = "S";
         }
 
         serviser_sn = (Spinner) v_dodeli_sn.findViewById(R.id.spinner_user_SN_dodeli);
@@ -226,8 +248,9 @@ public class DodaliSNFragment extends Fragment {
         dataAdapter2.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         pripadnost_sn.setAdapter(dataAdapter2);
 
-        db.updateSNOznaciDatum(etSN.getText().toString());
-        dodeliSNje = db.GetSeznamSNDodelitev(etSN.getText().toString(), spVal);
+        //db.updateSNOznaciDatum(etSN.getText().toString());
+        //dodeliSNje = db.GetSeznamSNDodelitev(etSN.getText().toString(), spVal);
+        dodeliSNje = db.GetSeznamSNDodelitev( spVal,status_akt);
         adapterSeznamSNjev = new DodelitevSNAdapter(getActivity(), dodeliSNje);
         listView = (ListView) v_dodeli_sn.findViewById(R.id.seznamSNDodelitve);
         listView.setAdapter(adapterSeznamSNjev);
@@ -239,14 +262,21 @@ public class DodaliSNFragment extends Fragment {
             @Override
             public void onClick(View v) {
                 int stevec=0;
+                ArrayList<String> parameters = new ArrayList<String>();
                 for(int i=0; i<=dodeliSNje.size()-1;i++)
                 {
-
                     if (dodeliSNje.get(i).getOznacen() == 1)
                     {
                         stevec = stevec + 1;
-                        db.updateSNServiser(Integer.toString(dodeliSNje.get(i).getid()),serviser_sn.getSelectedItem().toString());
-                        updateVodjaMySql(Integer.toString(dodeliSNje.get(i).getid()),serviser_sn.getSelectedItem().toString());
+                        String datumDodelitve = new SimpleDateFormat("yyyy-MM-dd", Locale.getDefault()).format(new Date());
+                        db.updateSNServiser(Integer.toString(dodeliSNje.get(i).getid()),serviser_sn.getSelectedItem().toString(), datumDodelitve, "D");
+
+                        parameters.add(Integer.toString(dodeliSNje.get(i).getid()));
+                        db.updateSNOznaciId(Integer.toString(dodeliSNje.get(i).getid()),"0");
+                        //parameters.add(serviser_sn.getSelectedItem().toString());
+                        //parameters.add("D");
+                        //updateVodjaMySql(Integer.toString(dodeliSNje.get(i).getid()),serviser_sn.getSelectedItem().toString(),"D");
+                        //updateVodjaPrenosiMySql(Integer.toString(dodeliSNje.get(i).getid()),serviser_sn.getSelectedItem().toString(),"D");
 
                     }
                 }
@@ -254,59 +284,46 @@ public class DodaliSNFragment extends Fragment {
                 {
                     String text = status_sn.getSelectedItem().toString();
                     String spVal = "";
+                    String status_akt = "";
                     if (text.equals("NEDODELJENI"))
                     {
                         spVal = "-1";
+                        status_akt = "A";
                     }
                     else if (text.equals("DODELJENI"))
                     {
                         spVal = "0";
+                        status_akt = "D";
 
                     }
                     else if (text.equals("STORNO"))
                     {
                         spVal = "1";
+                        status_akt = "S";
                     }
-                    dodeliSNje = db.GetSeznamSNDodelitev(etSN.getText().toString(), spVal);
+                    dodeliSNje = db.GetSeznamSNDodelitev( spVal,status_akt);
                     adapterSeznamSNjev = new DodelitevSNAdapter(getActivity(), dodeliSNje);
                     //listView = (ListView) v_dodeli_sn.findViewById(R.id.seznamSNDodelitve);
                     listView.setAdapter(adapterSeznamSNjev);
                     //listView.setChoiceMode(ListView.CHOICE_MODE_SINGLE);
                     adapterSeznamSNjev.notifyDataSetChanged();
-
+                    new UpdateVodjaOnWeb().execute(parameters);
                 }
             }
         });
 
-        /*
-n
-        ArrayAdapter<CharSequence>adapter=ArrayAdapter.createFromResource(getActivity(), R.array.status_sn, android.R.layout.simple_spinner_item);
-        adapter.setDropDownViewResource(android.R.layout.simple_spinner_item);
-        Spinner spinner2 = (Spinner) v_dodeli_sn.findViewById(R.id.spinner_status_SN_dodeli);
-        spinner2.setAdapter(adapter);
-
-        seznamDNdodelitve = (ListView) v_dodeli_sn.findViewById(R.id.seznamSNDodelitve);
-        seznamDNdodelitve.setChoiceMode(ListView.CHOICE_MODE_MULTIPLE);
-         snList = db.GetSeznamSN(etSN.getText().toString(),"-1");
-        ListAdapter adapterSN = new SimpleAdapter(getContext(), snList, R.layout.seznamdodelisn,new String[]{"stevilka_sn","narocnik","opis"}, new int[]{R.id.labelstevilkaSN, R.id.labelSNNarocnik, R.id.labelSNOpisNapke});
-        seznamDNdodelitve.setAdapter(adapterSN);
-        ((BaseAdapter) seznamDNdodelitve.getAdapter()).notifyDataSetChanged();
-
-*/
-
-
         return v_dodeli_sn;
     }
 
-    public void updateVodjaMySql(String id, String vodja)
+    public void updateVodjaMySql(String id, String vodja, String status_akt, String datum)
     {
         String result = null;
         try {
-            String myUrl = "https://www.sintal.si/tehnika/updateSNVodjaNaloga.php?SNid="+id+"&vodjaNaloga="+vodja;
+            String myUrl = "https://www.sintal.si/tehnika/updateSNVodjaNaloga.php?SNid="+id+"&vodjaNaloga="+vodja+"&status_akt="+status_akt+"&datum_dodelitve="+datum;
             URL url = new URL(myUrl);
             HttpURLConnection conn = (HttpURLConnection) url.openConnection();
             String username ="sintal_teh";
-            String password = "mCuSTArQ*PdWAH#7-getSN";
+            String password = "mCuSTArQ*PdWAH#7-";
             String userpass = username + ":" + password;
             String basicAuth = "Basic " + new String(Base64.getEncoder().encode(userpass.getBytes()));
             conn.setRequestProperty ("Authorization", basicAuth);
@@ -333,11 +350,63 @@ n
 
     }
 
+    public void updateVodjaPrenosiMySql(String id, String vodja, String status_akt, String datum)
+    {
+        String result = null;
+        try {
+            String myUrl = "https://www.sintal.si/tehnika/updateSNVodjaNalogaPrenosi.php?SNid="+id+"&vodjaNaloga="+vodja+"&status_akt="+status_akt+"&datum_dodelitve="+datum;
+            URL url = new URL(myUrl);
+            HttpURLConnection conn = (HttpURLConnection) url.openConnection();
+            String username ="sintal_teh";
+            String password = "mCuSTArQ*PdWAH#7-";
+            String userpass = username + ":" + password;
+            String basicAuth = "Basic " + new String(Base64.getEncoder().encode(userpass.getBytes()));
+            conn.setRequestProperty ("Authorization", basicAuth);
+            conn.connect();
+
+            if (conn.getResponseCode() == HttpURLConnection.HTTP_OK) {
+                InputStreamReader inputStreamReader = new InputStreamReader(conn.getInputStream());
+                BufferedReader reader = new BufferedReader(inputStreamReader);
+                StringBuilder stringBuilder = new StringBuilder();
+                String temp;
+
+                while ((temp = reader.readLine()) != null) {
+                    stringBuilder.append(temp);
+                }
+                result = stringBuilder.toString();
+            }else  {
+                result = "error";
+            }
+            conn.disconnect();
+
+        } catch (Exception  e) {
+            e.printStackTrace();
+        }
+
+    }
+
+
     @Override
     public void onActivityCreated(@Nullable Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
         mViewModel = new ViewModelProvider(this).get(DodeliSNViewModel.class);
         // TODO: Use the ViewModel
+    }
+
+    private class UpdateVodjaOnWeb extends AsyncTask<ArrayList,Void,Void> {
+
+        @Override
+        protected Void doInBackground(ArrayList... arrayLists) {
+            String datum = "";
+            DateTimeFormatter dtf = DateTimeFormatter.ofPattern("yyyy-MM-dd");
+            LocalDateTime now = LocalDateTime.now();
+            datum = dtf.format(now);
+            for (int i = 0; i<arrayLists[0].size();i++) {
+                updateVodjaMySql(arrayLists[0].get(i).toString(), serviser_sn.getSelectedItem().toString(), "D", datum);
+                updateVodjaPrenosiMySql(arrayLists[0].get(i).toString(), serviser_sn.getSelectedItem().toString(), "D", datum);
+            }
+            return null;
+        }
     }
 
 }

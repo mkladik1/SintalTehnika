@@ -74,6 +74,7 @@ public class DodelitevSNAdapter extends ArrayAdapter<ServisniNalog> implements F
         TextView nazivNarocnikSNja;
         TextView opisNapakeSNja;
         CheckBox cbOznacen;
+        TextView datumDodelitveDNSNja;
 
     }
 
@@ -92,6 +93,7 @@ public class DodelitevSNAdapter extends ArrayAdapter<ServisniNalog> implements F
             holder.nazivNarocnikSNja = (TextView) convertView.findViewById(R.id.labelSNNarocnik);
             holder.opisNapakeSNja = (TextView) convertView.findViewById(R.id.labelSNOpisNapke);
             holder.cbOznacen = (CheckBox) convertView.findViewById(R.id.cbDodeli);
+            holder.datumDodelitveDNSNja = (TextView) convertView.findViewById(R.id.labelidSNDatum);
             //holder.continent = (TextView) convertView.findViewById(R.id.continent);
             //holder.region = (TextView) convertView.findViewById(R.id.region);
 
@@ -113,11 +115,8 @@ public class DodelitevSNAdapter extends ArrayAdapter<ServisniNalog> implements F
         holder.idSNja.setText(n.getPripadnost() +" - " +n.getPripadnostNaziv() +", "+    Integer.toString(n.getid()));
         holder.nazivNarocnikSNja.setText(n.getNarocnikNaziv().toString()+", "+n.getNarocnikNaslov().toString());
         holder.opisNapakeSNja.setText(n.getOpis().toString());
-
-
-
+        holder.datumDodelitveDNSNja.setText("dodeljeno: " + n.getDatumDodelitve());
         holder.cbOznacen.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
-
             @Override
             public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
                 // TODO Auto-generated method stub
@@ -158,7 +157,7 @@ public class DodelitevSNAdapter extends ArrayAdapter<ServisniNalog> implements F
             @Override
             public void onClick(View v) {
                     DatabaseHandler db = new DatabaseHandler(getContext());
-                    db.updateSNStatusAkt(Integer.toString(n.getid()),"S");
+                    db.updateSNStatusAkt(Integer.toString(n.getid()),"D");
                     notifyDataSetChanged();
             }});
 
@@ -188,198 +187,12 @@ public class DodelitevSNAdapter extends ArrayAdapter<ServisniNalog> implements F
                 intent.putExtra("odgOsebaSNja", odgOsebaSNja);
                 intent.putExtra("narocnikSNja", narocnikSNja);
                 getContext().startActivity(intent);
-                //if (vN.equals("A")) {
-
-
-
-
-/*
-                    myFrag.setArguments(bundle);
-                    Intent intent = new Intent(getContext(), DialogPodatkiSN.class);
-                    intent.putExtra("stSNja", stSNja );
-                    intent.putExtra("opisSNja", opisSNja);
-                    intent.putExtra("vodjaSNja", vodjaSNja);
-                    intent.putExtra("narocnikSNja", narocnikSNja);
-                    getContext().startActivity(intent);
-
- */
-                //}
-
 
             }
         });
 
 
-/*
-        Button bDelete = (Button) convertView.findViewById(R.id.bBrisiNadzor);
-        Button bEdit = (Button) convertView.findViewById(R.id.bUrediNadzor);
-        Button bCopy = (Button) convertView.findViewById(R.id.bKopirajNadzor);
 
-        bDelete.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Nadzor nadzori = getItem(position);
-                if (nadzori.getStatus() == 0) {
-                    DatabaseHandler db = new DatabaseHandler(getContext());
-                    db.deleteNadzorPrevozPodKategorija(nadzori.getStNadzora());
-                    db.deleteNadzorPrevozKategorija(nadzori.getStNadzora());
-                    db.deleteNadzor(nadzori.getStNadzora());
-                    db.close();
-                    originalData.remove(position);
-                    notifyDataSetChanged();
-                    refreshList();
-                }
-            }
-        });
-
-        bEdit.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                //Nadzor n = (Nadzor) adapter.getItem(position);
-                Nadzor nadzori = getItem(position);
-                String stN = nadzori.getStNadzora();
-                int stNadzora = Integer.parseInt(stN);
-                String vN = nadzori.getVrstaN();
-                Bundle bundle = new Bundle();
-                DatabaseHandler db = new DatabaseHandler(getContext());
-                String userNaziv = db.getUserNaziv(nadzori.getDodatnoPolje3());
-                bundle.putString("stNadzora", stN);
-                if (vN.equals("A")) {
-                    NadzorAlkotestFragment myFrag = new NadzorAlkotestFragment();
-                    myFrag.setArguments(bundle);
-                    Intent intent = new Intent(getContext(), NadzorAlkotest.class);
-                    intent.putExtra("stNadzora", stN);
-                    intent.putExtra("userID", nadzori.getDodatnoPolje3());
-                    intent.putExtra("userName", userNaziv);
-
-                    //Bundle b = new Bundle();
-                    //b.putInt("stNadzora", stNadzora); //Your id
-                    //intent.putExtras(b); //Put your id to your next Intent
-                    getContext().startActivity(intent);
-                } else if (vN.equals("P")) {
-                    NadzorPrevozFragment myFrag = new NadzorPrevozFragment();
-                    myFrag.setArguments(bundle);
-                    Intent intent = new Intent(getContext(), NadzorPrevoz.class);
-                    intent.putExtra("stNadzora", stN);
-                    intent.putExtra("userID", nadzori.getDodatnoPolje3());
-                    intent.putExtra("userName", userNaziv);
-                    //Bundle b = new Bundle();
-                    //b.putInt("stNadzora", stNadzora); //Your id
-                    //intent.putExtras(b); //Put your id to your next Intent
-                    getContext().startActivity(intent);
-
-                } else if (vN.equals("T")) {
-                    NadzorTehnikaFragment myFrag = new NadzorTehnikaFragment();
-                    myFrag.setArguments(bundle);
-                    Intent intent = new Intent(getContext(), NadzorTehnika.class);
-                    intent.putExtra("stNadzora", stN);
-                    intent.putExtra("userID", nadzori.getDodatnoPolje3());
-                    intent.putExtra("userName", userNaziv);
-                    //Bundle b = new Bundle();
-                    //b.putInt("stNadzora", stNadzora); //Your id
-                    //intent.putExtras(b); //Put your id to your next Intent
-                    getContext().startActivity(intent);
-                } else if (vN.equals("V")) {
-                    NadzorVarovanjeFragment myFrag = new NadzorVarovanjeFragment();
-                    myFrag.setArguments(bundle);
-                    Intent intent = new Intent(getContext(), NadzorVarovanje.class);
-                    intent.putExtra("stNadzora", stN);
-                    intent.putExtra("userID", nadzori.getDodatnoPolje3());
-                    intent.putExtra("userName", userNaziv);
-                    //Bundle b = new Bundle();
-                    //b.putInt("stNadzora", stNadzora); //Your id
-                    //intent.putExtras(b); //Put your id to your next Intent
-                    getContext().startActivity(intent);
-                } else if (vN.equals("O")) {
-                    NadzorVNCFragment myFrag = new NadzorVNCFragment();
-                    myFrag.setArguments(bundle);
-                    Intent intent = new Intent(getContext(), NadzorVNC.class);
-                    intent.putExtra("stNadzora", stN);
-                    intent.putExtra("userID", nadzori.getDodatnoPolje3());
-                    intent.putExtra("userName", userNaziv);
-                    //Bundle b = new Bundle();
-                    //b.putInt("stNadzora", stNadzora); //Your id
-                    //intent.putExtras(b); //Put your id to your next Intent
-                    getContext().startActivity(intent);
-                }
-
-
-            }
-        });
-
-        bCopy.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                //Nadzor n = (Nadzor) adapter.getItem(position);
-                Nadzor nadzori = getItem(position);
-                String stN = nadzori.getStNadzora();
-                int stNadzora = Integer.parseInt(stN);
-                String vN = nadzori.getVrstaN();
-                DatabaseHandler db = new DatabaseHandler(getContext());
-                String userNaziv = db.getUserNaziv(nadzori.getDodatnoPolje3());
-                Bundle bundle = new Bundle();
-                bundle.putString("stNadzora", stN);
-                if (vN.equals("A")) {
-                    db = new DatabaseHandler(getContext());
-                    long stNad = db.kopirajNadzor(nadzori.getStNadzora());
-                    stN = String.valueOf(stNad);
-                    NadzorAlkotestFragment myFrag = new NadzorAlkotestFragment();
-                    myFrag.setArguments(bundle);
-                    Intent intent = new Intent(getContext(), NadzorAlkotest.class);
-                    intent.putExtra("stNadzora", stN);
-                    intent.putExtra("userID", nadzori.getDodatnoPolje3());
-                    intent.putExtra("userName", userNaziv);
-                    getContext().startActivity(intent);
-                } else if (vN.equals("P")) {
-                    db = new DatabaseHandler(getContext());
-                    long stNad = db.kopirajNadzor(nadzori.getStNadzora());
-                    stN = String.valueOf(stNad);
-                    NadzorPrevozFragment myFrag = new NadzorPrevozFragment();
-                    myFrag.setArguments(bundle);
-                    Intent intent = new Intent(getContext(), NadzorPrevoz.class);
-                    intent.putExtra("stNadzora", stN);
-                    intent.putExtra("userID", nadzori.getDodatnoPolje3());
-                    intent.putExtra("userName", userNaziv);
-                    getContext().startActivity(intent);
-
-                } else if (vN.equals("T")) {
-                    db = new DatabaseHandler(getContext());
-                    long stNad = db.kopirajNadzor(nadzori.getStNadzora());
-                    stN = String.valueOf(stNad);
-                    NadzorTehnikaFragment myFrag = new NadzorTehnikaFragment();
-                    myFrag.setArguments(bundle);
-                    Intent intent = new Intent(getContext(), NadzorTehnika.class);
-                    intent.putExtra("stNadzora", stN);
-                    intent.putExtra("userID", nadzori.getDodatnoPolje3());
-                    intent.putExtra("userName", userNaziv);
-                    getContext().startActivity(intent);
-                } else if (vN.equals("V")) {
-                    db = new DatabaseHandler(getContext());
-                    long stNad = db.kopirajNadzor(nadzori.getStNadzora());
-                    stN = String.valueOf(stNad);
-                    NadzorVarovanjeFragment myFrag = new NadzorVarovanjeFragment();
-                    myFrag.setArguments(bundle);
-                    Intent intent = new Intent(getContext(), NadzorVarovanje.class);
-                    intent.putExtra("stNadzora", stN);
-                    intent.putExtra("userID", nadzori.getDodatnoPolje3());
-                    intent.putExtra("userName", userNaziv);
-                    getContext().startActivity(intent);
-                } else if (vN.equals("O")) {
-                    db = new DatabaseHandler(getContext());
-                    long stNad = db.kopirajNadzor(nadzori.getStNadzora());
-                    stN = String.valueOf(stNad);
-                    NadzorVNCFragment myFrag = new NadzorVNCFragment();
-                    myFrag.setArguments(bundle);
-                    Intent intent = new Intent(getContext(), NadzorVNC.class);
-                    intent.putExtra("stNadzora", stN);
-                    intent.putExtra("userID", nadzori.getDodatnoPolje3());
-                    intent.putExtra("userName", userNaziv);
-                    getContext().startActivity(intent);
-                }
-
-            }
-        });
-*/
         // Return the completed view to render on screen
 
         return convertView;
@@ -410,27 +223,6 @@ public class DodelitevSNAdapter extends ArrayAdapter<ServisniNalog> implements F
                 for (int i = 0; i < originalData.size(); i++) {
                     if ((originalData.get(i).getOpis().toUpperCase())
                             .contains(constraint.toString().toUpperCase())) {
-/*
-                        ServisniNalog n = new ServisniNalog();
-                        //n.setStNadzora(filteredData.get(i).getStNadzora());
-                        n.setStNadzora(Integer.parseInt(originalData.get(i).getStNadzora()));
-                        n.setVrstaN(originalData.get(i).getVrstaN());
-                        n.setOsebaNadzora(originalData.get(i).getOsebaNadzora());
-                        n.setOsebaIzkaznica(originalData.get(i).getOsebaIzkaznica());
-                        n.setKrajNadzora(originalData.get(i).getKrajNadzora());
-                        n.setDatumNadzora(originalData.get(i).getDatumNadzora());
-                        n.setUraZacetkaNadzora(originalData.get(i).getUraZacetkaNadzora());
-                        n.setUraKoncaNadzora(originalData.get(i).getUraKoncaNadzora());
-                        n.setRegStevilka(originalData.get(i).getRegStevilka());
-                        n.setDelovniNalog(originalData.get(i).getDelovniNalog());
-                        n.setObjekt(originalData.get(i).getObjekt());
-                        n.setDodatnoPolje1(originalData.get(i).getDodatnoPolje1());
-                        n.setDodatnoPolje2(originalData.get(i).getDodatnoPolje2());
-                        n.setDodatnoPolje3(originalData.get(i).getDodatnoPolje3());
-                        n.setOpomba(originalData.get(i).getOpomba());
-                        n.setStatus(originalData.get(i).getStatus());
-                        filterList.add(n);
-                        */
 
                     }
                 }

@@ -18,6 +18,8 @@ public class SNPagerAdapter  extends FragmentStateAdapter {
 
     static String userName;
     static int userID;
+    static int tehnikID;
+    static int snID;
     static  int nalogaID;
     static int nsID;
     static int sistemID;
@@ -29,10 +31,12 @@ public class SNPagerAdapter  extends FragmentStateAdapter {
     }
 
 
-    public static void setParameters(int uid)
+    public static void setParameters(int sID, int tehID, int uID)
     {
 
-        userID = uid;
+        snID = sID;
+        tehnikID = tehID;
+        userID = uID;
        /* nalogaID = nid;
         nsID = nsid;
         sistemID = sid;
@@ -46,7 +50,7 @@ public class SNPagerAdapter  extends FragmentStateAdapter {
     public static int getParameters()
     {
 
-        return userID;
+        return snID;
        /* nalogaID = nid;
         nsID = nsid;
         sistemID = sid;

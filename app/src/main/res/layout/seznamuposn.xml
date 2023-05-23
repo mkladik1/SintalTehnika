@@ -50,6 +50,16 @@
                     android:gravity="right|end"
                     android:text="idSN"
                     android:textSize="16sp"></TextView>
+
+                <TextView
+                    android:id="@+id/labelidSNDodeljeno"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="right|left"
+                    android:layout_weight="1"
+                    android:gravity="right|end"
+                    android:text=" dodeljeno:"
+                    android:textSize="16sp"></TextView>
             </LinearLayout>
 
             <TextView

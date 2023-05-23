@@ -5,5 +5,10 @@
         <item>DODELJENI</item>
         <item>STORNO</item>
     </string-array>
+    <string-array name="status_sn_seznam">
+        <item>DODELJENI</item>
+        <item>PODPISANI</item>
+        <item>ZAKLJUČENI</item>
+    </string-array>
 
 </resources>

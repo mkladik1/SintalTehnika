@@ -6,6 +6,7 @@ buildscript {
     }
     dependencies {
         classpath "com.android.tools.build:gradle:4.1.2";
+        //implementation 'com.itextpdf.android:itext7-core-android:7.2.3'
         //implementation fileTree(dir: 'libs', include: ['*.jar'])
 
 
@@ -13,6 +14,7 @@ buildscript {
         // in the individual module build.gradle files
         //implementation files('libs/mysql-connector-java-8.0.29.jar');
     }
+
 }
 
 allprojects {

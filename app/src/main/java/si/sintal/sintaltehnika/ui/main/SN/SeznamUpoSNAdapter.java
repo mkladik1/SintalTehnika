@@ -33,13 +33,10 @@ import si.sintal.sintaltehnika.ui.main.ServisniNalog;
 public class SeznamUpoSNAdapter extends ArrayAdapter<ServisniNalog> implements Filterable {
 
     private Context context;
-    ServisniNalog seznamSN;
     private LayoutInflater inflater;
     private ArrayList<ServisniNalog> originalData;
     private ArrayList<ServisniNalog> seznamSNjev;
     ItemFilter mFilter;
-    public String narocnikNaziv;
-    public String narocnikNaslov;
     public int id;
 
     public SeznamUpoSNAdapter(Context context, ArrayList<ServisniNalog> seznamSNjev) {
@@ -69,6 +66,7 @@ public class SeznamUpoSNAdapter extends ArrayAdapter<ServisniNalog> implements F
         TextView nazivNarocnikSNja;
         TextView opisNapakeSNja;
         CheckBox cbOznacen;
+        TextView datumDodeljenSN;
 
     }
 
@@ -85,6 +83,7 @@ public class SeznamUpoSNAdapter extends ArrayAdapter<ServisniNalog> implements F
             holder.idSNja = (TextView) convertView.findViewById(R.id.labelidSN);
             holder.nazivNarocnikSNja = (TextView) convertView.findViewById(R.id.labelSNNarocnik);
             holder.opisNapakeSNja = (TextView) convertView.findViewById(R.id.labelSNOpisNapke);
+            holder.datumDodeljenSN = (TextView) convertView.findViewById(R.id.labelidSNDodeljeno);
             //holder.cbOznacen = (CheckBox) convertView.findViewById(R.id.cbDodeli);
             //holder.continent = (TextView) convertView.findViewById(R.id.continent);
             //holder.region = (TextView) convertView.findViewById(R.id.region);
@@ -107,6 +106,8 @@ public class SeznamUpoSNAdapter extends ArrayAdapter<ServisniNalog> implements F
         holder.idSNja.setText(Integer.toString(n.getid()));
         holder.nazivNarocnikSNja.setText(n.getNarocnikNaziv().toString()+", "+n.getNarocnikNaslov().toString());
         holder.opisNapakeSNja.setText(n.getOpis().toString());
+        String datumDod = "dodeljen: " + n.getDatumDodelitve().toString();
+        holder.datumDodeljenSN.setText(datumDod);
 
         Button bIzpolniSN = (Button) convertView.findViewById(R.id.bIzpolniSN);
         bIzpolniSN.setOnClickListener(new View.OnClickListener() {
@@ -114,7 +115,9 @@ public class SeznamUpoSNAdapter extends ArrayAdapter<ServisniNalog> implements F
                 public void onClick(View v) {
                     Fragment my = FragmentManager.findFragment(v);
                     ViewPager2 viewPager =(ViewPager2) my.getActivity().findViewById(R.id.SNViewPager);
-                    SNPagerAdapter.setParameters(n.getid());
+                    DatabaseHandler db = new DatabaseHandler(getContext());
+                    int tehnik = Integer.parseInt(db.getTehnikId(n.getVodjaNaloga()));
+                    SNPagerAdapter.setParameters(n.getid(),tehnik,0);
                     viewPager.setCurrentItem(1);
 
                             //.findFragmentById(getItemId(index).toInt())

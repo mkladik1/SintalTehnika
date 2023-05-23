@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:background="#DCDCDC"
+    android:focusableInTouchMode="false"
+    android:isScrollContainer="false"
+    android:orientation="vertical"
+    android:padding="5dp">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:orientation="horizontal">
+
+            <TextView
+                android:id="@+id/tvSNArtikelSt"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_vertical"
+                android:paddingRight="20dp"
+                android:text="10001" />
+
+            <TextView
+                android:id="@+id/tvSNArtikelNaziv"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_vertical"
+                android:layout_weight="1"
+                android:text="Drobni potrošni material" />
+
+
+            <TextView
+                android:id="@+id/tvSNArtikelEnota"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_vertical"
+                android:gravity="right"
+                android:paddingRight="10dp"
+                android:text="KOS" />
+
+            <Button
+                android:id="@+id/bSNArtikelDodaj"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:gravity="clip_horizontal|center_vertical"
+                app:icon="@android:drawable/ic_menu_close_clear_cancel" />
+        </LinearLayout>
+    </LinearLayout>

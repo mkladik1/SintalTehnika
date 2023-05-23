@@ -91,6 +91,16 @@ public class NastavitveFragment extends Fragment {
             }
         });
 
+        Button bPrenesiArtikle = (Button) v_nastavitve.findViewById(R.id.bPrenesiArtikle);
+        bPrenesiArtikle.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                pbPrenos.setVisibility(View.VISIBLE);
+                new LoadArtikliFromWeb().execute();
+
+            }
+        });
+
         Button bPrenesiUporabnike = (Button) v_nastavitve.findViewById(R.id.bPrenesiUporabnike);
         bPrenesiUporabnike.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -176,6 +186,86 @@ public class NastavitveFragment extends Fragment {
                         String user_id = object.getString("user_id");
                         DatabaseHandler db = new DatabaseHandler(getContext());
                         db.insertUpdateTehnik(tehnik_id,naziv,servis, montaza, vzdrzevanje, user_id);
+                    }
+                    //getString("user_id");//.getString("user_id");
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
+
+
+
+            }
+
+            return null;
+        }
+
+        @Override
+        protected void onPostExecute(Object o) {
+            super.onPostExecute(o);
+            ProgressBar pbPrenos1 = (ProgressBar) getView().findViewById(R.id.progressBarPrenos);
+            pbPrenos1.setVisibility(View.GONE);
+
+        }
+
+    }
+
+
+    private class LoadArtikliFromWeb extends AsyncTask {
+
+        @Override
+        protected Object doInBackground(Object... arg0) {
+            //MySQLDatabase.mysqlConnect();
+            String result = null;
+            try {
+                URL url = new URL("https://www.sintal.si/tehnika/getArtikli.php");
+                HttpURLConnection conn = (HttpURLConnection) url.openConnection();
+                String username ="sintal_teh";
+                String password = "mCuSTArQ*PdWAH#7-getArtikli";
+                String userpass = username + ":" + password;
+                String basicAuth = "Basic " + new String(Base64.getEncoder().encode(userpass.getBytes()));
+                conn.setRequestProperty ("Authorization", basicAuth);
+                conn.connect();
+
+                if (conn.getResponseCode() == HttpURLConnection.HTTP_OK) {
+                    InputStreamReader inputStreamReader = new InputStreamReader(conn.getInputStream());
+                    BufferedReader reader = new BufferedReader(inputStreamReader);
+                    StringBuilder stringBuilder = new StringBuilder();
+                    String temp;
+
+                    while ((temp = reader.readLine()) != null) {
+                        stringBuilder.append(temp);
+                    }
+                    result = stringBuilder.toString();
+                }else  {
+                    result = "error";
+                }
+
+            } catch (Exception  e) {
+                e.printStackTrace();
+            }
+            //return result;
+            if (result != null)
+            {
+                JSONObject obj = null;
+                try {
+                    obj = new JSONObject(result);
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
+                try {
+                    JSONArray dataArray = obj.getJSONArray("artikli");
+                    //int pageName = obj.getJSONArray("users").length();
+                    for (int i=0; i < dataArray.length() ; i++)
+                    {
+                        JSONObject object = dataArray.getJSONObject(i);
+                        String No_ = object.getString("No_");
+                        String Naziv = object.getString("Naziv");
+                        String Naziv_iskanje = object.getString("Naziv_iskanje");
+                        String Merska_enota = object.getString("Merska_enota");
+                        String Kratka_oznaka = object.getString("Kratka_oznaka");
+                        //String user_id = object.getString("user_id");
+                        DatabaseHandler db = new DatabaseHandler(getContext());
+                        db.insertUpdateArtikel(No_,Naziv,Naziv_iskanje, Merska_enota, Kratka_oznaka);
                     }
                     //getString("user_id");//.getString("user_id");
                 } catch (JSONException e) {
@@ -466,6 +556,7 @@ public class NastavitveFragment extends Fragment {
                         String OE = object.getString("OE");
                         String DATUM_ZACETEK = object.getString("DATUM_ZACETEK");
                         String DATUM_KONEC = object.getString("DATUM_KONEC");
+
                         String OPIS = object.getString("OPIS");
                         OPIS = OPIS.replaceAll("è","č");
                         OPIS = OPIS.replaceAll("È","Č");
@@ -526,8 +617,12 @@ public class NastavitveFragment extends Fragment {
                         SEKTOR_POSTNA_ST = SEKTOR_POSTNA_ST.replaceAll("è","č");
                         SEKTOR_POSTNA_ST = SEKTOR_POSTNA_ST.replaceAll("È","Č");
 
-
                         String VODJA_NALOGA = object.getString("VODJA_NALOGA");
+                        String DATUM_IZVEDBE = object.getString("DATUM_IZVEDBE");
+                        String DATUM_PODPISA = object.getString("DATUM_PODPISA");
+                        String DATUM_DODELITVE = object.getString("DATUM_DODELITVE");
+
+
                         DatabaseHandler db = new DatabaseHandler(getContext());
                         db.insertUpdateSN(id,
                                 DELOVNI_NALOG,
@@ -567,7 +662,10 @@ public class NastavitveFragment extends Fragment {
                                 NAROCNIK_HISNA_ST,
                                 NAROCNIK_IME_SEKTORJA,
                                 SEKTOR_NASLOV,
-                                SEKTOR_POSTNA_ST
+                                SEKTOR_POSTNA_ST,
+                                DATUM_PODPISA,
+                                DATUM_DODELITVE,
+                                DATUM_IZVEDBE
                         );
                     }
                     //getString("user_id");//.getString("user_id");

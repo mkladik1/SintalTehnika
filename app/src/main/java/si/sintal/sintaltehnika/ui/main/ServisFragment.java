@@ -30,6 +30,7 @@ import si.sintal.sintaltehnika.R;
 public class ServisFragment extends Fragment {
 
     private ServisViewModel mViewModel;
+    private String userID;
     private String tehnikID;
     private String tehnikNaziv;
     private String tehnikEmail;
@@ -48,13 +49,14 @@ public class ServisFragment extends Fragment {
                              @Nullable Bundle savedInstanceState) {
         View v = inflater.inflate(R.layout.servis_fragment, container, false);
         Intent intent= getActivity().getIntent();
-        tehnikID = intent.getStringExtra("userID");
+        userID = intent.getStringExtra("userID");
         tehnikNaziv = intent.getStringExtra("userName");
         tehnikEmail = intent.getStringExtra("email");
         tehnikAdminDostop = intent.getStringExtra("admin");
         servis = intent.getStringExtra("servis");
         montaza = intent.getStringExtra("montaza");
         vzdrzevanje = intent.getStringExtra("vzdrzevanje");
+        tehnikID = intent.getStringExtra("tehnikID");
 
         TabLayout tabLayout = (TabLayout) v.findViewById(R.id.snTabs);
         tabLayout.setTabGravity(TabLayout.GRAVITY_FILL);
@@ -91,7 +93,7 @@ public class ServisFragment extends Fragment {
             @Override
             public void onClick(View v) {
                 Intent intent = new Intent(getActivity(), GlavnoOkno.class);
-                intent.putExtra("userID", tehnikID);
+                intent.putExtra("userID", userID);
                 intent.putExtra("userName", tehnikNaziv);
                 intent.putExtra("email", tehnikEmail);
                 intent.putExtra("admin",tehnikAdminDostop);
