@@ -3,7 +3,6 @@ package si.sintal.sintaltehnika.ui.main;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
-import android.provider.ContactsContract;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -169,18 +168,19 @@ public class DodelitevSNAdapter extends ArrayAdapter<ServisniNalog> implements F
                 //Nadzor n = (Nadzor) adapter.getItem(position);
 
                 Bundle bundle = new Bundle();
-                //DatabaseHandler db = new DatabaseHandler(getContext());
+                DatabaseHandler db = new DatabaseHandler(getContext());
                 String datumSNja = n.getDatumZacetek();
                 String stSNja = n.getDelovniNalog();
                 String opisSNja = n.getOpis();
                 String vodjaSNja = n.getVodjaNaloga();
                 String odgOsebaSNja = n.getOdgovornaOseba();
                 String narocnikSNja = n.getNarocnikNaziv() + ", " + n.getNarocnikNaslov();
-
+                int id = n.getid();
                 DialogPodatkiOSNFragment myFrag = new DialogPodatkiOSNFragment();
                 myFrag.setArguments(bundle);
                 Intent intent = new Intent(getContext(), DialogPodatkiOSNActivity.class);
                 intent.putExtra("stSNja", stSNja );
+                intent.putExtra("idSNja", id );
                 intent.putExtra("datumSNja", datumSNja);
                 intent.putExtra("opisSNja", opisSNja);
                 intent.putExtra("vodjaSNja", vodjaSNja);

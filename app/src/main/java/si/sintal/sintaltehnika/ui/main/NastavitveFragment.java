@@ -1,20 +1,18 @@
 package si.sintal.sintaltehnika.ui.main;
 
-import androidx.lifecycle.ViewModelProvider;
-
 import android.content.Intent;
 import android.os.AsyncTask;
 import android.os.Bundle;
-
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
-import androidx.fragment.app.Fragment;
-
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.ProgressBar;
+
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.fragment.app.Fragment;
+import androidx.lifecycle.ViewModelProvider;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -97,6 +95,7 @@ public class NastavitveFragment extends Fragment {
             public void onClick(View v) {
                 pbPrenos.setVisibility(View.VISIBLE);
                 new LoadArtikliFromWeb().execute();
+                //new LoadSkladisceFromWeb().execute();
 
             }
         });
@@ -159,6 +158,7 @@ public class NastavitveFragment extends Fragment {
                 }else  {
                     result = "error";
                 }
+                conn.disconnect();
 
             } catch (Exception  e) {
                 e.printStackTrace();
@@ -183,9 +183,11 @@ public class NastavitveFragment extends Fragment {
                         String servis = object.getString("servis");
                         String montaza = object.getString("montaza");
                         String vzdrzevanje = object.getString("vzdrzevanje");
+                        String ime_regala = object.getString("ime_regala");
                         String user_id = object.getString("user_id");
+
                         DatabaseHandler db = new DatabaseHandler(getContext());
-                        db.insertUpdateTehnik(tehnik_id,naziv,servis, montaza, vzdrzevanje, user_id);
+                        db.insertUpdateTehnik(tehnik_id,naziv,servis, montaza, vzdrzevanje, ime_regala, user_id);
                     }
                     //getString("user_id");//.getString("user_id");
                 } catch (JSONException e) {
@@ -215,19 +217,20 @@ public class NastavitveFragment extends Fragment {
         @Override
         protected Object doInBackground(Object... arg0) {
             //MySQLDatabase.mysqlConnect();
-            String result = null;
+            String result1 = null;
             try {
                 URL url = new URL("https://www.sintal.si/tehnika/getArtikli.php");
-                HttpURLConnection conn = (HttpURLConnection) url.openConnection();
+                HttpURLConnection conn1 = (HttpURLConnection) url.openConnection();
                 String username ="sintal_teh";
                 String password = "mCuSTArQ*PdWAH#7-getArtikli";
                 String userpass = username + ":" + password;
                 String basicAuth = "Basic " + new String(Base64.getEncoder().encode(userpass.getBytes()));
-                conn.setRequestProperty ("Authorization", basicAuth);
-                conn.connect();
+                conn1.setDoOutput(true);
+                conn1.setRequestProperty ("Authorization", basicAuth);
+                //conn.connect();
 
-                if (conn.getResponseCode() == HttpURLConnection.HTTP_OK) {
-                    InputStreamReader inputStreamReader = new InputStreamReader(conn.getInputStream());
+                if (conn1.getResponseCode() == HttpURLConnection.HTTP_OK) {
+                    InputStreamReader inputStreamReader = new InputStreamReader(conn1.getInputStream());
                     BufferedReader reader = new BufferedReader(inputStreamReader);
                     StringBuilder stringBuilder = new StringBuilder();
                     String temp;
@@ -235,20 +238,20 @@ public class NastavitveFragment extends Fragment {
                     while ((temp = reader.readLine()) != null) {
                         stringBuilder.append(temp);
                     }
-                    result = stringBuilder.toString();
+                    result1 = stringBuilder.toString();
                 }else  {
-                    result = "error";
+                    result1 = "error";
                 }
-
+                conn1.disconnect();
             } catch (Exception  e) {
                 e.printStackTrace();
             }
             //return result;
-            if (result != null)
+            if (result1 != null)
             {
                 JSONObject obj = null;
                 try {
-                    obj = new JSONObject(result);
+                    obj = new JSONObject(result1);
                 } catch (JSONException e) {
                     e.printStackTrace();
                 }
@@ -276,8 +279,251 @@ public class NastavitveFragment extends Fragment {
 
             }
 
+            String result2 = null;
+            try {
+                URL url = new URL("https://www.sintal.si/tehnika/getSNSkladisce.php");
+                HttpURLConnection conn2 = (HttpURLConnection) url.openConnection();
+                String username ="sintal_teh";
+                String password = "mCuSTArQ*PdWAH#7-getSNSkladisce";  //mCuSTArQ*PdWAH#7-getSNSKladisce
+                String userpass = username + ":" + password;
+                String basicAuth = "Basic " + new String(Base64.getEncoder().encode(userpass.getBytes()));
+                conn2.setRequestProperty ("Authorization", basicAuth);
+                conn2.connect();
+
+                if (conn2.getResponseCode() == HttpURLConnection.HTTP_OK) {
+                    InputStreamReader inputStreamReader = new InputStreamReader(conn2.getInputStream());
+                    BufferedReader reader = new BufferedReader(inputStreamReader);
+                    StringBuilder stringBuilder = new StringBuilder();
+                    String temp;
+
+                    while ((temp = reader.readLine()) != null) {
+                        stringBuilder.append(temp);
+                    }
+                    result2 = stringBuilder.toString();
+                }else  {
+                    result2 = "error";
+                }
+                conn2.disconnect();
+
+            } catch (Exception  e) {
+                e.printStackTrace();
+            }
+            //return result;
+            if (result2 != null)
+
+            {
+                JSONObject obj = null;
+                try {
+                    obj = new JSONObject(result2);
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
+                try {
+                    JSONArray dataArray = obj.getJSONArray("artikli_skladisce");
+                    //int pageName = obj.getJSONArray("users").length();
+                    for (int i=0; i < dataArray.length() ; i++)
+                    {
+                        JSONObject object = dataArray.getJSONObject(i);
+                        int St_artikla = object.getInt("St_artikla");
+                        String Skladisce = object.getString("Skladisce");
+                        String Datum = object.getString("Datum");
+                        int Kolicina = object.getInt("Kolicina");
+                        //String Kratka_oznaka = object.getString("Kratka_oznaka");
+                        //String user_id = object.getString("user_id");
+                        DatabaseHandler db = new DatabaseHandler(getContext());
+                        db.insertUpdateSkladisce(St_artikla,Skladisce,Datum, Kolicina);
+                    }
+                    //getString("user_id");//.getString("user_id");
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
+
+
+
+            }
+
+            String result3 = null;
+            try {
+                URL url = new URL("https://www.sintal.si/tehnika/getSifrantVrsteArtiklov.php");
+                HttpURLConnection conn3 = (HttpURLConnection) url.openConnection();
+                String username ="sintal_teh";
+                String password = "mCuSTArQ*PdWAH#7-getSifrantVrsteArtiklov";
+                String userpass = username + ":" + password;
+                String basicAuth = "Basic " + new String(Base64.getEncoder().encode(userpass.getBytes()));
+                conn3.setRequestProperty ("Authorization", basicAuth);
+                conn3.connect();
+
+                if (conn3.getResponseCode() == HttpURLConnection.HTTP_OK) {
+                    InputStreamReader inputStreamReader = new InputStreamReader(conn3.getInputStream());
+                    BufferedReader reader = new BufferedReader(inputStreamReader);
+                    StringBuilder stringBuilder = new StringBuilder();
+                    String temp;
+
+                    while ((temp = reader.readLine()) != null) {
+                        stringBuilder.append(temp);
+                    }
+                    result3 = stringBuilder.toString();
+                }else  {
+                    result3 = "error";
+                }
+                conn3.disconnect();
+            } catch (Exception  e) {
+                e.printStackTrace();
+            }
+            //return result;
+            if (result3 != null)
+            {
+                JSONObject obj = null;
+                try {
+                    obj = new JSONObject(result3);
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
+                try {
+                    JSONArray dataArray = obj.getJSONArray("skladisce_sifrant_artiklov");
+                    //int pageName = obj.getJSONArray("users").length();
+                    for (int i=0; i < dataArray.length() ; i++)
+                    {
+                        JSONObject object = dataArray.getJSONObject(i);
+                        String oznaka = object.getString("oznaka");
+                        String naziv_oznake = object.getString("naziv_oznake");
+                        //String Naziv_iskanje = object.getString("Naziv_iskanje");
+                        //String Merska_enota = object.getString("Merska_enota");
+                        //String Kratka_oznaka = object.getString("Kratka_oznaka");
+                        //String user_id = object.getString("user_id");
+                        DatabaseHandler db = new DatabaseHandler(getContext());
+                        db.insertUpdateSkladisceVrsteArtiklov(oznaka,naziv_oznake);
+                    }
+                    //getString("user_id");//.getString("user_id");
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
+            }
+
+
+            String result4 = null;
+            try {
+                URL url = new URL("https://www.sintal.si/tehnika/getSifrantVrsteArtiklov.php");
+                HttpURLConnection conn4 = (HttpURLConnection) url.openConnection();
+                String username ="sintal_teh";
+                String password = "mCuSTArQ*PdWAH#7-getSifrantVrsteArtiklov";
+                String userpass = username + ":" + password;
+                String basicAuth = "Basic " + new String(Base64.getEncoder().encode(userpass.getBytes()));
+                conn4.setRequestProperty ("Authorization", basicAuth);
+                conn4.connect();
+
+                if (conn4.getResponseCode() == HttpURLConnection.HTTP_OK) {
+                    InputStreamReader inputStreamReader = new InputStreamReader(conn4.getInputStream());
+                    BufferedReader reader = new BufferedReader(inputStreamReader);
+                    StringBuilder stringBuilder = new StringBuilder();
+                    String temp;
+
+                    while ((temp = reader.readLine()) != null) {
+                        stringBuilder.append(temp);
+                    }
+                    result4 = stringBuilder.toString();
+                }else  {
+                    result4 = "error";
+                }
+                conn4.disconnect();
+            } catch (Exception  e) {
+                e.printStackTrace();
+            }
+            //return result;
+            if (result4 != null)
+            {
+                JSONObject obj = null;
+                try {
+                    obj = new JSONObject(result4);
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
+                try {
+                    JSONArray dataArray = obj.getJSONArray("skladisce_sifrant_artiklov");
+                    //int pageName = obj.getJSONArray("users").length();
+                    for (int i=0; i < dataArray.length() ; i++)
+                    {
+                        JSONObject object = dataArray.getJSONObject(i);
+                        String oznaka = object.getString("oznaka");
+                        String naziv_oznake = object.getString("naziv_oznake");
+                        //String Naziv_iskanje = object.getString("Naziv_iskanje");
+                        //String Merska_enota = object.getString("Merska_enota");
+                        //String Kratka_oznaka = object.getString("Kratka_oznaka");
+                        //String user_id = object.getString("user_id");
+                        DatabaseHandler db = new DatabaseHandler(getContext());
+                        db.insertUpdateSkladisceVrsteArtiklov(oznaka,naziv_oznake);
+                    }
+                    //getString("user_id");//.getString("user_id");
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
+            }
+
+
+            String result5 = null;
+            try {
+                URL url = new URL("https://www.sintal.si/tehnika/getSifreArtiklov.php");
+                HttpURLConnection conn5 = (HttpURLConnection) url.openConnection();
+                String username ="sintal_teh";
+                String password = "mCuSTArQ*PdWAH#7-getSifreArtiklov";
+                String userpass = username + ":" + password;
+                String basicAuth = "Basic " + new String(Base64.getEncoder().encode(userpass.getBytes()));
+                conn5.setRequestProperty ("Authorization", basicAuth);
+                conn5.connect();
+
+                if (conn5.getResponseCode() == HttpURLConnection.HTTP_OK) {
+                    InputStreamReader inputStreamReader = new InputStreamReader(conn5.getInputStream());
+                    BufferedReader reader = new BufferedReader(inputStreamReader);
+                    StringBuilder stringBuilder = new StringBuilder();
+                    String temp;
+
+                    while ((temp = reader.readLine()) != null) {
+                        stringBuilder.append(temp);
+                    }
+                    result5 = stringBuilder.toString();
+                }else  {
+                    result5 = "error";
+                }
+                conn5.disconnect();
+            } catch (Exception  e) {
+                e.printStackTrace();
+            }
+            //return result;
+            if (result5 != null)
+            {
+                JSONObject obj = null;
+                try {
+                    obj = new JSONObject(result5);
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
+                try {
+                    JSONArray dataArray = obj.getJSONArray("sifre_artiklov");
+                    //int pageName = obj.getJSONArray("users").length();
+                    for (int i=0; i < dataArray.length() ; i++)
+                    {
+                        JSONObject object = dataArray.getJSONObject(i);
+
+                        String sifra_artikla = object.getString("sifra_artikla");
+                        String oznaka = object.getString("oznaka");
+                        //String Naziv_iskanje = object.getString("Naziv_iskanje");
+                        //String Merska_enota = object.getString("Merska_enota");
+                        //String Kratka_oznaka = object.getString("Kratka_oznaka");
+                        //String user_id = object.getString("user_id");
+                        DatabaseHandler db = new DatabaseHandler(getContext());
+                        db.insertUpdateSifreArtiklov(sifra_artikla,oznaka);
+                    }
+                    //getString("user_id");//.getString("user_id");
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
+            }
+
+
             return null;
         }
+
+
 
         @Override
         protected void onPostExecute(Object o) {
@@ -288,6 +534,7 @@ public class NastavitveFragment extends Fragment {
         }
 
     }
+
 
     private class LoadUporabnikiFromWeb extends AsyncTask {
 
@@ -325,7 +572,8 @@ public class NastavitveFragment extends Fragment {
                 e.printStackTrace();
             }
             //return result;
-            if (result != null)
+            if ((result != null)
+            && ( result.equals("No results!")== false) )
             {
                 JSONObject obj = null;
                 try {
@@ -364,16 +612,16 @@ public class NastavitveFragment extends Fragment {
             result = null;
             try {
                 URL url = new URL("https://www.sintal.si/tehnika/getUsersDostop.php");
-                HttpURLConnection conn = (HttpURLConnection) url.openConnection();
+                HttpURLConnection conn2 = (HttpURLConnection) url.openConnection();
                 String username ="sintal_teh";
                 String password = "mCuSTArQ*PdWAH#7-getUsersDostop";
                 String userpass = username + ":" + password;
                 String basicAuth = "Basic " + new String(Base64.getEncoder().encode(userpass.getBytes()));
-                conn.setRequestProperty ("Authorization", basicAuth);
-                conn.connect();
+                conn2.setRequestProperty ("Authorization", basicAuth);
+                conn2.connect();
 
-                if (conn.getResponseCode() == HttpURLConnection.HTTP_OK) {
-                    InputStreamReader inputStreamReader = new InputStreamReader(conn.getInputStream());
+                if (conn2.getResponseCode() == HttpURLConnection.HTTP_OK) {
+                    InputStreamReader inputStreamReader = new InputStreamReader(conn2.getInputStream());
                     BufferedReader reader = new BufferedReader(inputStreamReader);
                     StringBuilder stringBuilder = new StringBuilder();
                     String temp;
@@ -385,7 +633,7 @@ public class NastavitveFragment extends Fragment {
                 }else  {
                     result = "error";
                 }
-                conn.disconnect();
+                conn2.disconnect();
 
             } catch (Exception  e) {
                 e.printStackTrace();
@@ -427,16 +675,16 @@ public class NastavitveFragment extends Fragment {
                 //using var response = await httpClient.GetAsync(sb.ToString());
                 //string apiResponse = await response.Content.ReadAsStringAsync();
                 URL url = new URL("https://www.sintal.si/tehnika/getPripadnost.php");
-                HttpURLConnection conn = (HttpURLConnection) url.openConnection();
+                HttpURLConnection conn3 = (HttpURLConnection) url.openConnection();
                 String username ="sintal_teh";
                 String password = "mCuSTArQ*PdWAH#7-getPripadnost";
                 String userpass = username + ":" + password;
                 String basicAuth = "Basic " + new String(Base64.getEncoder().encode(userpass.getBytes()));
-                conn.setRequestProperty ("Authorization", basicAuth);
-                conn.connect();
+                conn3.setRequestProperty ("Authorization", basicAuth);
+                conn3.connect();
 
-                if (conn.getResponseCode() == HttpURLConnection.HTTP_OK) {
-                    InputStreamReader inputStreamReader = new InputStreamReader(conn.getInputStream());
+                if (conn3.getResponseCode() == HttpURLConnection.HTTP_OK) {
+                    InputStreamReader inputStreamReader = new InputStreamReader(conn3.getInputStream());
                     BufferedReader reader = new BufferedReader(inputStreamReader);
                     StringBuilder stringBuilder = new StringBuilder();
                     String temp;
@@ -448,7 +696,7 @@ public class NastavitveFragment extends Fragment {
                 }else  {
                     result = "error";
                 }
-                conn.disconnect();
+                conn3.disconnect();
 
             } catch (Exception  e) {
                 e.printStackTrace();
@@ -506,16 +754,16 @@ public class NastavitveFragment extends Fragment {
             String result = null;
             try {
                 URL url = new URL("https://www.sintal.si/tehnika/getSN.php");
-                HttpURLConnection conn = (HttpURLConnection) url.openConnection();
+                HttpURLConnection conn1 = (HttpURLConnection) url.openConnection();
                 String username ="sintal_teh";
                 String password = "mCuSTArQ*PdWAH#7-getSN";
                 String userpass = username + ":" + password;
                 String basicAuth = "Basic " + new String(Base64.getEncoder().encode(userpass.getBytes()));
-                conn.setRequestProperty ("Authorization", basicAuth);
-                conn.connect();
+                conn1.setRequestProperty ("Authorization", basicAuth);
+                conn1.connect();
 
-                if (conn.getResponseCode() == HttpURLConnection.HTTP_OK) {
-                    InputStreamReader inputStreamReader = new InputStreamReader(conn.getInputStream());
+                if (conn1.getResponseCode() == HttpURLConnection.HTTP_OK) {
+                    InputStreamReader inputStreamReader = new InputStreamReader(conn1.getInputStream());
                     BufferedReader reader = new BufferedReader(inputStreamReader);
                     StringBuilder stringBuilder = new StringBuilder();
                     String temp;
@@ -527,7 +775,7 @@ public class NastavitveFragment extends Fragment {
                 }else  {
                     result = "error";
                 }
-                conn.disconnect();
+                conn1.disconnect();
 
             } catch (Exception  e) {
                 e.printStackTrace();
@@ -622,6 +870,16 @@ public class NastavitveFragment extends Fragment {
                         String DATUM_PODPISA = object.getString("DATUM_PODPISA");
                         String DATUM_DODELITVE = object.getString("DATUM_DODELITVE");
 
+                        String PRENOS = object.getString("PRENOS");
+                        String DATUM_PRENOSA = object.getString("DATUM_PRENOSA");
+                        String OPIS_OKVARE = object.getString("OPIS_OKVARE");
+                        String OPIS_POSTOPKA = object.getString("OPIS_POSTOPKA");
+
+                        String URE_PREVOZ = object.getString("URE_PREVOZ");
+                        String URE_DELO = object.getString("URE_DELO");
+                        String STEVILO_KM = object.getString("STEVILO_KM");
+                        //String DATUM_DODELITVE = object.getString("DATUM_DODELITVE");
+
 
                         DatabaseHandler db = new DatabaseHandler(getContext());
                         db.insertUpdateSN(id,
@@ -665,7 +923,14 @@ public class NastavitveFragment extends Fragment {
                                 SEKTOR_POSTNA_ST,
                                 DATUM_PODPISA,
                                 DATUM_DODELITVE,
-                                DATUM_IZVEDBE
+                                DATUM_IZVEDBE,
+                                PRENOS,
+                                DATUM_PRENOSA,
+                                OPIS_OKVARE,
+                                OPIS_POSTOPKA,
+                                URE_PREVOZ,
+                                URE_DELO,
+                                STEVILO_KM
                         );
                     }
                     //getString("user_id");//.getString("user_id");
@@ -674,6 +939,148 @@ public class NastavitveFragment extends Fragment {
                 }
 
             }
+
+
+            result = null;
+            try {
+                //using var response = await httpClient.GetAsync(sb.ToString());
+                //string apiResponse = await response.Content.ReadAsStringAsync();
+                URL url = new URL("https://www.sintal.si/tehnika/getSNArtikli.php");
+                HttpURLConnection conn7 = (HttpURLConnection) url.openConnection();
+                String username ="sintal_teh";
+                String password = "mCuSTArQ*PdWAH#7-getSifreArtiklov";
+                String userpass = username + ":" + password;
+                String basicAuth = "Basic " + new String(Base64.getEncoder().encode(userpass.getBytes()));
+                conn7.setRequestProperty ("Authorization", basicAuth);
+                conn7.connect();
+
+                if (conn7.getResponseCode() == HttpURLConnection.HTTP_OK) {
+                    InputStreamReader inputStreamReader = new InputStreamReader(conn7.getInputStream());
+                    BufferedReader reader = new BufferedReader(inputStreamReader);
+                    StringBuilder stringBuilder = new StringBuilder();
+                    String temp;
+
+                    while ((temp = reader.readLine()) != null) {
+                        stringBuilder.append(temp);
+                    }
+                    result = stringBuilder.toString();
+                }else  {
+                    result = "error";
+                }
+                conn7.disconnect();
+
+            } catch (Exception  e) {
+                e.printStackTrace();
+            }
+            //return result;
+            if ((result != null) && ( result.equals("No results!")== false) )
+            {
+                JSONObject obj = null;
+                try {
+                    obj = new JSONObject(result);
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
+                try {
+                    JSONArray dataArray = obj.getJSONArray("sn_artikli");
+                    //int pageName = obj.getJSONArray("users").length();
+                    for (int i=0; i < dataArray.length() ; i++)
+                    {
+                        JSONObject object = dataArray.getJSONObject(i);
+                        String sn_artikel_id = object.getString("sn_artikel_id");
+                        String sn_id = object.getString("sn_id");
+                        String DELOVNI_NALOG = object.getString("DELOVNI_NALOG");
+                        String No_ = object.getString("No_");
+                        String kolicina = object.getString("kolicina");
+                        String vrsta_id = object.getString("vrsta_id");
+                        String upo_id = object.getString("upo_id");
+                        String tehnik_id = object.getString("tehnik_id");
+                        String regal = object.getString("regal");
+                        if (No_.contains("S")== true)
+                        {
+
+                        }
+                        else {
+                            DatabaseHandler db = new DatabaseHandler(getContext());
+                            db.insertUpdateSNArtikelUserTehnik(Integer.parseInt(sn_id), DELOVNI_NALOG, No_, Integer.parseInt(vrsta_id), Integer.parseInt(upo_id), Integer.parseInt(tehnik_id), Float.parseFloat(kolicina), regal);
+                        }
+                    }
+                    //getString("user_id");//.getString("user_id");
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
+
+
+
+            }
+
+
+            result = null;
+            try {
+                //using var response = await httpClient.GetAsync(sb.ToString());
+                //string apiResponse = await response.Content.ReadAsStringAsync();
+                URL url = new URL("https://www.sintal.si/tehnika/getSNEmailLog.php");
+                HttpURLConnection conn7 = (HttpURLConnection) url.openConnection();
+                String username ="sintal_teh";
+                String password = "mCuSTArQ*PdWAH#7-getSNEmailLog";
+                String userpass = username + ":" + password;
+                String basicAuth = "Basic " + new String(Base64.getEncoder().encode(userpass.getBytes()));
+                conn7.setRequestProperty ("Authorization", basicAuth);
+                conn7.connect();
+
+                if (conn7.getResponseCode() == HttpURLConnection.HTTP_OK) {
+                    InputStreamReader inputStreamReader = new InputStreamReader(conn7.getInputStream());
+                    BufferedReader reader = new BufferedReader(inputStreamReader);
+                    StringBuilder stringBuilder = new StringBuilder();
+                    String temp;
+
+                    while ((temp = reader.readLine()) != null) {
+                        stringBuilder.append(temp);
+                    }
+                    result = stringBuilder.toString();
+                }else  {
+                    result = "error";
+                }
+                conn7.disconnect();
+
+            } catch (Exception  e) {
+                e.printStackTrace();
+            }
+            //return result;
+            if ((result != null) && ( result.equals("No results!")== false) )
+            {
+                JSONObject obj = null;
+                try {
+                    obj = new JSONObject(result);
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
+                try {
+                    JSONArray dataArray = obj.getJSONArray("email_log");
+                    //int pageName = obj.getJSONArray("users").length();
+                    for (int i=0; i < dataArray.length() ; i++)
+                    {
+                        JSONObject object = dataArray.getJSONObject(i);
+                        String user_id = object.getString("user_id");
+                        int sn_id = object.getInt("sn_id");
+                        String sn_dn = object.getString("sn_dn");
+                        String email = object.getString("email");
+                        String datum = object.getString("datum");
+
+                         DatabaseHandler db = new DatabaseHandler(getContext());
+                         db.insertUpdateEmailLog(user_id,sn_id,sn_dn,email,datum);
+
+                    }
+                    //getString("user_id");//.getString("user_id");
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
+
+
+
+            }
+
+
 
             return null;
         }
@@ -717,6 +1124,7 @@ public class NastavitveFragment extends Fragment {
                 }else  {
                     result = "error";
                 }
+                conn.disconnect();
 
             } catch (Exception  e) {
                 e.printStackTrace();
@@ -796,6 +1204,7 @@ public class NastavitveFragment extends Fragment {
                 }else  {
                     result = "error";
                 }
+                conn.disconnect();
 
             } catch (Exception  e) {
                 e.printStackTrace();

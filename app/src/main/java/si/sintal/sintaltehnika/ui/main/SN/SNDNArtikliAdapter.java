@@ -22,13 +22,13 @@ public class SNDNArtikliAdapter extends ArrayAdapter<SNArtikel>{
     private ArrayList<SNArtikel> seznamSNArtikli;
     private String tehnikID;
     private String userID;
-    private String SNID;
+    private int SNID;
     private String SNDN;
     private int vrstaID;
 
 
 
-    public SNDNArtikliAdapter(Context context, ArrayList<SNArtikel> seznamSNArtikli, String SNId, String SNDn, String userId, String tehnikId, Integer vrstaId)
+    public SNDNArtikliAdapter(Context context, ArrayList<SNArtikel> seznamSNArtikli, int SNId, String SNDn, String userId, String tehnikId, Integer vrstaId)
     {
         super(context, 0, seznamSNArtikli);
         this.context = context;
@@ -59,6 +59,7 @@ public class SNDNArtikliAdapter extends ArrayAdapter<SNArtikel>{
         TextView nazivArtikel;
         TextView merkaEnotaArtikel;
         Button bDodajArtikel;
+        TextView kolicinaArtikel;
 
     }
 
@@ -75,7 +76,7 @@ public class SNDNArtikliAdapter extends ArrayAdapter<SNArtikel>{
             holder.nazivArtikel = (TextView) convertView.findViewById(R.id.tvSNArtikelNaziv);
             holder.merkaEnotaArtikel = (TextView) convertView.findViewById(R.id.tvSNArtikelEnota);
             holder.bDodajArtikel = (Button) convertView.findViewById(R.id.bSNArtikelDodaj);
-
+            holder.kolicinaArtikel = (TextView) convertView.findViewById(R.id.tvSNArtikelKolicina);
             convertView.setTag(holder);
 
         } else {
@@ -87,20 +88,21 @@ public class SNDNArtikliAdapter extends ArrayAdapter<SNArtikel>{
         holder.nazivArtikel.setText(n.getnaziv().toString());
         holder.merkaEnotaArtikel.setText(n.getmerskaEnota().toString());
         holder.bDodajArtikel = (Button) convertView.findViewById(R.id.bSNArtikelDodaj);
-
+        holder.kolicinaArtikel = (TextView) convertView.findViewById(R.id.tvSNArtikelKolicina);
+        holder.kolicinaArtikel.setText(String.valueOf(n.getKolicina()));
         Button bDodajArtikel = (Button) convertView.findViewById(R.id.bSNArtikelDodaj);
         bDodajArtikel.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
 
                 DatabaseHandler db = new DatabaseHandler(getContext());
-                int stSNDN = Integer.parseInt(SNID);
-                String stSNja = SNDN;
+                //int stSNDN = Integer.parseInt(SNID);
+                //String stSNja = SNDN;
                 String snNo_ = n.getid();
                 int vrstaId = vrstaID; //
                 int upoId = Integer.parseInt(userID);
                 int tehnikId = Integer.parseInt(tehnikID);
-                db.deleteSNArtikelUserTehnik(stSNDN,stSNja,snNo_,vrstaId,upoId,tehnikId);
+                db.deleteSNArtikelUserTehnik(SNID,SNDN,snNo_,vrstaId,upoId,tehnikId);
                 seznamSNArtikli.remove(position);
                 refreshList();
             }

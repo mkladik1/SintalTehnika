@@ -1,7 +1,5 @@
 package si.sintal.sintaltehnika.ui.main;
 
-import android.media.Image;
-
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.Date;
@@ -109,7 +107,11 @@ public class ServisniNalog {
     public String getDatumKonec() {
         //return datumKonec;
         String vrniStr = "";
-        if (datumKonec.equals("null"))
+        if (datumKonec == null)
+        {
+            vrniStr = "";
+        }
+        else if (datumKonec.equals("null"))
         {
             vrniStr = "";
         }
@@ -212,7 +214,11 @@ public class ServisniNalog {
 
     public String getDatumDodelitve() {
         String vrniStr = "";
-        if (datumDodeltive.equals("null"))
+        if (datumDodeltive == null)
+        {
+            vrniStr = "";
+        }
+        else if (datumDodeltive.equals("null"))
         {
             vrniStr = "";
         }
@@ -226,7 +232,11 @@ public class ServisniNalog {
     public String getDatumIzvedbe() {
         //return datumIzvedbe;
         String vrniStr = "";
-        if (datumIzvedbe.equals("null"))
+        if (datumIzvedbe == null)
+        {
+            vrniStr = "";
+        }
+        else if (datumIzvedbe.equals("null"))
         {
             vrniStr = "";
         }
@@ -243,14 +253,21 @@ public class ServisniNalog {
     public void setOpisOkvare(String newOpisOkvare) {this.opisOkvare = newOpisOkvare;  }
 
     public String getOpisPostopka() {
-        return opisPostopka;
+        if (opisPostopka == null)
+            return "";
+        else
+            return opisPostopka;
     }
     public void setOpisPostopka(String newOpisPostopka) {this.opisPostopka = newOpisPostopka;  }
 
     public String getDatumPodpisa() {
         //return datumPodpisa;
         String vrniStr = "";
-        if (datumPodpisa.equals("null"))
+        if (datumPodpisa == null)
+        {
+            vrniStr = "";
+        }
+        else if (datumPodpisa.equals("null"))
         {
             vrniStr = "";
         }

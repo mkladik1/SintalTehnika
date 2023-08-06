@@ -11,14 +11,15 @@ import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 import android.net.Uri;
 import android.os.Bundle;
-import android.view.ViewDebug;
-
-import androidx.annotation.Nullable;
 
 import org.jetbrains.annotations.NotNull;
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
 
-import java.text.DateFormat;
 import java.text.SimpleDateFormat;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
@@ -73,7 +74,8 @@ public class DatabaseHandler extends SQLiteOpenHelper {
             "  seznam_servis int(11) NOT NULL," +
             "  seznam_montaza int(11) NOT NULL," +
             "  seznam_vzdrzevanje int(11) NOT NULL," +
-            "  user_id int(11) NOT NULL" +
+            "  user_id int(11) NOT NULL," +
+            "  ime_regala varchar(20) NULL" +
             ");";
         mDatabase.execSQL(CREATE_TEHNIKA_DELAVCI);
 
@@ -128,7 +130,9 @@ public class DatabaseHandler extends SQLiteOpenHelper {
         "OPIS_POSTOPKA TEXT  NULL, " +
         "PODPIS_NAROCNIK IMAGEDATA BLOB, " +
         "PODPIS_SERVISER IMAGEDATA BLOB, " +
-        "DATUM_PODPISA date  NULL " +
+        "DATUM_PODPISA date  NULL, " +
+        "PRENOS INT  DEFAULT 0, " +
+        "DATUM_PRENOSA datetime  NULL " +
         ") " ;
         mDatabase.execSQL(CREATE_TEHNIKA_SN);
 
@@ -159,12 +163,119 @@ public class DatabaseHandler extends SQLiteOpenHelper {
                 " sn_id int(11) NOT NULL, " +
                 " DELOVNI_NALOG varchar(20) NOT NULL, " +
                 " No_ varchar(6) NOT NULL," +
+                " kolicina decimal(15,2) not null, " +
                 " vrsta_id int(2) null, " +
                 " upo_id int(10) DEFAULT NULL," +
                 " tehnik_id int(10) DEFAULT NULL," +
-                " PRIMARY KEY('sn_artikel_id')" +
+                " REGAL varchar(50) DEFAULT '', " +
+                " PRIMARY KEY('sn_artikel_id' AUTOINCREMENT)" +
                 ")";
         mDatabase.execSQL(CREATE_TEHNIKA_SN_ARTKLI);
+
+        String CREATE_TEHNIKA_SN_SKLADISCE = "CREATE TABLE IF NOT EXISTS sintal_teh_artikli_skladisce (" +
+                " St_artikla INTEGER NOT NULL, " +
+                " Skladisce varchar(50) NOT NULL, " +
+                " datum date NOT NULL," +
+                " kolicina int NULL " +
+                ")";
+        mDatabase.execSQL(CREATE_TEHNIKA_SN_SKLADISCE);
+
+        String CREATE_TEHNIKA_SKLADISCE_VRSTE_ARTIKLOV = "CREATE TABLE IF NOT EXISTS sintal_teh_skladisce_vrste_artiklov (" +
+                " oznaka varchar(3) noT NULL, " +
+                " naziv_oznake text NOT NULL" +
+                ")";
+        mDatabase.execSQL(CREATE_TEHNIKA_SKLADISCE_VRSTE_ARTIKLOV);
+
+        String CREATE_TEHNIKA_SIFRE_ARTIKLOV = "CREATE TABLE IF NOT EXISTS sintal_teh_sifre_artiklov (" +
+                " sifra_artikla varchar(6) noT NULL, " +
+                " oznaka varchar(3) NOT NULL" +
+                ")";
+        mDatabase.execSQL(CREATE_TEHNIKA_SIFRE_ARTIKLOV);
+
+        String CREATE_TEHNIKA_ZA_PRENOS_VIEW = "CREATE VIEW IF NOT EXISTS view_tehnika_prenos_sn as select 0 as 'Order Type' \n" +
+                "                ,sn.id as 'Order ID' \n" +
+                "                ,sn_art.sn_artikel_id as 'Order Item Line' \n" +
+                "                ,sn.DELOVNI_NALOG ,sn_art.No_ ,'TEH-01' as 'Location Code' \n" +
+                "                ,sn_art.REGAL as 'Bin Code' \n" +
+                "                ,sn_art.kolicina as 'Quantity' \n" +
+                "                ,art.Merska_enota as 'Unit of Measure' \n" +
+                "                ,'' as Description \n" +
+                "                ,'' as Description2 \n" +
+                "                ,0 as 'NAV Status' \n" +
+                "                ,datetime('now','localtime') as 'Proccessed' \n" +
+                "                ,sn_art.upo_id as 'User ID' \n" +
+                "                ,'' as 'NAV Error' ,sn.STATUS_AKT \n" +
+                "                from sintal_teh_sn sn \n" +
+                "                inner join sintal_teh_sn_artikli sn_art on sn.id = sn_art.sn_id \n" +
+                "                left join sintal_teh_artikli art on sn_art.No_ = art.No_\n" +
+                "                UNION\n" +
+                "                select 0 as 'Order Type' \n" +
+                "                ,sn.id as 'Order ID' \n" +
+                "                ,9998 as 'Order Item Line' \n" +
+                "                ,sn.DELOVNI_NALOG\n" +
+                "                ,'S0135' as No_ \n" +
+                "                ,'TEH-01' as 'Location Code' \n" +
+                "                ,'' as 'Bin Code'  --regal\n" +
+                "                ,sn.URE_DELO as 'Quantity' \n" +
+                "                ,'URA' as 'Unit of Measure' \n" +
+                "                ,'' as Description \n" +
+                "                ,'' as Description2 \n" +
+                "                ,0 as 'NAV Status' \n" +
+                "                ,datetime('now','localtime') as 'Proccessed' \n" +
+                "                ,-1 as 'User ID' \n" +
+                "                ,'' as 'NAV Error' ,sn.STATUS_AKT \n" +
+                "                from sintal_teh_sn sn\n" +
+                "                where sn.URE_DELO is not 'null' and sn.URE_DELO > 0\n" +
+                "                UNION\n" +
+                "                select 0 as 'Order Type' \n" +
+                "                ,sn.id as 'Order ID' \n" +
+                "                ,9999 as 'Order Item Line' \n" +
+                "                ,sn.DELOVNI_NALOG\n" +
+                "                ,'S0053' as No_ \n" +
+                "                ,'TEH-01' as 'Location Code' \n" +
+                "                ,'' as 'Bin Code'  --regal\n" +
+                "                ,sn.STEVILO_KM as 'Quantity' \n" +
+                "                ,'KM' as 'Unit of Measure' \n" +
+                "                ,'' as Description \n" +
+                "                ,'' as Description2 \n" +
+                "                ,0 as 'NAV Status' \n" +
+                "                ,datetime('now','localtime') as 'Proccessed' \n" +
+                "                ,-1 as 'User ID' \n" +
+                "                ,'' as 'NAV Error' ,sn.STATUS_AKT \n" +
+                "                from sintal_teh_sn sn\n" +
+                "                where sn.STEVILO_KM is not 'null' and sn.STEVILO_KM > 0\n" +
+                "                UNION\n" +
+                "                select 0 as 'Order Type' \n" +
+                "                ,sn.id as 'Order ID' \n" +
+                "                ,9999 as 'Order Item Line' \n" +
+                "                ,sn.DELOVNI_NALOG\n" +
+                "                ,'S0053' as No_ \n" +
+                "                ,'TEH-01' as 'Location Code' \n" +
+                "                ,'' as 'Bin Code'  --regal\n" +
+                "                ,sn.URE_PREVOZ as 'Quantity' \n" +
+                "                ,'KM' as 'Unit of Measure' \n" +
+                "                ,'' as Description \n" +
+                "                ,'' as Description2 \n" +
+                "                ,0 as 'NAV Status' \n" +
+                "                ,datetime('now','localtime') as 'Proccessed' \n" +
+                "                ,-1 as 'User ID' \n" +
+                "                ,'' as 'NAV Error' ,sn.STATUS_AKT \n" +
+                "                from sintal_teh_sn sn\n" +
+                "                where sn.URE_PREVOZ is not 'null' and sn.URE_PREVOZ > 0" +
+                "";
+        mDatabase.execSQL(CREATE_TEHNIKA_ZA_PRENOS_VIEW);
+
+        mDatabase = this.getReadableDatabase();
+            String CREATE_TEHNIKA_EMAIL_LOG = "CREATE TABLE IF NOT EXISTS sintal_teh_email_log (" +
+                    "log_id INTEGER NOT NULL, " +
+                    "user_id INTEGER NOT NULL, " +
+                    "sn_id INTEGER NOT NULL, " +
+                    "sn_dn TEXT NOT NULL, " +
+                    "email TEXT NOT NULL, " +
+                    "datum DATETIME NOT NULL, " +
+                    "PRIMARY KEY (log_id AUTOINCREMENT) " +
+                    ");";
+        mDatabase.execSQL(CREATE_TEHNIKA_EMAIL_LOG);
 
         mDatabase.close();
 
@@ -189,6 +300,64 @@ public class DatabaseHandler extends SQLiteOpenHelper {
 
         mDatabase.close();
         return stZapisov;
+    }
+
+    public void insertEmailLog(String user_id, int sn_id, String sn_dn, String email, String datum ) {
+
+
+        mDatabase = this.getWritableDatabase();
+
+            ContentValues values = new ContentValues();
+            //values.put("log_id",null);
+            values.put("user_id",user_id);
+            values.put("sn_id",sn_id);
+            values.put("sn_dn",sn_dn);
+            values.put("email",email);
+            values.put("datum",datum);
+
+            mDatabase.insert("sintal_teh_email_log",null, values);
+
+        mDatabase.close();
+
+    }
+
+
+    public void insertUpdateEmailLog(String user_id, int sn_id, String sn_dn, String email, String datum ) {
+
+        String query = "";
+        mDatabase = this.getWritableDatabase();
+        query = "SELECT * FROM sintal_teh_email_log where sn_id ="+ sn_id + " and user_id = '"+   user_id + "' and email = '" + email + "'";
+        mCursor = mDatabase.rawQuery(query,null);
+        //NadzorXML n;
+        if (mCursor != null)
+        {
+            mCursor.moveToFirst();
+        }
+        if (mCursor.moveToFirst()) {
+            //String UPDATE_USER ="";
+            //ContentValues values = new ContentValues();
+            //values.put("pripadnost",pripadnost);
+            //values.put("pripadnost_vnc",pripadnost_vnc);
+            //mDatabase.update("sintal_teh_pripadnost", values, "pripadnost=?", new String[]{pripadnost});
+
+        }
+        else
+        {
+            ContentValues values = new ContentValues();
+            //values.put("log_id",null);
+            values.put("user_id",user_id);
+            values.put("sn_id",sn_id);
+            values.put("sn_dn",sn_dn);
+            values.put("email",email);
+            values.put("datum",datum);
+
+            mDatabase.insert("sintal_teh_email_log",null, values);
+        }
+        mCursor.close();
+
+
+        mDatabase.close();
+
     }
 
     public void insertUpdatePripadnost(String pripadnost, String pripadnost_vnc ) {
@@ -267,7 +436,149 @@ public class DatabaseHandler extends SQLiteOpenHelper {
         //return myList;
     }
 
-    public void insertUpdateTehnik(String tehnikID, String naziv, String servis, String montaza, String vzdrzevanje, String userID ) {
+    public List<String> getVrsteArtikov(){
+        List<String> list = new ArrayList<String>();
+
+        // Select All Query
+        String selectQuery = "SELECT  * FROM sintal_teh_skladisce_vrste_artiklov";
+
+        SQLiteDatabase db = this.getReadableDatabase();
+        Cursor cursor = db.rawQuery(selectQuery, null);//selectQuery,selectedArguments
+
+        // looping through all rows and adding to list
+        if (cursor.moveToFirst()) {
+            do {
+                list.add(cursor.getString(1));//adding 2nd column data
+            } while (cursor.moveToNext());
+        }
+        // closing connection
+        cursor.close();
+        db.close();
+        // returning lables
+        return list;
+    }
+
+    public void insertUpdateSkladisceVrsteArtiklov(String oznaka, String naziv_oznake) {
+
+        //ArrayList<NadzorXML> myList=new ArrayList<NadzorXML>();
+        //List<Nadzor> myList=new ArrayList<Nadzor>();
+        mDatabase = this.getWritableDatabase();
+        String GET_USER = "SELECT * FROM sintal_teh_skladisce_vrste_artiklov where oznaka='"+oznaka+"'";
+        mCursor = mDatabase.rawQuery(GET_USER,null);
+        //NadzorXML n;
+        if (mCursor != null)
+        {
+            mCursor.moveToFirst();
+        }
+        if (mCursor.moveToFirst()) {
+            //String UPDATE_USER ="";
+            /*
+            ContentValues values = new ContentValues();
+            values.put("pripadnost",pripadnost);
+            values.put("pripadnost_vnc",pripadnost_vnc);
+            mDatabase.update("sintal_teh_pripadnost", values, "pripadnost=?", new String[]{pripadnost});
+             */
+
+        }
+        else
+        {
+            ContentValues values = new ContentValues();
+            values.put("oznaka",oznaka);
+            values.put("naziv_oznake",naziv_oznake);
+            //values.put("Datum",Datum);
+            //values.put("Kolicina",Kolicina);
+            //values.put("Kratka_oznaka",Kratka_oznaka);
+            mDatabase.insert("sintal_teh_skladisce_vrste_artiklov",null, values);
+        }
+        mCursor.close();
+
+        //mDatabase.execSQL(INSERT_INTO_USERS_TABLE);
+        mDatabase.close();
+
+        //return myList;
+    }
+
+    public void insertUpdateSifreArtiklov(String sifra_artikla, String oznaka) {
+
+        //ArrayList<NadzorXML> myList=new ArrayList<NadzorXML>();
+        //List<Nadzor> myList=new ArrayList<Nadzor>();
+        mDatabase = this.getWritableDatabase();
+        String GET_USER = "SELECT * FROM sintal_teh_sifre_artiklov where sifra_artikla='"+sifra_artikla+"'";
+        mCursor = mDatabase.rawQuery(GET_USER,null);
+        //NadzorXML n;
+        if (mCursor != null)
+        {
+            mCursor.moveToFirst();
+        }
+        if (mCursor.moveToFirst()) {
+            //String UPDATE_USER ="";
+            /*
+            ContentValues values = new ContentValues();
+            values.put("pripadnost",pripadnost);
+            values.put("pripadnost_vnc",pripadnost_vnc);
+            mDatabase.update("sintal_teh_pripadnost", values, "pripadnost=?", new String[]{pripadnost});
+             */
+
+        }
+        else
+        {
+            ContentValues values = new ContentValues();
+            values.put("sifra_artikla",sifra_artikla);
+            values.put("oznaka",oznaka);
+            //values.put("Datum",Datum);
+            //values.put("Kolicina",Kolicina);
+            //values.put("Kratka_oznaka",Kratka_oznaka);
+            mDatabase.insert("sintal_teh_sifre_artiklov",null, values);
+        }
+        mCursor.close();
+
+        //mDatabase.execSQL(INSERT_INTO_USERS_TABLE);
+        mDatabase.close();
+
+        //return myList;
+    }
+
+    public void insertUpdateSkladisce(int St_artikla, String Skladisce, String Datum, int Kolicina ) {
+
+        //ArrayList<NadzorXML> myList=new ArrayList<NadzorXML>();
+        //List<Nadzor> myList=new ArrayList<Nadzor>();
+        mDatabase = this.getWritableDatabase();
+        String GET_USER = "SELECT * FROM sintal_teh_artikli_skladisce where St_artikla = " + String.valueOf(St_artikla) + " and Skladisce = '" + Skladisce + "' and kolicina = '" + String.valueOf(Kolicina)+"'";
+        mCursor = mDatabase.rawQuery(GET_USER,null);
+        //NadzorXML n;
+        if (mCursor != null)
+        {
+            mCursor.moveToFirst();
+        }
+        if (mCursor.moveToFirst()) {
+            //String UPDATE_USER ="";
+            /*
+            ContentValues values = new ContentValues();
+            values.put("pripadnost",pripadnost);
+            values.put("pripadnost_vnc",pripadnost_vnc);
+            mDatabase.update("sintal_teh_pripadnost", values, "pripadnost=?", new String[]{pripadnost});
+             */
+
+        }
+        else
+        {
+            ContentValues values = new ContentValues();
+            values.put("St_artikla",St_artikla);
+            values.put("Skladisce",Skladisce);
+            values.put("Datum",Datum);
+            values.put("Kolicina",Kolicina);
+            //values.put("Kratka_oznaka",Kratka_oznaka);
+            mDatabase.insert("sintal_teh_artikli_skladisce",null, values);
+        }
+        mCursor.close();
+
+        //mDatabase.execSQL(INSERT_INTO_USERS_TABLE);
+        mDatabase.close();
+
+        //return myList;
+    }
+
+    public void insertUpdateTehnik(String tehnikID, String naziv, String servis, String montaza, String vzdrzevanje, String ime_regala, String userID ) {
 
         //ArrayList<NadzorXML> myList=new ArrayList<NadzorXML>();
         //List<Nadzor> myList=new ArrayList<Nadzor>();
@@ -287,6 +598,7 @@ public class DatabaseHandler extends SQLiteOpenHelper {
             values.put("seznam_montaza",montaza);
             values.put("seznam_vzdrzevanje",vzdrzevanje);
             values.put("user_id",userID);
+            values.put("ime_regala",ime_regala);
             mDatabase.update("sintal_teh_delavci", values, "tehnik_id=?", new String[]{tehnikID});
 
         }
@@ -298,6 +610,7 @@ public class DatabaseHandler extends SQLiteOpenHelper {
             values.put("seznam_servis",servis);
             values.put("seznam_montaza",montaza);
             values.put("seznam_vzdrzevanje",vzdrzevanje);
+            values.put("ime_regala",ime_regala);
             values.put("user_id",userID);
 
             mDatabase.insert("sintal_teh_delavci",null, values);
@@ -391,7 +704,15 @@ public class DatabaseHandler extends SQLiteOpenHelper {
                                String SEKTOR_POSTNA_ST,
                                String DATUM_PODPISA,
                                String DATUM_DODELITVE,
-                               String DATUM_IZVEDBE
+                               String DATUM_IZVEDBE,
+                               String PRENOSA,
+                               String DATUM_PRENOSA,
+                               String OPIS_OKVARE,
+                               String OPIS_POSTOPKA,
+                               String URE_PREVOZ,
+                               String URE_DELO,
+                               String STEVILO_KM
+
 
 
     ) {
@@ -450,6 +771,13 @@ public class DatabaseHandler extends SQLiteOpenHelper {
             values.put("DATUM_PODPISA", DATUM_PODPISA);
             values.put("DATUM_DODELITVE",DATUM_DODELITVE);
             values.put("DATUM_IZVEDBE", DATUM_IZVEDBE);
+            values.put("PRENOS", PRENOSA);
+            values.put("DATUM_PRENOSA", DATUM_PRENOSA);
+            values.put("OPIS_OKVARE", OPIS_OKVARE);
+            values.put("OPIS_POSTOPKA", OPIS_POSTOPKA);
+            values.put("URE_PREVOZ", URE_PREVOZ);
+            values.put("URE_DELO", URE_DELO);
+            values.put("STEVILO_KM", STEVILO_KM);
             mDatabase.update("sintal_teh_sn", values, "id=?", new String[]{id});
 
         }
@@ -498,7 +826,13 @@ public class DatabaseHandler extends SQLiteOpenHelper {
             values.put("DATUM_PODPISA", DATUM_PODPISA);
             values.put("DATUM_DODELITVE",DATUM_DODELITVE);
             values.put("DATUM_IZVEDBE", DATUM_IZVEDBE);
-
+            values.put("PRENOS", PRENOSA);
+            values.put("DATUM_PRENOSA", DATUM_PRENOSA);
+            values.put("OPIS_OKVARE", OPIS_OKVARE);
+            values.put("OPIS_POSTOPKA", OPIS_POSTOPKA);
+            values.put("URE_PREVOZ", URE_PREVOZ);
+            values.put("URE_DELO", URE_DELO);
+            values.put("STEVILO_KM", STEVILO_KM);
             //values.put("OZNACI",OZNACI);
             mDatabase.insert("sintal_teh_sn",null, values);
         }
@@ -667,6 +1001,8 @@ public class DatabaseHandler extends SQLiteOpenHelper {
         mDatabase.close();
     }
 
+
+
     public void updateSNStatusAkt(String id, String statusAkt) {
         String GET_USER = "SELECT * FROM sintal_teh_sn where id ='" + id+"'";
         mDatabase = this.getReadableDatabase();
@@ -680,6 +1016,32 @@ public class DatabaseHandler extends SQLiteOpenHelper {
             ContentValues values = new ContentValues();
             values.put("STATUS_AKT", statusAkt);
             values.put("OZNACI", 0);
+            mDatabase.update("sintal_teh_sn", values, "id=?", new String[]{id});
+
+        }
+        mCursor.close();
+        mDatabase.close();
+    }
+
+    public void updateSNStatusZakljuci(String id, String statusAkt) {
+        String GET_USER = "SELECT * FROM sintal_teh_sn where id ='" + id+"'";
+        mDatabase = this.getReadableDatabase();
+        mCursor = mDatabase.rawQuery(GET_USER, null);
+        //NadzorXML n;
+        if (mCursor != null) {
+            mCursor.moveToFirst();
+        }
+        if (mCursor.moveToFirst()) {
+            //String UPDATE_USER ="";
+            String datum;
+            DateTimeFormatter dtf = DateTimeFormatter.ofPattern("yyyy-MM-dd");
+            LocalDateTime now = LocalDateTime.now();
+            datum = dtf.format(now);
+            //test.setText(datum);
+            ContentValues values = new ContentValues();
+            values.put("STATUS_AKT", statusAkt);
+            values.put("DATUM_KONEC",datum);
+            //values.put("OZNACI", 0);
             mDatabase.update("sintal_teh_sn", values, "id=?", new String[]{id});
 
         }
@@ -743,7 +1105,26 @@ public class DatabaseHandler extends SQLiteOpenHelper {
         ArrayList<ServisniNalog> list = new ArrayList<ServisniNalog>();
         String query ="";// "SELECT  * FROM sintal_teh_sn where datum_zacetek = '" + datum + "' and vodja_sn = 'Null'";
         //query = "SELECT  * FROM sintal_teh_sn where strftime('%d.%m.%Y', DATUM_ZACETEK) = '" + datum + "' and VODJA_NALOGA = '"+vodja_sn+"'";
-        query = "SELECT  * FROM sintal_teh_sn where VODJA_NALOGA = '"+vodja_sn+"' and STATUS_AKT = '"+status+"' and DATUM_DODELITVE is not null ";
+        if (status.equals("D") == true)
+        {
+            query = "SELECT  * FROM sintal_teh_sn where VODJA_NALOGA = '"+vodja_sn+"' and STATUS_AKT = '"+status+"' and DATUM_DODELITVE is not null ";
+        }
+        else if (status.equals("P") == true)
+        {
+            query = "SELECT  * FROM sintal_teh_sn where VODJA_NALOGA = '"+vodja_sn+"' and STATUS_AKT = '"+status+"' and DATUM_PODPISA is not null ";
+        }
+        else if (status.equals("Z") == true)
+        {
+            query = "SELECT  * FROM sintal_teh_sn where VODJA_NALOGA = '"+vodja_sn+"' and STATUS_AKT = '"+status+"'  ";
+        }
+        else if (status.equals("X") == true)
+        {
+            query = "SELECT  * FROM sintal_teh_sn where VODJA_NALOGA = '"+vodja_sn+"' and STATUS_AKT = '"+status+"'  ";
+        }
+        else if (status.equals("Y") == true)
+        {
+            query = "SELECT  * FROM sintal_teh_sn where VODJA_NALOGA = '"+vodja_sn+"' and STATUS_AKT = '"+status+"'  ";
+        }
 
         mDatabase = this.getReadableDatabase();
         mCursor = mDatabase.rawQuery(query, null);
@@ -771,6 +1152,9 @@ public class DatabaseHandler extends SQLiteOpenHelper {
             sn.setTipNarocila(mCursor.getInt(mCursor.getColumnIndex("TIP_NAROCILA")));
             sn.setTipVzdrzevanja(mCursor.getInt(mCursor.getColumnIndex("TIP_VZDRZEVANJA")));
             sn.setPripadnost(mCursor.getString(mCursor.getColumnIndex("PRIPADNOST")));
+            sn.setStKm(mCursor.getDouble(mCursor.getColumnIndex("STEVILO_KM")));
+            sn.setUreDelo(mCursor.getDouble(mCursor.getColumnIndex("URE_DELO")));
+            sn.setUrePrevoz(mCursor.getDouble(mCursor.getColumnIndex("URE_PREVOZ")));
 
             try{
                 String datumDod = mCursor.getString(mCursor.getColumnIndex("DATUM_DODELITVE"));
@@ -780,9 +1164,13 @@ public class DatabaseHandler extends SQLiteOpenHelper {
             {
 
             }
-
             sn.setDatumDodelitve(mCursor.getString(mCursor.getColumnIndex("DATUM_DODELITVE"))); //popravi query da bo dajal samo z datumom dodelitve
+            sn.setDatumIzvedbe(mCursor.getString(mCursor.getColumnIndex("DATUM_IZVEDBE")));
+            sn.setDatumPodpisa(mCursor.getString(mCursor.getColumnIndex("DATUM_PODPISA")));
+            sn.setDatumKonec(mCursor.getString(mCursor.getColumnIndex("DATUM_KONEC")));
             sn.setStatus(mCursor.getString(mCursor.getColumnIndex("STATUS_AKT")));
+            sn.setOpisPostopka(mCursor.getString(mCursor.getColumnIndex("OPIS_POSTOPKA")));
+            sn.setOpisOkvare(mCursor.getString(mCursor.getColumnIndex("OPIS_OKVARE")));
             //sn.setOznacen(0);
             list.add(sn);
         }
@@ -792,11 +1180,34 @@ public class DatabaseHandler extends SQLiteOpenHelper {
         return  list;
     }
 
-    public ArrayList<SNArtikel> GetArtikle(){
+    public ArrayList<SNArtikel> GetArtikle(String vrsta, String ime_regala){
 
         ArrayList<SNArtikel> list = new ArrayList<SNArtikel>();
         String query = "";
-        query = "SELECT  * FROM sintal_teh_artikli";
+        //query = "SELECT  * FROM sintal_teh_artikli";
+        if (vrsta.equals("regal") == true)
+        {
+            query = "SELECT " +
+                    "art.No_ " +
+                    ",art.Naziv " +
+                    ",art.Naziv_iskanje " +
+                    ",sum(Kolicina) as Kolicina, art.Merska_enota " +
+                    ",stas.Skladisce as Skladisce " +
+                    "FROM " +
+                    "sintal_teh_artikli art " +
+                    "left join sintal_teh_artikli_skladisce stas " +
+                    "on art.No_ = stas.St_artikla " +
+                    "WHERE stas.Skladisce = '"+ime_regala+"' " +
+                    "group by art.No_ " +
+                    "order by 1 ";
+        }
+        else {
+            query = "select art.No_, art.Naziv, art.Naziv_iskanje, 1 as Kolicina, art.Merska_enota, '' as Skladisce \n" +
+                    "from sintal_teh_artikli art \n" +
+                    "left join sintal_teh_sifre_artiklov sart on art.No_ = sart.sifra_artikla \n" +
+                    "left join sintal_teh_skladisce_vrste_artiklov svart on svart.oznaka = sart.oznaka\n" +
+                    "where svart.naziv_oznake = '"+vrsta+"'";
+        }
 
         mDatabase = this.getReadableDatabase();
         mCursor = mDatabase.rawQuery(query, null);
@@ -805,9 +1216,12 @@ public class DatabaseHandler extends SQLiteOpenHelper {
             sn.setid(mCursor.getString(mCursor.getColumnIndex("No_")));
             sn.setnaziv(mCursor.getString(mCursor.getColumnIndex("Naziv")));
             sn.setnazivIskanje(mCursor.getString(mCursor.getColumnIndex("Naziv_iskanje")));
-            sn.setKratkaOznaka(mCursor.getString(mCursor.getColumnIndex("Kratka_oznaka")));
+            sn.setKratkaOznaka("");
+            //sn.setKratkaOznaka(mCursor.getString(mCursor.getColumnIndex("Kratka_oznaka")));
             sn.setmerskaEnota(mCursor.getString(mCursor.getColumnIndex("Merska_enota")));
-
+            //sn.setmerskaEnota("");
+            sn.setKolicina(mCursor.getFloat(mCursor.getColumnIndex("Kolicina")));
+            sn.setRegal(mCursor.getString(mCursor.getColumnIndex("Skladisce")));
             //sn.setOznacen(0);
             list.add(sn);
         }
@@ -859,6 +1273,9 @@ public class DatabaseHandler extends SQLiteOpenHelper {
             sn.setStKm(mCursor.getDouble(mCursor.getColumnIndex("STEVILO_KM")));
             sn.setDatumPodpisa(mCursor.getString(mCursor.getColumnIndex("DATUM_PODPISA")));
             sn.setPodpis(mCursor.getBlob(mCursor.getColumnIndex("PODPIS_NAROCNIK")));
+            sn.setDatumDodelitve(mCursor.getString(mCursor.getColumnIndex("DATUM_DODELITVE")));
+            sn.setDatumKonec(mCursor.getString(mCursor.getColumnIndex("DATUM_KONEC")));
+            sn.setDatumIzvedbe(mCursor.getString(mCursor.getColumnIndex("DATUM_IZVEDBE")));
             //sn.setOznacen(0);
 
         }
@@ -1062,6 +1479,29 @@ public class DatabaseHandler extends SQLiteOpenHelper {
         mDatabase.close();
     }
 
+    public void updateSNPoslano(String snID, String status, String datum){
+        mDatabase = this.getWritableDatabase();
+        ContentValues cv = new ContentValues();
+        if (status.equals("X") == true)
+        {
+
+            cv.put("STATUS_AKT",status);
+            cv.put("DATUM_PRENOSA",status);
+            cv.put("PRENOS", 1);
+        }
+        else
+        {
+            cv.put("STATUS_AKT",status);
+        }
+
+        //cv.put("DATUM_POSILJANJA", datum);
+       //cv.put("STATUS_AKT", "P");
+        mDatabase.update("sintal_teh_sn",cv,"id = "+snID,null);
+
+        //mDatabase.execSQL(INSERT_INTO_USERS_TABLE);
+        mDatabase.close();
+    }
+
     public void deleteSNArtikelUserTehnik(int snId, String delovniNalog, String No_, int vrstaId, int userID, int tehnikID  )
     {
         mDatabase = this.getWritableDatabase();
@@ -1083,7 +1523,51 @@ public class DatabaseHandler extends SQLiteOpenHelper {
         mDatabase.close();
     }
 
-    public void insertSNArtikelUserTehnik(int snId, String delovniNalog, String No_, int vrstaId, int userID, int tehnikID  ) {
+    public void insertUpdateSNArtikelUserTehnik(int snId, String delovniNalog, String No_, int vrstaId, int userID, int tehnikID, float kolicina , String regal ) {
+
+        //ArrayList<NadzorXML> myList=new ArrayList<NadzorXML>();
+        //List<Nadzor> myList=new ArrayList<Nadzor>();
+        String query = "";
+        query = "select count(*) as st_vrstic from `sintal_teh_sn_artikli` " +
+                "where No_ = '"+No_+"' " +
+                "and sn_id = '"+String.valueOf(snId)+"' " +
+                "and vrsta_id = '"+String.valueOf(vrstaId)+"' " +
+                "and  upo_id = '"+String.valueOf(userID)+"' " +
+                "and tehnik_id = '"+String.valueOf(tehnikID)+"' ;";
+        mDatabase = this.getWritableDatabase();
+        mCursor = mDatabase.rawQuery(query, null);
+        int stZapisa = 0;
+        while (mCursor.moveToNext()){
+            stZapisa = mCursor.getInt(mCursor.getColumnIndex("st_vrstic"));
+        }
+        if (stZapisa > 0)
+        {
+            ContentValues values = new ContentValues();
+            values.put("sn_id",snId);
+            values.put("DELOVNI_NALOG",delovniNalog);
+            values.put("No_",No_);
+            values.put("kolicina",kolicina);
+            values.put("vrsta_id",vrstaId);
+            values.put("upo_id",userID);
+            values.put("tehnik_id",tehnikID);
+            values.put("REGAL",regal);
+
+            mDatabase.insert("sintal_teh_sn_artikli",null, values);
+        }
+        mCursor.close();
+
+
+
+        mCursor.close();
+
+        //mDatabase.execSQL(INSERT_INTO_USERS_TABLE);
+        mDatabase.close();
+
+        //return myList;
+    }
+
+
+    public void insertSNArtikelUserTehnik(int snId, String delovniNalog, String No_, int vrstaId, int userID, int tehnikID, float kolicina , String regal ) {
 
         //ArrayList<NadzorXML> myList=new ArrayList<NadzorXML>();
         //List<Nadzor> myList=new ArrayList<Nadzor>();
@@ -1092,9 +1576,11 @@ public class DatabaseHandler extends SQLiteOpenHelper {
         values.put("sn_id",snId);
         values.put("DELOVNI_NALOG",delovniNalog);
         values.put("No_",No_);
+        values.put("kolicina",kolicina);
         values.put("vrsta_id",vrstaId);
         values.put("upo_id",userID);
         values.put("tehnik_id",tehnikID);
+        values.put("REGAL",regal);
 
 
         mDatabase.insert("sintal_teh_sn_artikli",null, values);
@@ -1111,7 +1597,7 @@ public class DatabaseHandler extends SQLiteOpenHelper {
     {
         ArrayList<SNArtikel> list = new ArrayList<SNArtikel>();
         String query = "";
-        query = "select * from sintal_teh_sn_artikli art,  sintal_teh_artikli snart where art.No_ = snart.No_ " +
+        query = "select * , 1 as Kolicina from sintal_teh_sn_artikli art,  sintal_teh_artikli snart where art.No_ = snart.No_ " +
                 "and art.upo_id = "+ userId +  " and art.tehnik_id = " + tehnikId + " and art.sn_id = " + SnId  + " and art.vrsta_id = "+ vrstaId + " order by art.No_";
 
         mDatabase = this.getReadableDatabase();
@@ -1124,6 +1610,7 @@ public class DatabaseHandler extends SQLiteOpenHelper {
             sn.setKratkaOznaka(mCursor.getString(mCursor.getColumnIndex("Kratka_oznaka")));
             sn.setmerskaEnota(mCursor.getString(mCursor.getColumnIndex("Merska_enota")));
             sn.setSNArtikelId(mCursor.getInt(mCursor.getColumnIndex("sn_artikel_id")));
+            sn.setKolicina(mCursor.getFloat(mCursor.getColumnIndex("kolicina")));
             //sn.setOznacen(0);
             list.add(sn);
         }
@@ -1132,6 +1619,56 @@ public class DatabaseHandler extends SQLiteOpenHelper {
         mDatabase.close();
         return  list;
 
+    }
+
+    public String vrniPoslano(int snId, String userId) {
+        String query = "select email || ' - '  || datum as poslano from sintal_teh_email_log where sn_id = "+ String.valueOf(snId) + " order by datum desc limit 1";
+        mDatabase = this.getReadableDatabase();
+        mCursor = mDatabase.rawQuery(query, null);
+        String vrni = "";
+        while (mCursor.moveToNext()) {
+
+            vrni = mCursor.getString(mCursor.getColumnIndex("poslano"));
+
+            }
+        mCursor.close();
+        mDatabase.close();
+
+        return vrni;
+    }
+
+
+    public JSONArray vrniEmailLog(int snId, String userId) {
+        String query = "select * from sintal_teh_email_log where sn_id = "+ String.valueOf(snId) + " and user_id = " + userId;
+        mDatabase = this.getReadableDatabase();
+        mCursor = mDatabase.rawQuery(query, null);
+        JSONArray ja = new JSONArray();
+
+        while (mCursor.moveToNext()) {
+
+            try {
+                JSONObject emailLog = new JSONObject();
+                //int userID = ;
+                emailLog.put("user_id", mCursor.getInt(mCursor.getColumnIndex("user_id")));
+                emailLog.put("sn_id",mCursor.getInt(mCursor.getColumnIndex("sn_id")));
+                emailLog.put("sn_dn",mCursor.getString(mCursor.getColumnIndex("sn_dn")));
+                emailLog.put("email",mCursor.getString(mCursor.getColumnIndex("email")));
+                emailLog.put("datum",mCursor.getString(mCursor.getColumnIndex("datum")));
+
+                ja.put(emailLog);
+
+            }
+            catch (JSONException e)
+            {
+
+            }
+
+
+        }
+        mCursor.close();
+        mDatabase.close();
+
+        return ja;
     }
 
     public ArrayList<SNArtikel> GetSeznamArtikliIzpisDNSNUporabnik(int userId, int tehnikId, int vrstaId, int SnId)
@@ -1152,9 +1689,85 @@ public class DatabaseHandler extends SQLiteOpenHelper {
             sn.setmerskaEnota(mCursor.getString(mCursor.getColumnIndex("Merska_enota")));
             sn.setSNArtikelId(mCursor.getInt(mCursor.getColumnIndex("sn_artikel_id")));
             sn.setZamenjanNov(mCursor.getInt(mCursor.getColumnIndex("vrsta_id")));
+            sn.setKolicina(mCursor.getFloat(mCursor.getColumnIndex("kolicina")));
+            sn.setRegal(mCursor.getString(mCursor.getColumnIndex("REGAL")));
+            sn.setSn_id(mCursor.getInt(mCursor.getColumnIndex("sn_id")));
+            sn.setSn_artikel_id(mCursor.getInt(mCursor.getColumnIndex("sn_artikel_id")));
+            sn.setDelovniNalog(mCursor.getString(mCursor.getColumnIndex("DELOVNI_NALOG")));
+            sn.setUpoId(mCursor.getString(mCursor.getColumnIndex("upo_id")));
+            sn.setTehnikId(mCursor.getString(mCursor.getColumnIndex("tehnik_id")));
             //sn.setOznacen(0);
             list.add(sn);
         }
+
+        String query1 = "";
+        query1 = "select * from sintal_teh_sn where  id = " + SnId  + "";
+
+        //mDatabase = this.getReadableDatabase();
+        mCursor = mDatabase.rawQuery(query1, null);
+        while (mCursor.moveToNext()){
+            Float ure_prevoz = mCursor.getFloat(mCursor.getColumnIndex("URE_PREVOZ"));
+            Float ure_delo = mCursor.getFloat(mCursor.getColumnIndex("URE_DELO"));
+            Float stevilo_km = mCursor.getFloat(mCursor.getColumnIndex("STEVILO_KM"));
+            if (ure_prevoz > 0) {
+                SNArtikel sn = new SNArtikel();
+                sn.setid("S0053");
+                sn.setnaziv("URA SERVISERJA NA VOŽNJI");
+                sn.setnazivIskanje("");
+                sn.setKratkaOznaka("");
+                sn.setmerskaEnota("URA");
+                sn.setSNArtikelId(9997);
+                sn.setZamenjanNov(0);
+                sn.setKolicina(ure_prevoz);
+                sn.setRegal("");
+                sn.setSn_id(mCursor.getInt(mCursor.getColumnIndex("id")));
+                //sn.setSn_artikel_id(mCursor.getInt(mCursor.getColumnIndex("sn_artikel_id")));
+                sn.setDelovniNalog(mCursor.getString(mCursor.getColumnIndex("DELOVNI_NALOG")));
+                sn.setUpoId(String.valueOf(userId));
+                sn.setTehnikId(String.valueOf(tehnikId));
+                list.add(sn);
+            }
+
+            if (ure_delo > 0) {
+                SNArtikel sn = new SNArtikel();
+                sn.setid("S0135");
+                sn.setnaziv("URA SERVISERJA");
+                sn.setnazivIskanje("");
+                sn.setKratkaOznaka("");
+                sn.setmerskaEnota("URA");
+                sn.setSNArtikelId(9998);
+                sn.setZamenjanNov(0);
+                sn.setKolicina(ure_delo);
+                sn.setRegal("");
+                sn.setSn_id(mCursor.getInt(mCursor.getColumnIndex("id")));
+                //sn.setSn_artikel_id(mCursor.getInt(mCursor.getColumnIndex("sn_artikel_id")));
+                sn.setDelovniNalog(mCursor.getString(mCursor.getColumnIndex("DELOVNI_NALOG")));
+                sn.setUpoId(String.valueOf(userId));
+                sn.setTehnikId(String.valueOf(tehnikId));
+                list.add(sn);
+            }
+
+            if (stevilo_km > 0) {
+                SNArtikel sn = new SNArtikel();
+                sn.setid("S0042");
+                sn.setnaziv("Kilometrina");
+                sn.setnazivIskanje("");
+                sn.setKratkaOznaka("");
+                sn.setmerskaEnota("URA");
+                sn.setSNArtikelId(9999);
+                sn.setZamenjanNov(0);
+                sn.setKolicina(stevilo_km);
+                sn.setRegal("");
+                sn.setSn_id(mCursor.getInt(mCursor.getColumnIndex("id")));
+                //sn.setSn_artikel_id(mCursor.getInt(mCursor.getColumnIndex("sn_artikel_id")));
+                sn.setDelovniNalog(mCursor.getString(mCursor.getColumnIndex("DELOVNI_NALOG")));
+                sn.setUpoId(String.valueOf(userId));
+                sn.setTehnikId(String.valueOf(tehnikId));
+                list.add(sn);
+            }
+
+        }
+
 
         mCursor.close();
         mDatabase.close();
@@ -1182,6 +1795,28 @@ public class DatabaseHandler extends SQLiteOpenHelper {
         //mDatabase.execSQL(INSERT_INTO_USERS_TABLE);
         mDatabase.close();
         return tehnikid;
+    }
+
+    public String getTehnikImeRegala(String tehnik)
+    {
+        mDatabase = this.getWritableDatabase();
+        String tehnikImeRegala = "";
+        String GET_USER = "SELECT * FROM sintal_teh_delavci where tehnik_id = '" + tehnik + "'";
+        mCursor = mDatabase.rawQuery(GET_USER,null);
+        //NadzorXML n;
+        if (mCursor != null)
+        {
+            mCursor.moveToFirst();
+        }
+        if (mCursor.moveToFirst()) {
+            tehnikImeRegala = mCursor.getString(6);
+        }
+
+        mCursor.close();
+
+        //mDatabase.execSQL(INSERT_INTO_USERS_TABLE);
+        mDatabase.close();
+        return tehnikImeRegala;
     }
 
 
@@ -1461,3 +2096,4 @@ public class DatabaseHandler extends SQLiteOpenHelper {
         }
     };
 }
+

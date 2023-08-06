@@ -1,22 +1,24 @@
 package si.sintal.sintaltehnika.ui.main.SN;
 
-import androidx.lifecycle.ViewModelProvider;
-
 import android.content.Intent;
 import android.os.Bundle;
+import android.view.LayoutInflater;
+import android.view.View;
+import android.view.ViewGroup;
+import android.widget.AdapterView;
+import android.widget.ArrayAdapter;
+import android.widget.Button;
+import android.widget.ListView;
+import android.widget.SearchView;
+import android.widget.Spinner;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
-
-import android.view.LayoutInflater;
-import android.view.View;
-import android.view.ViewGroup;
-import android.widget.Button;
-import android.widget.ListView;
-import android.widget.SearchView;
+import androidx.lifecycle.ViewModelProvider;
 
 import java.util.ArrayList;
+import java.util.List;
 
 import si.sintal.sintaltehnika.DatabaseHandler;
 import si.sintal.sintaltehnika.R;
@@ -33,9 +35,11 @@ public class SNDodajArtikelFragment extends Fragment {
     private ListView lw;
     private String userId;
     private String tehnikId;
-    private String SNId;
+    private int SNId;
     private String SNDn;
     private int vrstaID;
+    private String imeRegala;
+    private Spinner spn;
 
     public static SNDodajArtikelFragment newInstance() {
         return new SNDodajArtikelFragment();
@@ -49,13 +53,14 @@ public class SNDodajArtikelFragment extends Fragment {
         Intent intent= getActivity().getIntent();
         userId = intent.getStringExtra("userID");
         tehnikId = intent.getStringExtra("tehnikID");
-        SNId = intent.getStringExtra("snID");
+        SNId = intent.getIntExtra("snID",0);
         SNDn = intent.getStringExtra("snDN");
         vrstaID = intent.getIntExtra("vrsta",-1);
 
         db = new DatabaseHandler(getContext());
+        imeRegala = db.getTehnikImeRegala(tehnikId);
         lw = (ListView) my_v.findViewById(R.id.SNseznamArtikov);
-        dodeliArtikle = db.GetArtikle();
+        dodeliArtikle = db.GetArtikle("regal", imeRegala);
         adapterSeznamArtiklov = new SNArtikliAdapter(getActivity(), dodeliArtikle,SNId,SNDn,userId,tehnikId,vrstaID);
         lw.setAdapter(adapterSeznamArtiklov);
         adapterSeznamArtiklov.notifyDataSetChanged();
@@ -75,6 +80,32 @@ public class SNDodajArtikelFragment extends Fragment {
             }
         });
 
+        spn =(Spinner) my_v.findViewById(R.id.idSifrnatVrsteSkladisc);
+        //DatabaseHandler db = new DatabaseHandler(getContext());
+        List<String> labels = db.getVrsteArtikov();
+        ArrayAdapter<String> dataAdapter = new ArrayAdapter<String>(getActivity(),android.R.layout.test_list_item, labels);
+        dataAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+        spn.setAdapter(dataAdapter);
+        spn.setSelection(7);
+        spn.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+            @Override
+            public void onItemSelected(AdapterView<?> parentView, View selectedItemView, int position, long id) {
+                // your code here
+                String text = spn.getSelectedItem().toString();
+                dodeliArtikle = db.GetArtikle(text, imeRegala);
+                adapterSeznamArtiklov = new SNArtikliAdapter(getActivity(), dodeliArtikle,SNId,SNDn,userId,tehnikId,vrstaID);
+                lw.setAdapter(adapterSeznamArtiklov);
+                adapterSeznamArtiklov.notifyDataSetChanged();
+                lw.setTextFilterEnabled(true);
+            }
+
+            @Override
+            public void onNothingSelected(AdapterView<?> parentView) {
+                // your code here
+            }
+
+        });
+
 
         Button bNazaj = (Button) my_v.findViewById(R.id.bDodajSNArtikelNazaj);
         bNazaj.setOnClickListener(new View.OnClickListener() {
@@ -88,6 +119,8 @@ public class SNDodajArtikelFragment extends Fragment {
 
         return my_v;
     }
+
+
 
     @Override
     public void onActivityCreated(@Nullable Bundle savedInstanceState) {

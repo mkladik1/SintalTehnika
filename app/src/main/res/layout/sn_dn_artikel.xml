@@ -33,6 +33,14 @@
 
 
             <TextView
+                android:id="@+id/tvSNArtikelKolicina"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_vertical"
+                android:width="70dp"
+                android:text="Drobni potrošni material" />
+
+            <TextView
                 android:id="@+id/tvSNArtikelEnota"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"

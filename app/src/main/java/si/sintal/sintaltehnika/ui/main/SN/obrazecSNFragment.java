@@ -1,9 +1,5 @@
 package si.sintal.sintaltehnika.ui.main.SN;
 
-import androidx.core.content.FileProvider;
-import androidx.lifecycle.ViewModelProvider;
-
-
 import android.app.Dialog;
 import android.content.ActivityNotFoundException;
 import android.content.Context;
@@ -17,14 +13,9 @@ import android.graphics.Path;
 import android.graphics.RectF;
 import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
-import android.graphics.fonts.Font;
 import android.net.Uri;
+import android.os.AsyncTask;
 import android.os.Bundle;
-
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
-import androidx.fragment.app.Fragment;
-
 import android.util.AttributeSet;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -41,16 +32,17 @@ import android.widget.RadioGroup;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.itextpdf.io.font.otf.Glyph;
-import com.itextpdf.io.font.otf.GlyphLine;
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.core.content.FileProvider;
+import androidx.fragment.app.Fragment;
+import androidx.lifecycle.ViewModelProvider;
+
 import com.itextpdf.io.image.ImageDataFactory;
 import com.itextpdf.kernel.font.PdfFont;
 import com.itextpdf.kernel.font.PdfFontFactory;
 import com.itextpdf.kernel.geom.PageSize;
-import com.itextpdf.kernel.pdf.PdfDictionary;
 import com.itextpdf.kernel.pdf.PdfDocument;
-import com.itextpdf.kernel.pdf.PdfOutputStream;
-import com.itextpdf.kernel.pdf.PdfString;
 import com.itextpdf.kernel.pdf.PdfWriter;
 import com.itextpdf.layout.Document;
 import com.itextpdf.layout.borders.Border;
@@ -58,54 +50,50 @@ import com.itextpdf.layout.element.Cell;
 import com.itextpdf.layout.element.IElement;
 import com.itextpdf.layout.element.Image;
 import com.itextpdf.layout.element.Paragraph;
-import com.itextpdf.layout.element.TabStop;
 import com.itextpdf.layout.element.Table;
 import com.itextpdf.layout.element.Text;
 import com.itextpdf.layout.properties.HorizontalAlignment;
-import com.itextpdf.layout.properties.TabAlignment;
 import com.itextpdf.layout.properties.TextAlignment;
 import com.itextpdf.layout.properties.UnitValue;
 import com.itextpdf.layout.properties.VerticalAlignment;
 
-
-
+import java.io.BufferedReader;
 import java.io.ByteArrayOutputStream;
+import java.io.DataOutputStream;
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
-import java.sql.Blob;
+import java.io.InputStreamReader;
+import java.net.HttpURLConnection;
+import java.net.MalformedURLException;
+import java.net.URL;
 import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
+import java.util.Base64;
 import java.util.Date;
-import java.util.List;
-
 
 import si.sintal.sintaltehnika.BuildConfig;
 import si.sintal.sintaltehnika.DatabaseHandler;
 import si.sintal.sintaltehnika.R;
 import si.sintal.sintaltehnika.ui.main.SNArtikel;
 import si.sintal.sintaltehnika.ui.main.SNPagerAdapter;
+import si.sintal.sintaltehnika.ui.main.SendEmailService;
 import si.sintal.sintaltehnika.ui.main.ServisniNalog;
-
-import static com.itextpdf.kernel.pdf.PdfName.BaseFont;
-import static com.itextpdf.kernel.pdf.PdfName.Center;
-import static com.itextpdf.kernel.pdf.PdfName.Document;
-import static com.itextpdf.kernel.pdf.PdfName.op;
-import static com.itextpdf.layout.properties.Property.FONT;
-import static com.itextpdf.styledxmlparser.css.CommonCssConstants.BOLD;
 
 public class obrazecSNFragment extends Fragment {
 
     private ObrazecSNViewModel mViewModel;
-    private int STSN;
+    //private int STSN;
     private String tehnikID;
     private String userID;
-    private String snID;
+    private int snID;
     private String snDN;
+    int serverResponseCode = 0;
     private SNDNArtikliAdapter adapterSeznamSNDNArtikli;
     private SNDNArtikliAdapter adapterSeznamSNDNArtikli2;
     static ArrayList<SNArtikel> artikliVgrajeni;
@@ -117,10 +105,12 @@ public class obrazecSNFragment extends Fragment {
     View view;
     obrazecSNFragment.signature mSignature;
     Bitmap bitmap;
+    ServisniNalog sn = new ServisniNalog();
     //private String tehnikAdminDostop;
     //private String servis;
     //private String montaza;
     //private String vzdrzevanje;
+
 
 
 
@@ -136,21 +126,17 @@ public class obrazecSNFragment extends Fragment {
         Intent intent= getActivity().getIntent();
         userID = intent.getStringExtra("userID");
         tehnikID = intent.getStringExtra("tehnikID");
-        TextView test = (TextView) v.findViewById(R.id.tvStevilkaSN);
-        snDN = test.getText().toString();
-        test = (TextView) v.findViewById(R.id.idObrazecSN);
-        snID = test.getText().toString();
-        ServisniNalog sn = new ServisniNalog();
-        //sn = db.vrniSN(Integer.parseInt(snID));
-        //tehnikID = db.getTehnikId(sn.getVodjaNaloga());
-        //test = (TextView) v.findViewById(R.id.idObrazecSNTehnikID);
-        //tehnikID = test.getText().toString();
+        snID = SNPagerAdapter.getParameters();
+
+        sn = db.vrniSN(snID);
+        snDN = sn.getDelovniNalog();
+        String tehnik = sn.getVodjaNaloga();
+        tehnikID = db.getTehnikId(tehnik);
+
         Button bDodajMat = (Button) v.findViewById(R.id.bSNDodajVMat);
         bDodajMat.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                TextView test = (TextView) getView().findViewById(R.id.idObrazecSNTehnikID);
-                tehnikID = test.getText().toString();
                 Intent intent = new Intent(getActivity(), SNDodajArtikel.class);
 
                 intent.putExtra("userID", userID);
@@ -166,8 +152,6 @@ public class obrazecSNFragment extends Fragment {
         bDodajMat2.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                TextView test = (TextView) getView().findViewById(R.id.idObrazecSNTehnikID);
-                tehnikID = test.getText().toString();
                 Intent intent = new Intent(getActivity(), SNDodajArtikel.class);
 
                 intent.putExtra("userID", userID);
@@ -202,17 +186,20 @@ public class obrazecSNFragment extends Fragment {
                 String tvSNNapaka = test.getText().toString();
                 test = (TextView) getView().findViewById(R.id.etSNUrePrevoz);
                 String etSNUrePrevoz = test.getText().toString();
+                etSNUrePrevoz = etSNUrePrevoz.replace(',','.');
                 test = (TextView) getView().findViewById(R.id.etSNUreDelo);
                 String etSNUreDelo = test.getText().toString();
+                etSNUreDelo = etSNUreDelo.replace(',','.');
                 test = (TextView) getView().findViewById(R.id.etSNStKm);
                 String etSNStKm = test.getText().toString();
+                etSNStKm = etSNStKm.replace(',','.');
                 test = (TextView) getView().findViewById(R.id.tvSNNapaka2);
                 String tvSNNapaka2 = test.getText().toString();
                 if ((isValidFormat("yyyy-MM-dd",tvSNDatumMontaze) == true)
                     || (tvSNDatumMontaze.equals("")))
                 {
                     DatabaseHandler db = new DatabaseHandler(getContext());
-                    db.updateSNDN(snID, tipNarocila, tipVzdrzevanja, tvSNDatumMontaze, tvSNGarancija, tvSNNapaka, etSNUrePrevoz, etSNUreDelo, etSNStKm, tvSNNapaka2);
+                    db.updateSNDN(String.valueOf(snID), tipNarocila, tipVzdrzevanja, tvSNDatumMontaze, tvSNGarancija, tvSNNapaka, etSNUrePrevoz, etSNUreDelo, etSNStKm, tvSNNapaka2);
                     Toast.makeText(getView().getContext(),"Podatki o servisnem nalogu uspešno shranjeni",Toast.LENGTH_LONG).show();
                 }
                 else
@@ -252,14 +239,45 @@ public class obrazecSNFragment extends Fragment {
                         try {
                             //convertToPdf();
                             createPdf();
-                            openPdf();
-                            db.updateSNStatusAkt(snID,"Z");
+                            //openPdf();
+                            //db.updateSNStatusAkt(snID,"Z");
+                            db.updateSNStatusZakljuci(String.valueOf(snID),"Z");
+                            bDodajMat.setEnabled(false);
+                            bDodajMat2.setEnabled(false);
+                            bSNShrani.setEnabled(false);
+                            bSign.setEnabled(false);
+                            bPdf.setEnabled(false);
+
                         } catch (Exception e) {
                             e.printStackTrace();
                         }
                     }
                 }
         );
+
+        Button bPoslji = (Button) v.findViewById(R.id.buttonSNPoslji);
+        bPoslji.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                TextView emailTw = (TextView) getView().findViewById(R.id.etSNEmail);
+                String email =  emailTw.getText().toString();
+                String status = sn.getStatus();
+                if ((status.equals("A") == true) || (status.equals("D") == true) || (status.equals("P") == true)) {
+                    try {
+                        createPdf();
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                    }
+                }
+                if (email.equals("") == false) {
+                    new SendEmailNarocnik().execute();
+                }
+                else
+                {
+                    Toast.makeText(getView().getContext(),"Obvezno vnesite email za pošiljanje!",Toast.LENGTH_LONG).show();
+                }
+            }
+        });
 
         Button bShowSN = (Button) v.findViewById(R.id.buttonSNPrikazi);
         bShowSN.setOnClickListener(
@@ -268,8 +286,23 @@ public class obrazecSNFragment extends Fragment {
                     public void onClick(View v) {
                         try {
                             //convertToPdf();
-                            createPdf();
-                            openPdf();
+                            String status = sn.getStatus();
+                            if ((status.equals("A") == true) || (status.equals("D") == true) || (status.equals("P") == true))
+                            {
+                                createPdf();
+                                openPdf();
+                            }
+                            else {
+                                String path = getContext().getFilesDir().getPath();
+                                File dir = new File(path);
+                                File file = new File(dir, snID+".pdf");
+                                if(!file.exists())
+                                {
+                                    createPdf();
+                                }
+
+                                openPdf();
+                            }
                             //db.updateSNStatusAkt(snID,"Z");
                         } catch (Exception e) {
                             e.printStackTrace();
@@ -278,6 +311,16 @@ public class obrazecSNFragment extends Fragment {
                 }
         );
 
+        Button bDodajVgrMat = (Button) v.findViewById(R.id.bSNDodajVMat);
+        Button bDodajNovMat = (Button) v.findViewById(R.id.bSNDodajZMat);
+
+        Button bSNShraniSpremembe = (Button) v.findViewById(R.id.bSNShraniSNPo);
+        bSNShraniSpremembe.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Toast.makeText(getContext(), "Funkcija v izdelai!", Toast.LENGTH_SHORT).show();
+            }
+        });
         String statusSN = sn.getStatus();
         if (statusSN == null)
         {
@@ -287,12 +330,19 @@ public class obrazecSNFragment extends Fragment {
             bSign.setEnabled(false);
             bSNShrani.setEnabled(false);
             bPdf.setEnabled(false);
+            bDodajVgrMat.setEnabled(false);
+            bDodajNovMat.setEnabled(false);
+            bSNShraniSpremembe.setEnabled(true);
+
         }
         else
         {
             bSign.setEnabled(true);
             bSNShrani.setEnabled(true);
             bPdf.setEnabled(true);
+            bDodajVgrMat.setEnabled(true);
+            bDodajNovMat.setEnabled(true);
+            bSNShraniSpremembe.setEnabled(false);
         }
 
         return v;
@@ -366,20 +416,26 @@ public class obrazecSNFragment extends Fragment {
         dialog.setCancelable(true);
 
         DatabaseHandler db = new DatabaseHandler(getContext());
-        STSN = SNPagerAdapter.getParameters();
-        ServisniNalog SN = new ServisniNalog();
-        SN = db.vrniSN(STSN);
+        snID = SNPagerAdapter.getParameters();
+
+        sn = db.vrniSN(snID);
+        snDN = sn.getDelovniNalog();
+        String tehnik = sn.getVodjaNaloga();
+        tehnikID = db.getTehnikId(tehnik);
 
         Button bSNShrani = (Button) getView().findViewById(R.id.bSNShrani);
         Button bPdf = (Button) getView().findViewById(R.id.bSNPoslji);
         Button bSign = (Button) getView().findViewById(R.id.bSNPodisStranka);
+        Button bDodajVgrMat = (Button) getView().findViewById(R.id.bSNDodajVMat);
+        Button bDodajNovMat = (Button) getView().findViewById(R.id.bSNDodajZMat);
+        Button bSNShraniSpremembe = (Button) getView().findViewById(R.id.bSNShraniSNPo);
 
         String tehnikID = "";//this.tehnikID;
-        int rgIndex = SN.getTipNarocila();
+        int rgIndex = sn.getTipNarocila();
         RadioGroup rg1 = (RadioGroup) getView().findViewById(R.id.rbSNTipNarocila);
-        if (SN.getTipNarocila() > -1)
+        if (sn.getTipNarocila() > -1)
         {
-            if (SN.getTipNarocila() == 3)
+            if (sn.getTipNarocila() == 3)
             {
                 ((RadioButton)rg1.getChildAt(0)).setChecked(true);
             }
@@ -395,7 +451,7 @@ public class obrazecSNFragment extends Fragment {
             //((RadioButton)rg1.getChildAt(0)).setChecked(false);
         }
         RadioGroup rg2 = (RadioGroup) getView().findViewById(R.id.rgSNVzdrzevanje);
-        int tipVzdrzevanja = SN.getTipVzdzevanja();
+        int tipVzdrzevanja = sn.getTipVzdzevanja();
         if (tipVzdrzevanja > -1)
         {
             if (tipVzdrzevanja == 1) {
@@ -425,52 +481,52 @@ public class obrazecSNFragment extends Fragment {
             ((RadioButton)rg2.getChildAt(3)).setChecked(false);
         }
 
-        tehnikID = db.getTehnikId(SN.getVodjaNaloga());
+        tehnikID = db.getTehnikId(sn.getVodjaNaloga());
         this.tehnikID = tehnikID;
         TextView test = (TextView) getView().findViewById(R.id.idObrazecSN);
-        test.setText(Integer.toString(SN.getid()));
+        test.setText(Integer.toString(sn.getid()));
         test = (TextView) getView().findViewById(R.id.idObrazecSNTehnikID);
         test.setText(tehnikID);
         test = (TextView) getView().findViewById(R.id.tvSNNarocnikNaziv);
-        test.setText(SN.getNarocnikNaziv());
+        test.setText(sn.getNarocnikNaziv());
         test = (TextView) getView().findViewById(R.id.tvStevilkaSN);
-        test.setText(SN.getDelovniNalog());
+        test.setText(sn.getDelovniNalog());
         test = (TextView) getView().findViewById(R.id.tvSNNarocnikNaslov);
-        test.setText(SN.getNarocnikKraj()+", "+SN.getNarocnikNaslov());
+        test.setText(sn.getNarocnikKraj()+", "+sn.getNarocnikNaslov());
 
         test = (TextView) getView().findViewById(R.id.tvSNImeSektorja);
-        test.setText(SN.getNarocnikSektor());
+        test.setText(sn.getNarocnikSektor());
         test = (TextView) getView().findViewById(R.id.tvSNAdSekt);
-        test.setText(SN.getKodaObjekta());
+        test.setText(sn.getKodaObjekta());
         test = (TextView) getView().findViewById(R.id.tvSNImeSekNaslov);
-        test.setText(SN.getSektroNaslov());
+        test.setText(sn.getSektroNaslov());
 
         test = (TextView) getView().findViewById(R.id.tvSNKontaktnaOseba);
-        test.setText(SN.getOdgovornaOseba());
+        test.setText(sn.getOdgovornaOseba());
         test = (TextView) getView().findViewById(R.id.tvSNTelefon);
         test.setText("");
 
         test = (TextView) getView().findViewById(R.id.tvSNNarocil);
-        test.setText(SN.getOdgovornaOseba());
+        test.setText(sn.getOdgovornaOseba());
         test = (TextView) getView().findViewById(R.id.tvSNNarocilTelefon);
         test.setText("");
 
         test = (TextView) getView().findViewById(R.id.tvSNPripadnost);
-        test.setText(SN.getPripadnostNaziv());
+        test.setText(sn.getPripadnostNaziv());
 
         Intent intent= getActivity().getIntent();
         userID = intent.getStringExtra("userID");
         test = (TextView) getView().findViewById(R.id.tvStevilkaSN);
         snDN = test.getText().toString();
         test = (TextView) getView().findViewById(R.id.idObrazecSN);
-        snID = test.getText().toString();
+        snID = Integer.parseInt(test.getText().toString());
         test = (TextView) getView().findViewById(R.id.idObrazecSNTehnikID);
         tehnikID = test.getText().toString();
 
 
         test = (TextView) getView().findViewById(R.id.tvSNDatumMontaze);
-        test.setText(SN.getDatumIzvedbe());
-        String datum = SN.getDatumIzvedbe();
+        test.setText(sn.getDatumIzvedbe());
+        String datum = sn.getDatumIzvedbe();
         if ( (datum == null)
         || (datum.equals("")) )
         {
@@ -482,52 +538,52 @@ public class obrazecSNFragment extends Fragment {
         }
 
         test = (TextView) getView().findViewById(R.id.tvSNGarancija);
-        if (SN.getGarancija() == 0)
+        if (sn.getGarancija() == 0)
         {
             test.setText("");
         }
         else
         {
-            test.setText(Integer.toString(SN.getGarancija()));
+            test.setText(Integer.toString(sn.getGarancija()));
         }
 
         test = (TextView) getView().findViewById(R.id.tvSNNapaka);
-        test.setText(SN.getOpisOkvare());
+        test.setText(sn.getOpisOkvare());
         test = (TextView) getView().findViewById(R.id.etSNUrePrevoz);
-        if (SN.getUrePrevoz() == 0.0)
+        if (sn.getUrePrevoz() == 0.0)
         {
             test.setText("");
         }
         else
         {
-            test.setText(Double.toString(SN.getUrePrevoz()));
+            test.setText(Double.toString(sn.getUrePrevoz()));
         }
         test = (TextView) getView().findViewById(R.id.etSNUreDelo);
-        if (SN.getUreDelo() == 0.0)
+        if (sn.getUreDelo() == 0.0)
         {
             test.setText("");
         }
         else {
-            test.setText(Double.toString(SN.getUreDelo()));
+            test.setText(Double.toString(sn.getUreDelo()));
         }
         test = (TextView) getView().findViewById(R.id.etSNStKm);
-        if (SN.getStKm() == 0.0)
+        if (sn.getStKm() == 0.0)
         {
             test.setText("");
         }
         else {
-            test.setText(Double.toString(SN.getStKm()));
+            test.setText(Double.toString(sn.getStKm()));
         }
         test = (TextView) getView().findViewById(R.id.tvSNNapaka2);
-        test.setText(SN.getOpisPostopka());
+        test.setText(sn.getOpisPostopka());
 
-        artikliVgrajeni = db.GetSeznamArtikliDNSNUporabnik(Integer.parseInt(userID),Integer.parseInt(tehnikID),1,Integer.parseInt(snID));
+        artikliVgrajeni = db.GetSeznamArtikliDNSNUporabnik(Integer.parseInt(userID),Integer.parseInt(tehnikID),1,snID);
         adapterSeznamSNDNArtikli = new SNDNArtikliAdapter(getActivity(), artikliVgrajeni,snID,snDN,userID,tehnikID,1);
         //adapterSeznamSNDNArtikli.notifyDataSetChanged();
         ListView listView = (ListView) getView().findViewById(R.id.snVgrajeniArtikli);
         listView.setAdapter(adapterSeznamSNDNArtikli);
 
-        artikliZamenjani = db.GetSeznamArtikliDNSNUporabnik(Integer.parseInt(userID),Integer.parseInt(tehnikID),2,Integer.parseInt(snID));
+        artikliZamenjani = db.GetSeznamArtikliDNSNUporabnik(Integer.parseInt(userID),Integer.parseInt(tehnikID),2,snID);
         adapterSeznamSNDNArtikli2 = new SNDNArtikliAdapter(getActivity(), artikliZamenjani,snID,snDN,userID,tehnikID,2);
         //adapterSeznamSNDNArtikli2.notifyDataSetChanged();
         ListView listView2 = (ListView) getView().findViewById(R.id.snZamenjaniArtikli);
@@ -537,7 +593,7 @@ public class obrazecSNFragment extends Fragment {
         setDynamicHeight(listView);
         setDynamicHeight(listView2);
 
-        String statusSN = SN.getStatus();
+        String statusSN = sn.getStatus();
         if (statusSN == null)
         {
 
@@ -546,12 +602,18 @@ public class obrazecSNFragment extends Fragment {
             bSign.setEnabled(false);
             bSNShrani.setEnabled(false);
             bPdf.setEnabled(false);
+            bDodajVgrMat.setEnabled(false);
+            bDodajNovMat.setEnabled(false);
+            bSNShraniSpremembe.setEnabled(true);
         }
         else
         {
             bSign.setEnabled(true);
             bSNShrani.setEnabled(true);
             bPdf.setEnabled(true);
+            bDodajVgrMat.setEnabled(true);
+            bDodajNovMat.setEnabled(true);
+            bSNShraniSpremembe.setEnabled(false);
         }
 
         //methodA(); // this is called ...
@@ -578,7 +640,7 @@ public class obrazecSNFragment extends Fragment {
         view = mContent;
         DatabaseHandler db = new DatabaseHandler(getContext());
         ServisniNalog sn =  new ServisniNalog();
-        sn = db.vrniSN(Integer.parseInt(snID));
+        sn = db.vrniSN(snID);
         mSignature.clear();
 
         mClear.setOnClickListener(new View.OnClickListener() {
@@ -599,6 +661,7 @@ public class obrazecSNFragment extends Fragment {
                 mSignature.clear();
                 dialog.dismiss();
                 Toast.makeText(getContext(), "Uspešno podpisano", Toast.LENGTH_SHORT).show();
+
                 // Calling the same class
                 //recreate();
             }
@@ -653,7 +716,7 @@ public class obrazecSNFragment extends Fragment {
 
             DatabaseHandler db = new DatabaseHandler(getContext());
             ServisniNalog sn = new ServisniNalog();
-            sn = db.vrniSN(Integer.parseInt(snID));
+            sn = db.vrniSN(snID);
 
             FileOutputStream fOut = new FileOutputStream(file);
 
@@ -762,21 +825,21 @@ public class obrazecSNFragment extends Fragment {
             table3.setWidth(UnitValue.createPercentValue(100));
             table3.setFixedLayout();
             table3.setFont(font);
-            table3.addCell(new Cell(1,1).add(new Paragraph(sn.getOpisOkvare())));
+            table3.addCell(new Cell(1,1).add(new Paragraph(String.valueOf(sn.getOpisOkvare()))));
             document.add(table3);
 
             Paragraph pSpecifikacijaMateriala = new Paragraph();
             pSpecifikacijaMateriala.setTextAlignment(TextAlignment.LEFT);
             pSpecifikacijaMateriala.setHorizontalAlignment(HorizontalAlignment.LEFT);
             pSpecifikacijaMateriala.setVerticalAlignment(VerticalAlignment.MIDDLE);
-            //pSpecifikacijaMateriala.setFontSize(10);
-            //pSpecifikacijaMateriala.setFont(font);
+            pSpecifikacijaMateriala.setFontSize(10);
+            pSpecifikacijaMateriala.setFont(font);
             pSpecifikacijaMateriala.add("4. specifikacija materiala");
             document.add(pSpecifikacijaMateriala);
 
             ArrayList<SNArtikel> artikliDN;
             //tehnikID = db.getTehnikId(SN.getVodjaNaloga());
-            artikliDN = db.GetSeznamArtikliIzpisDNSNUporabnik(Integer.parseInt(userID),Integer.parseInt(tehnikID),1,Integer.parseInt(snID));
+            artikliDN = db.GetSeznamArtikliIzpisDNSNUporabnik(Integer.parseInt(userID),Integer.parseInt(tehnikID),1,snID);
 
             Table table4 = new Table(UnitValue.createPercentArray(new float[]{1,8,2,2}));
             table4.setWidth(UnitValue.createPercentValue(100));
@@ -791,12 +854,15 @@ public class obrazecSNFragment extends Fragment {
                 SNArtikel snArtikel = (SNArtikel) artikliDN.get(i-1);
                 table4.addCell(new Cell(1,1).add(new Paragraph(Integer.toString(i))));
                 table4.addCell(new Cell(1,1).add(new Paragraph(snArtikel.getnaziv())));
-                table4.addCell(new Cell(1,1).add(new Paragraph("1")));
+                table4.addCell(new Cell(1,1).add(new Paragraph(String.valueOf(snArtikel.getKolicina()))));
                 if (snArtikel.getZamenjanNov() == 1) {
-                    table4.addCell(new Cell(1, 1).add(new Paragraph("Z")));
+                    table4.addCell(new Cell(1, 1).add(new Paragraph("N")));
                 }
                 else if (snArtikel.getZamenjanNov() == 2) {
-                    table4.addCell(new Cell(1, 1).add(new Paragraph("N")));
+                    table4.addCell(new Cell(1, 1).add(new Paragraph("Z")));
+                }
+                else{
+                    table4.addCell(new Cell(1, 1).add(new Paragraph("")));
                 }
             }
             document.add(table4);
@@ -806,6 +872,7 @@ public class obrazecSNFragment extends Fragment {
             pPostopek.setHorizontalAlignment(HorizontalAlignment.LEFT);
             pPostopek.setVerticalAlignment(VerticalAlignment.MIDDLE);
             pPostopek.setFontSize(10);
+            pPostopek.setFont(font);
             pPostopek.add("5. natančen opis postopka odprave napake in njenega vzroka");
             document.add(pPostopek);
 
@@ -829,8 +896,7 @@ public class obrazecSNFragment extends Fragment {
             LocalDateTime now = LocalDateTime.now();
             datum = dtf.format(now);
 
-            byte[] podpisNarocnika = sn.getPodpis();
-            Image podpis = new Image(ImageDataFactory.create(podpisNarocnika));
+
 
             Table table6 = new Table(UnitValue.createPercentArray(new float[]{4,6,2,4}));
             table6.setWidth(UnitValue.createPercentValue(100));
@@ -854,7 +920,16 @@ public class obrazecSNFragment extends Fragment {
             table6.addCell(new Cell(1,1).add(new Paragraph("NAROČNIK")).setVerticalAlignment(VerticalAlignment.MIDDLE));
             table6.addCell(new Cell(1,1).add(new Paragraph(sn.getOdgovornaOseba())).setVerticalAlignment(VerticalAlignment.MIDDLE));
             table6.addCell(new Cell(1,1).add(new Paragraph(sn.getDatumPodpisa().toString())).setVerticalAlignment(VerticalAlignment.MIDDLE));
-            table6.addCell(new Cell(1,1).add(podpis.setAutoScale(true)).setVerticalAlignment(VerticalAlignment.MIDDLE));
+            byte[] podpisNarocnika = sn.getPodpis();
+            if (podpisNarocnika != null) {
+                Image podpis = new Image(ImageDataFactory.create(podpisNarocnika));
+                table6.addCell(new Cell(1,1).add(podpis.setAutoScale(true)).setVerticalAlignment(VerticalAlignment.MIDDLE));
+            }
+            else
+            {
+                table6.addCell(new Cell(1,1).add(new Paragraph("")));
+            }
+
 
             document.add(table6);
 
@@ -933,6 +1008,245 @@ public class obrazecSNFragment extends Fragment {
 
     }
 
+    private class SendEmailNarocnik extends AsyncTask {
+        String result = null;
+        @Override
+        protected Object doInBackground(Object... arg0) {
+                result = "";
+                SendEmailService sm = new SendEmailService(getContext());
+                String fn = getContext().getFilesDir()+"/"+snID+".pdf";
+                File pdfFile = new File(fn);
+                /*
+                if (pdfFile.exists() == false)
+                {
+                    try {
+                        String status = sn.getStatus();
+                        if ((status.equals("A") == true) || (status.equals("D") == true) || (status.equals("P") == true)) {
+                            createPdf();
+                        }
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                    }
+                }*/
+                TextView emailTw = (TextView) getActivity().findViewById(R.id.etSNEmail);
+                String email =  emailTw.getText().toString();
+                result = sm.SendEmail(fn,email);
+
+                if (result.equals("") == true)
+                {
+                    String datum = "";
+                    DateTimeFormatter dtf = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
+                    LocalDateTime now = LocalDateTime.now();
+                    datum = dtf.format(now);
+                    DatabaseHandler db = new DatabaseHandler(getContext());
+                    ServisniNalog sn = db.vrniSN(snID);
+                    String st = sn.getStatus();
+                    if(st.equals("Z") == true)
+                    {
+
+                    }
+                    else
+                    {
+                        db.updateSNPoslano(String.valueOf(snID), "P", datum);
+                    }
+                    db.insertEmailLog(userID,snID,snDN,email,datum);
+                }
+
+                return result;
+        }
+
+        @Override
+        protected void onPostExecute(Object o) {
+            super.onPostExecute(o);
+            if (result.equals("") == true)
+            {
+                Toast.makeText(getActivity(), "Podatki uspešno poslani!", Toast.LENGTH_LONG).show();
+
+            }
+            else{
+                Toast.makeText(getActivity(), "Napaka pri pošiljanju podatkov!", Toast.LENGTH_LONG).show();
+            }
+
+        }
+    }
+
+    private class UpdatePodpisanoOnWeb extends AsyncTask<ArrayList,Void,Void> {
+        private byte[] data;
+        public UpdatePodpisanoOnWeb(byte[] data) {
+            this.data = data;
+        }
+        @Override
+        protected Void doInBackground(ArrayList... arrayLists) {
+            //String datum = "";
+            //DateTimeFormatter dtf = DateTimeFormatter.ofPattern("yyyy-MM-dd");
+            //LocalDateTime now = LocalDateTime.now();
+            //datum = dtf.format(now);
+            byte[] podpis = data;
+            String StoredPath = "";
+            StoredPath = getContext().getFilesDir()+"/"+snID+".bmp";
+            try {
+                FileOutputStream fos = new FileOutputStream(StoredPath);
+                fos.write(podpis);
+                fos.close();
+                uploadFile(StoredPath);
+            }
+            catch (Exception e){
+
+            }
+            updatePodpisanoMySql(arrayLists[0].get(0).toString(), arrayLists[0].get(1).toString(),  arrayLists[0].get(2).toString(), podpis) ;
+            //Toast.makeText(getContext(), "No Application available to view pdf", Toast.LENGTH_LONG).show();
+            return null;
+        }
+    }
+
+
+    public int uploadFile(String sourceFileUri) {
+
+
+        String fileName = sourceFileUri;
+
+        HttpURLConnection htpconn = null;
+        DataOutputStream dos = null;
+        String lineEnd = "\r\n";
+        String twoHyphens = "--";
+        String boundary = "*****";
+        int bytesRead, bytesAvailable, bufferSize;
+        byte[] buffer;
+        int maxBufferSize = 1 * 1024 * 1024;
+        File sourceFile = new File(sourceFileUri);
+
+        if (!sourceFile.isFile()) {
+
+
+            return 0;
+
+        } else {
+            try {
+
+                // open a URL connection to the Servlet
+                FileInputStream fileInputStream = new FileInputStream(sourceFile);
+                URL url = new URL("https://www.sintal.si/tehnika/uploadFile.php");
+                String username ="sintal_teh";
+                String password = "mCuSTArQ*PdWAH#7-uploadImage";
+                String userpass = username + ":" + password;
+                String basicAuth = "Basic " + new String(Base64.getEncoder().encode(userpass.getBytes()));
+
+                htpconn = (HttpURLConnection) url.openConnection();
+                htpconn.setDoInput(true); // Allow Inputs
+                htpconn.setDoOutput(true); // Allow Outputs
+                htpconn.setUseCaches(false); // Don't use a Cached Copy
+                htpconn.setRequestMethod("POST");
+                htpconn.setRequestProperty("Connection", "Keep-Alive");
+                htpconn.setRequestProperty("ENCTYPE", "multipart/form-data");
+                //Content-Disposition: form-data; name=\"uploadedfile\"; filename=\"
+                htpconn.setRequestProperty("Content-Type", "multipart/form-data;boundary=" + boundary);
+                htpconn.setRequestProperty("uploadedfile", fileName);
+                htpconn.setRequestProperty ("Authorization", basicAuth);
+                dos = new DataOutputStream(htpconn.getOutputStream());
+
+                dos.writeBytes(twoHyphens + boundary + lineEnd);
+                dos.writeBytes("Content-Disposition: form-data; name=\"uploadedfile\";filename=\"" + fileName + "\"" + lineEnd);
+
+                dos.writeBytes(lineEnd);
+
+                // create a buffer of  maximum size
+                bytesAvailable = fileInputStream.available();
+
+                bufferSize = Math.min(bytesAvailable, maxBufferSize);
+                buffer = new byte[bufferSize];
+
+                // read file and write it into form...
+                bytesRead = fileInputStream.read(buffer, 0, bufferSize);
+
+                while (bytesRead > 0) {
+
+                    dos.write(buffer, 0, bufferSize);
+                    bytesAvailable = fileInputStream.available();
+                    bufferSize = Math.min(bytesAvailable, maxBufferSize);
+                    bytesRead = fileInputStream.read(buffer, 0, bufferSize);
+
+                }
+
+                // send multipart form data necesssary after file data...
+                dos.writeBytes(lineEnd);
+                dos.writeBytes(twoHyphens + boundary + twoHyphens + lineEnd);
+
+                // Responses from the server (code and message)
+                serverResponseCode = htpconn.getResponseCode();
+                String serverResponseMessage = htpconn.getResponseMessage();
+
+                Log.i("uploadFile", "HTTP Response is : "
+                        + serverResponseMessage + ": " + serverResponseCode);
+
+                if (serverResponseCode == 200) {
+
+                }
+
+                fileInputStream.close();
+                dos.flush();
+                dos.close();
+
+            } catch(MalformedURLException ex){
+                ex.printStackTrace();
+                Log.e("Upload file to server", "error: " + ex.getMessage(), ex);
+            } catch(Exception e){
+
+                //dialog.dismiss();
+                e.printStackTrace();
+/*
+                    runOnUiThread(new Runnable() {
+                        public void run() {
+                            messageText.setText("Got Exception : see logcat ");
+                            Toast.makeText(getActivity(), "Got Exception : see logcat ",
+                                    Toast.LENGTH_SHORT).show();
+                        }
+                    });
+                    */
+                Log.e("Upload file to server Exception", "Exception : "
+                        + e.getMessage(), e);
+            }
+            //dialog.dismiss();
+            htpconn.disconnect();
+            return serverResponseCode;
+
+        } // End else block
+    }
+
+    public void updatePodpisanoMySql(String id, String status_akt, String datum_podpisa, byte[] podpis)
+    {
+        String result = null;
+        try {
+            //uploadFile(StoredPath);
+            String myUrl = "https://www.sintal.si/tehnika/updateSNPodpisDatumPodpisa.php?SNid="+id+"&status_akt="+status_akt+"&datum_podpisa="+datum_podpisa;
+            URL url = new URL(myUrl);
+            HttpURLConnection htconn = (HttpURLConnection) url.openConnection();
+            String username ="sintal_teh";
+            String password = "mCuSTArQ*PdWAH#7-updatePodpis";
+            String userpass = username + ":" + password;
+            String basicAuth = "Basic " + new String(Base64.getEncoder().encode(userpass.getBytes()));
+            htconn.setRequestProperty ("Authorization", basicAuth);
+            htconn.connect();
+
+            if (htconn.getResponseCode() == HttpURLConnection.HTTP_OK) {
+                InputStreamReader inputStreamReader = new InputStreamReader(htconn.getInputStream());
+                BufferedReader reader = new BufferedReader(inputStreamReader);
+                StringBuilder stringBuilder = new StringBuilder();
+                String temp;
+
+                while ((temp = reader.readLine()) != null) {
+                    stringBuilder.append(temp);
+                }
+                result = stringBuilder.toString();
+            }else  {
+                result = "error";
+            }
+            htconn.disconnect();
+
+        } catch (Exception  e) {
+            e.printStackTrace();
+        }
+
+    }
 
 
     public class signature extends View {
@@ -963,17 +1277,24 @@ public class obrazecSNFragment extends Fragment {
             Canvas canvas = new Canvas(bitmap);
             try {
                 DatabaseHandler db = new DatabaseHandler(getContext());
-                // Output the file
                 //FileOutputStream mFileOutStream = new FileOutputStream(StoredPath);
                 v.draw(canvas);
                 String datum = "";
-                DateTimeFormatter dtf = DateTimeFormatter.ofPattern("dd.MM.yyyy");
+                DateTimeFormatter dtf = DateTimeFormatter.ofPattern("yyyy-MM-dd");
                 LocalDateTime now = LocalDateTime.now();
                 datum = dtf.format(now);
                 ByteArrayOutputStream bos = new ByteArrayOutputStream();
                 bitmap.compress(Bitmap.CompressFormat.PNG, 100, bos);
                 byte[] bArray = bos.toByteArray();
-                db.updatePodpis(snID,bArray,datum);
+                db.updatePodpis(String.valueOf(snID),bArray,datum);
+                //new obrazecSNFragment().updatePodpisanoMySql(snID,"P",datum,bArray);//.execute();
+                ArrayList<String> parameters = new ArrayList<String>();
+                parameters.add(String.valueOf(snID));
+                parameters.add("P");
+                parameters.add(datum);
+                //parameters.add(bArray);
+
+                new UpdatePodpisanoOnWeb(bArray).execute(parameters);
                 path.reset();
                 clear();
             } catch (Exception e) {
@@ -1061,5 +1382,9 @@ public class obrazecSNFragment extends Fragment {
         }
 
     }
+
+
+
+
 
 }

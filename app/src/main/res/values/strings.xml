@@ -10,5 +10,9 @@
         <item>PODPISANI</item>
         <item>ZAKLJUČENI</item>
     </string-array>
+    <string-array name="status_sn_zakljuceni">
+        <item>ZAKLJUČENI</item>
+        <item>PRENEŠENI</item>
+    </string-array>
 
 </resources>

@@ -11,9 +11,12 @@
         <option name="modules">
           <set>
             <option value="$PROJECT_DIR$" />
+            <option value="$PROJECT_DIR$/activation" />
+            <option value="$PROJECT_DIR$/additionnal" />
             <option value="$PROJECT_DIR$/app" />
+            <option value="$PROJECT_DIR$/gson-2.10.1" />
             <option value="$PROJECT_DIR$/jboss-common-jdbc-wrapper" />
-            <option value="$PROJECT_DIR$/mysql-connector-java-8.0.29" />
+            <option value="$PROJECT_DIR$/mail" />
           </set>
         </option>
         <option name="resolveModulePerSourceSet" value="false" />

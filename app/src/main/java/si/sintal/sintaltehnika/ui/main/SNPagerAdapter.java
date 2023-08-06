@@ -1,16 +1,14 @@
 package si.sintal.sintaltehnika.ui.main;
 
-import android.widget.Adapter;
-
 import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
-import androidx.fragment.app.FragmentActivity;
 import androidx.fragment.app.FragmentManager;
 import androidx.lifecycle.Lifecycle;
 import androidx.viewpager2.adapter.FragmentStateAdapter;
 
 import si.sintal.sintaltehnika.ui.main.SN.obrazecSNFragment;
 import si.sintal.sintaltehnika.ui.main.SN.seznamSNFragment;
+import si.sintal.sintaltehnika.ui.main.SN.SNZakljuceniSNFragment;
 
 public class SNPagerAdapter  extends FragmentStateAdapter {
 
@@ -63,7 +61,7 @@ public class SNPagerAdapter  extends FragmentStateAdapter {
 
     @Override
     public int getItemCount() {
-        return 2;
+        return 3;
     }
 
     @NonNull
@@ -87,6 +85,8 @@ public class SNPagerAdapter  extends FragmentStateAdapter {
             case 3:
                 return FragmentZapisnik.newInstance(3);
              */
+            case 2:
+                return new SNZakljuceniSNFragment();
             default:
                 return null;
         }

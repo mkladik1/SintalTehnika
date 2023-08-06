@@ -6,9 +6,13 @@ buildscript {
     }
     dependencies {
         classpath "com.android.tools.build:gradle:4.1.2";
+
+        //implementation 'com.google.code.gson:gson:jar:2.10.1';
         //implementation 'com.itextpdf.android:itext7-core-android:7.2.3'
         //implementation fileTree(dir: 'libs', include: ['*.jar'])
-
+        //implementation files('libs/activation.jar');
+        //implementation files('libs/additionnal.jar');
+        //implementation files('libs/mail.jar');
 
         // NOTE: Do not place your application dependencies here; they belong
         // in the individual module build.gradle files

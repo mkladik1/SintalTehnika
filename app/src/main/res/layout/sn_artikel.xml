@@ -32,14 +32,21 @@
                 android:text="Drobni potrošni material" />
 
 
+            <EditText
+                android:id="@+id/tvSNArtikelKolicina2"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:width="70dp"
+                android:ems="10"
+                android:inputType="numberDecimal" />
+
             <TextView
                 android:id="@+id/tvSNArtikelEnota"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_gravity="center_vertical"
                 android:gravity="right"
-                android:paddingRight="10dp"
-                android:text="KOS" />
+                android:paddingRight="10dp" />
 
             <Button
                 android:id="@+id/bSNArtikelDodaj"

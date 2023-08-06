@@ -9,7 +9,6 @@ import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.CheckBox;
-import android.widget.CompoundButton;
 import android.widget.Filter;
 import android.widget.Filterable;
 import android.widget.TextView;
@@ -22,12 +21,9 @@ import java.util.ArrayList;
 
 import si.sintal.sintaltehnika.DatabaseHandler;
 import si.sintal.sintaltehnika.DialogPodatkiOSNActivity;
-import si.sintal.sintaltehnika.MainActivity;
 import si.sintal.sintaltehnika.R;
-import si.sintal.sintaltehnika.ServisActivity;
 import si.sintal.sintaltehnika.ui.main.DialogPodatkiOSNFragment;
 import si.sintal.sintaltehnika.ui.main.SNPagerAdapter;
-import si.sintal.sintaltehnika.ui.main.ServisFragment;
 import si.sintal.sintaltehnika.ui.main.ServisniNalog;
 
 public class SeznamUpoSNAdapter extends ArrayAdapter<ServisniNalog> implements Filterable {
@@ -38,14 +34,18 @@ public class SeznamUpoSNAdapter extends ArrayAdapter<ServisniNalog> implements F
     private ArrayList<ServisniNalog> seznamSNjev;
     ItemFilter mFilter;
     public int id;
+    private  int tehnikID;
+    private int userID;
 
-    public SeznamUpoSNAdapter(Context context, ArrayList<ServisniNalog> seznamSNjev) {
+    public SeznamUpoSNAdapter(Context context, ArrayList<ServisniNalog> seznamSNjev, int tehID, int upoId) {
         super(context, 0, seznamSNjev);
         this.context = context;
         this.seznamSNjev = new ArrayList<ServisniNalog>();
         this.seznamSNjev.addAll(seznamSNjev);
         this.originalData = new ArrayList<ServisniNalog>();
         this.originalData.addAll(seznamSNjev);
+        this.tehnikID = tehID;
+        this.userID = upoId;
 
     }
 
@@ -139,16 +139,21 @@ public class SeznamUpoSNAdapter extends ArrayAdapter<ServisniNalog> implements F
                                                String vodjaSNja = n.getVodjaNaloga();
                                                String odgOsebaSNja = n.getOdgovornaOseba();
                                                String narocnikSNja = n.getNarocnikNaziv() + ", " + n.getNarocnikNaslov();
-
+                                               //String tehId = tehnikID;
+                                               //String usId = userID;
+                                               int id = n.getid();
                                                DialogPodatkiOSNFragment myFrag = new DialogPodatkiOSNFragment();
                                                myFrag.setArguments(bundle);
                                                Intent intent = new Intent(getContext(), DialogPodatkiOSNActivity.class);
                                                intent.putExtra("stSNja", stSNja);
+                                               intent.putExtra("idSNja", id );
                                                intent.putExtra("datumSNja", datumSNja);
                                                intent.putExtra("opisSNja", opisSNja);
                                                intent.putExtra("vodjaSNja", vodjaSNja);
                                                intent.putExtra("odgOsebaSNja", odgOsebaSNja);
                                                intent.putExtra("narocnikSNja", narocnikSNja);
+                                               intent.putExtra("tehnikID", tehnikID);
+                                               intent.putExtra("userID", userID);
                                                getContext().startActivity(intent);
                                            }
                                        });

@@ -24,9 +24,9 @@ import si.sintal.sintaltehnika.DatabaseHandler;
 import si.sintal.sintaltehnika.R;
 import si.sintal.sintaltehnika.ui.main.ServisniNalog;
 
-public class seznamSNFragment extends Fragment {
+public class SNZakljuceniSNFragment extends Fragment {
 
-    private SeznamSNViewModel mViewModel;
+    private SNZakljuceniSNViewModel mViewModel;
     private String userID;
     private String tehnikID;
     private String tehnikNaziv;
@@ -39,21 +39,21 @@ public class seznamSNFragment extends Fragment {
     private String SNDn;
     static DatabaseHandler db;
     static ArrayList<ServisniNalog> dodeliSNje;
-    private SeznamUpoSNAdapter adapterSeznamUpoSNjev;
+    private SNSeznamZakljucenihSNAdapter adapterSeznamUpoSNjev;
     private ListView listView;
     private Spinner status_sn;
     private Spinner izbraniServiser;
     private Spinner izbraniStatus;
 
-    public static seznamSNFragment newInstance() {
-        return new seznamSNFragment();
+    public static SNZakljuceniSNFragment newInstance() {
+        return new SNZakljuceniSNFragment();
     }
 
+    @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container,
                              @Nullable Bundle savedInstanceState) {
-        View v = inflater.inflate(R.layout.seznam_s_n_fragment, container, false);
-
+        View v = inflater.inflate(R.layout.sn_zakljuceni_sn_fragment, container, false);
         Intent intent= getActivity().getIntent();
         userID = intent.getStringExtra("userID");
         tehnikID = intent.getStringExtra("tehnikID");
@@ -63,14 +63,7 @@ public class seznamSNFragment extends Fragment {
         servis = intent.getStringExtra("servis");
         montaza = intent.getStringExtra("montaza");
         vzdrzevanje = intent.getStringExtra("vzdrzevanje");
-        if (tehnikID == null)
-        {
-            tehnikID = "0";
-        }
-        if(userID == null)
-        {
-            userID = "0";
-        }
+
         db = new DatabaseHandler(getContext());
 
         SimpleDateFormat sdf = new SimpleDateFormat("dd.MM.yyyy");
@@ -86,9 +79,9 @@ public class seznamSNFragment extends Fragment {
 
 
         //dodeliSNje = db.GetSeznamSNUporabnik(etSN.getText().toString(), izbraniServiser.getSelectedItem().toString());
-        dodeliSNje = db.GetSeznamSNUporabnik(izbraniServiser.getSelectedItem().toString(),"D");
-        adapterSeznamUpoSNjev = new SeznamUpoSNAdapter(getActivity(), dodeliSNje, Integer.parseInt(tehnikID), Integer.parseInt(userID));
-        listView = (ListView) v.findViewById(R.id.seznamSNUpoLV);
+        dodeliSNje = db.GetSeznamSNUporabnik(izbraniServiser.getSelectedItem().toString(),"X");
+        adapterSeznamUpoSNjev = new SNSeznamZakljucenihSNAdapter(getActivity(), dodeliSNje, userID, tehnikID);
+        listView = (ListView) v.findViewById(R.id.seznamSNZakljuceni);
         listView.setAdapter(adapterSeznamUpoSNjev);
 
         izbraniServiser.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener()  {
@@ -96,13 +89,18 @@ public class seznamSNFragment extends Fragment {
             public void onItemSelected(AdapterView<?> parent, View view, int position, long id)
             {
                 String status = izbraniStatus.getSelectedItem().toString();
-                status = status.substring(0,1);
+                //status = status.substring(0,1);
+                if (status.equals("ZAKLJUČENI")){
+                status = "Z";
+                }
+                else {
+                status = "X";
+                }
                 dodeliSNje = db.GetSeznamSNUporabnik(izbraniServiser.getSelectedItem().toString(),status);
                 tehnikID = db.getTehnikId(izbraniServiser.getSelectedItem().toString());
-                adapterSeznamUpoSNjev = new SeznamUpoSNAdapter(getActivity(), dodeliSNje, Integer.parseInt(tehnikID), Integer.parseInt(userID));
-                listView = (ListView) v.findViewById(R.id.seznamSNUpoLV);
+                adapterSeznamUpoSNjev = new SNSeznamZakljucenihSNAdapter(getActivity(), dodeliSNje,userID,tehnikID);
+                listView = (ListView) v.findViewById(R.id.seznamSNZakljuceni);
                 listView.setAdapter(adapterSeznamUpoSNjev);
-
                 //Toast.makeText(getActivity(), "Something changed", LENGTH_SHORT).show();
             } // to close the onItemSelected
             public void onNothingSelected(AdapterView<?> parent)
@@ -116,11 +114,20 @@ public class seznamSNFragment extends Fragment {
             public void onItemSelected(AdapterView<?> parent, View view, int position, long id)
             {
                 String status = izbraniStatus.getSelectedItem().toString();
-                status = status.substring(0,1);
+
+                if (status.equals("ZAKLJUČENI")){
+                    status = "Z";
+                }
+                else {
+                    status = "X";
+                }
+
+                //status = status.substring(0,1);
+
                 dodeliSNje = db.GetSeznamSNUporabnik(izbraniServiser.getSelectedItem().toString(),status);
                 tehnikID = db.getTehnikId(izbraniServiser.getSelectedItem().toString());
-                adapterSeznamUpoSNjev = new SeznamUpoSNAdapter(getActivity(), dodeliSNje, Integer.parseInt(tehnikID), Integer.parseInt(userID));
-                listView = (ListView) v.findViewById(R.id.seznamSNUpoLV);
+                adapterSeznamUpoSNjev = new SNSeznamZakljucenihSNAdapter(getActivity(), dodeliSNje,userID,tehnikID);
+                listView = (ListView) v.findViewById(R.id.seznamSNZakljuceni);
                 listView.setAdapter(adapterSeznamUpoSNjev);
                 //Toast.makeText(getActivity(), "Something changed", LENGTH_SHORT).show();
             } // to close the onItemSelected
@@ -129,10 +136,7 @@ public class seznamSNFragment extends Fragment {
 
             }
         });
-        tehnikID = db.getTehnikId(izbraniServiser.getSelectedItem().toString());
 
-        //listView.setChoiceMode(ListView.CHOICE_MODE_MULTIPLE);
-        //adapterSeznamUpoSNjev.notifyDataSetChanged();
 
         return v;
     }
@@ -140,12 +144,13 @@ public class seznamSNFragment extends Fragment {
     @Override
     public void onActivityCreated(@Nullable Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
-        mViewModel = new ViewModelProvider(this).get(SeznamSNViewModel.class);
+        mViewModel = new ViewModelProvider(this).get(SNZakljuceniSNViewModel.class);
         // TODO: Use the ViewModel
     }
 
+
     @Override
-    public void onResume(){
+    public void onResume() {
         super.onResume();
         db = new DatabaseHandler(getContext());
 
@@ -162,9 +167,9 @@ public class seznamSNFragment extends Fragment {
 
 
         //dodeliSNje = db.GetSeznamSNUporabnik(etSN.getText().toString(), izbraniServiser.getSelectedItem().toString());
-        dodeliSNje = db.GetSeznamSNUporabnik(izbraniServiser.getSelectedItem().toString(),"D");
-        adapterSeznamUpoSNjev = new SeznamUpoSNAdapter(getActivity(), dodeliSNje, Integer.parseInt(tehnikID), Integer.parseInt(userID));
-        listView = (ListView) getView().findViewById(R.id.seznamSNUpoLV);
+        dodeliSNje = db.GetSeznamSNUporabnik(izbraniServiser.getSelectedItem().toString(),"X");
+        adapterSeznamUpoSNjev = new SNSeznamZakljucenihSNAdapter(getActivity(), dodeliSNje, userID, tehnikID);
+        listView = (ListView) getView().findViewById(R.id.seznamSNZakljuceni);
         listView.setAdapter(adapterSeznamUpoSNjev);
 
         izbraniServiser.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener()  {
@@ -172,11 +177,17 @@ public class seznamSNFragment extends Fragment {
             public void onItemSelected(AdapterView<?> parent, View view, int position, long id)
             {
                 String status = izbraniStatus.getSelectedItem().toString();
-                status = status.substring(0,1);
+                //status = status.substring(0,1);
+                if (status.equals("ZAKLJUČENI")){
+                    status = "Z";
+                }
+                else {
+                    status = "X";
+                }
                 dodeliSNje = db.GetSeznamSNUporabnik(izbraniServiser.getSelectedItem().toString(),status);
                 tehnikID = db.getTehnikId(izbraniServiser.getSelectedItem().toString());
-                adapterSeznamUpoSNjev = new SeznamUpoSNAdapter(getActivity(), dodeliSNje, Integer.parseInt(tehnikID), Integer.parseInt(userID));
-                listView = (ListView) getView().findViewById(R.id.seznamSNUpoLV);
+                adapterSeznamUpoSNjev = new SNSeznamZakljucenihSNAdapter(getActivity(), dodeliSNje, userID, tehnikID);
+                listView = (ListView) getView().findViewById(R.id.seznamSNZakljuceni);
                 listView.setAdapter(adapterSeznamUpoSNjev);
                 //Toast.makeText(getActivity(), "Something changed", LENGTH_SHORT).show();
             } // to close the onItemSelected
@@ -191,11 +202,18 @@ public class seznamSNFragment extends Fragment {
             public void onItemSelected(AdapterView<?> parent, View view, int position, long id)
             {
                 String status = izbraniStatus.getSelectedItem().toString();
-                status = status.substring(0,1);
+                //status = status.substring(0,1);
+                if (status.equals("ZAKLJUČENI")){
+                    status = "Z";
+                }
+                else {
+                    status = "X";
+                }
+
                 dodeliSNje = db.GetSeznamSNUporabnik(izbraniServiser.getSelectedItem().toString(),status);
                 tehnikID = db.getTehnikId(izbraniServiser.getSelectedItem().toString());
-                adapterSeznamUpoSNjev = new SeznamUpoSNAdapter(getActivity(), dodeliSNje, Integer.parseInt(tehnikID), Integer.parseInt(userID));
-                listView = (ListView) getView().findViewById(R.id.seznamSNUpoLV);
+                adapterSeznamUpoSNjev = new SNSeznamZakljucenihSNAdapter(getActivity(), dodeliSNje,userID, tehnikID);
+                listView = (ListView) getView().findViewById(R.id.seznamSNZakljuceni);
                 listView.setAdapter(adapterSeznamUpoSNjev);
                 //Toast.makeText(getActivity(), "Something changed", LENGTH_SHORT).show();
             } // to close the onItemSelected
@@ -204,6 +222,8 @@ public class seznamSNFragment extends Fragment {
 
             }
         });
+
+
     }
 
 }

@@ -8,6 +8,33 @@ public class SNArtikel {
     String kratkaOznaka;
     int snArtikelId;
     int zamenjanNov;
+    float kolicina;
+    String regal;
+    int sn_id;
+    int sn_artikel_id;
+    String delovniNalog;
+    String upoId;
+    String tehnikId;
+
+    public void  setTehnikId(String newUpiId){ this.tehnikId = newUpiId;}
+
+    public String getTehnikId() { return tehnikId;}
+
+    public void  setUpoId(String newUpiId){ this.upoId = newUpiId;}
+
+    public String getUpoId() { return upoId;}
+
+    public String getDelovniNalog() {return delovniNalog;}
+
+    public void setDelovniNalog(String newDelovniNalog){ this.delovniNalog = newDelovniNalog;}
+
+    public int getSn_id() {return sn_id;}
+
+    public void setSn_id(int newSndId) {this.sn_id = newSndId;}
+
+    public int getSnArtikelId(){ return sn_artikel_id;}
+
+    public void setSn_artikel_id( int newSnArtikelId) {this.sn_artikel_id = newSnArtikelId;}
 
     public String getid() {
         return id;
@@ -57,4 +84,15 @@ public class SNArtikel {
         return zamenjanNov;
     }
     public void setZamenjanNov(int newZamenjanNov){this.zamenjanNov = newZamenjanNov;}
+
+    public float getKolicina() {
+        return kolicina;
+    }
+
+    public void setKolicina(float newKolicina){this.kolicina = newKolicina;}
+
+    public String getRegal(){ return regal;}
+
+    public void setRegal(String newRegal){this.regal = newRegal;}
+
 }

@@ -119,16 +119,16 @@ public class MainFragment extends Fragment {
             String result = null;
             try {
                 URL url = new URL("https://www.sintal.si/tehnika/getUsers.php");
-                HttpURLConnection conn = (HttpURLConnection) url.openConnection();
+                HttpURLConnection connU = (HttpURLConnection) url.openConnection();
                 String username ="sintal_teh";
                 String password = "mCuSTArQ*PdWAH#7-getUsers";
                 String userpass = username + ":" + password;
                 String basicAuth = "Basic " + new String(Base64.getEncoder().encode(userpass.getBytes()));
-                conn.setRequestProperty ("Authorization", basicAuth);
-                conn.connect();
+                connU.setRequestProperty ("Authorization", basicAuth);
+                connU.connect();
 
-                if (conn.getResponseCode() == HttpURLConnection.HTTP_OK) {
-                    InputStreamReader inputStreamReader = new InputStreamReader(conn.getInputStream());
+                if (connU.getResponseCode() == HttpURLConnection.HTTP_OK) {
+                    InputStreamReader inputStreamReader = new InputStreamReader(connU.getInputStream());
                     BufferedReader reader = new BufferedReader(inputStreamReader);
                     StringBuilder stringBuilder = new StringBuilder();
                     String temp;
@@ -140,6 +140,7 @@ public class MainFragment extends Fragment {
                 }else  {
                     result = "error";
                 }
+                connU.disconnect();
 
             } catch (Exception  e) {
                 e.printStackTrace();

@@ -1,4 +1,7 @@
+include ':gson-2.10.1'
+include ':mail'
+include ':additionnal'
+include ':activation'
 include ':jboss-common-jdbc-wrapper'
-include ':mysql-connector-java-8.0.29'
 include ':app'
 rootProject.name = "SintalTehnika"
