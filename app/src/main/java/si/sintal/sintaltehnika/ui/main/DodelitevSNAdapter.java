@@ -112,7 +112,7 @@ public class DodelitevSNAdapter extends ArrayAdapter<ServisniNalog> implements F
         }
 
         holder.idSNja.setText(n.getPripadnost() +" - " +n.getPripadnostNaziv() +", "+    Integer.toString(n.getid()));
-        holder.nazivNarocnikSNja.setText(n.getNarocnikNaziv().toString()+", "+n.getNarocnikNaslov().toString());
+        holder.nazivNarocnikSNja.setText(n.getKodaObjekta().toString()+ " - " +n.getNarocnikNaziv().toString()+", "+n.getNarocnikNaslov().toString());
         holder.opisNapakeSNja.setText(n.getOpis().toString());
         holder.datumDodelitveDNSNja.setText("dodeljeno: " + n.getDatumDodelitve());
         holder.cbOznacen.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
@@ -156,7 +156,7 @@ public class DodelitevSNAdapter extends ArrayAdapter<ServisniNalog> implements F
             @Override
             public void onClick(View v) {
                     DatabaseHandler db = new DatabaseHandler(getContext());
-                    db.updateSNStatusAkt(Integer.toString(n.getid()),"D");
+                    db.updateSNStatusAkt(Integer.toString(n.getid()),"S");
                     notifyDataSetChanged();
             }});
 

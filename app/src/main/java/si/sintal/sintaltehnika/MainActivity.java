@@ -1,13 +1,11 @@
 package si.sintal.sintaltehnika;
 
-import androidx.appcompat.app.AppCompatActivity;
-
 import android.Manifest;
 import android.os.Bundle;
 
-import si.sintal.sintaltehnika.ui.main.MainFragment;
+import androidx.appcompat.app.AppCompatActivity;
 
-import static java.security.AccessController.getContext;
+import si.sintal.sintaltehnika.ui.main.MainFragment;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -23,5 +21,8 @@ public class MainActivity extends AppCompatActivity {
                     .replace(R.id.container, MainFragment.newInstance())
                     .commitNow();
         }
+
+
+
     }
 }

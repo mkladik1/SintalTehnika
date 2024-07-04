@@ -13,4 +13,9 @@
         <item name="android:statusBarColor" tools:targetApi="l">?attr/colorPrimaryVariant</item>
         <!-- Customize your theme here. -->
     </style>
+    <style name="CustomCheckboxSintal" parent="@style/Widget.AppCompat.CompoundButton.CheckBox">
+        <item name="android:colorControlNormal">#3db5ea</item>
+        <item name="android:colorControlActivated">#3db5ea</item>
+        <item name="android:colorControlHighlight">#3db5ea</item>
+    </style>
 </resources>

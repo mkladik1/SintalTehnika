@@ -34,7 +34,7 @@
             android:text="Status DN" />
 
         <Spinner
-            android:id="@+id/spinner_status_DN_SN"
+            android:id="@+id/spinner_LM_DN_SN"
             android:layout_width="wrap_content"
             android:layout_height="match_parent"
             android:layout_weight="1"

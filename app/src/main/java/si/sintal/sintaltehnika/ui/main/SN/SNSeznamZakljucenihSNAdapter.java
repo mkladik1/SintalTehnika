@@ -205,7 +205,7 @@ public class SNSeznamZakljucenihSNAdapter extends ArrayAdapter<ServisniNalog> im
                     try {
                         DatabaseHandler db = new DatabaseHandler(getContext());
                         ArrayList<SNArtikel> seznamSNArtikli;
-                        mySNid = n.getGarancija();
+                        mySNid = n.getid();
                         pos = position;
                         seznamSNArtikli = db.GetSeznamArtikliIzpisDNSNUporabnik(Integer.parseInt(userID),Integer.parseInt(tehnikID),1,n.getid());
                         String datum = "";
@@ -281,6 +281,7 @@ public class SNSeznamZakljucenihSNAdapter extends ArrayAdapter<ServisniNalog> im
                         // TODO Auto-generated catch block
                         e.printStackTrace();
                     }
+                    notifyDataSetChanged();
                 }
                 else {
                     Toast.makeText(getContext(), "Ta SN je že prenešen, prenos ni več mogoč!", Toast.LENGTH_LONG).show();
@@ -330,7 +331,8 @@ public class SNSeznamZakljucenihSNAdapter extends ArrayAdapter<ServisniNalog> im
                 uploadFile(StoredPath);
                 //String rezultat = "";
                 String rezultat = refreshSNMysql(userID);
-                if (rezultat.equals("\tUpdate succesful") == true)
+                if ( (rezultat.equals("\tUpdate succesful") == true)
+                || (rezultat.equals("\tAlready transfered") == true) )
                 {
                 DatabaseHandler db = new DatabaseHandler(getContext());
 
@@ -391,6 +393,7 @@ public class SNSeznamZakljucenihSNAdapter extends ArrayAdapter<ServisniNalog> im
             else if (vrni.equals("\tAlready transfered") == true)
             {
                 Toast.makeText(getContext(), "Ta SN je že prenešen", Toast.LENGTH_LONG).show();
+                notifyDataSetChanged();
             }
             else
             {

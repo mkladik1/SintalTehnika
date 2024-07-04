@@ -44,6 +44,8 @@ public class MainFragment extends Fragment {
                              @Nullable Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.main_fragment, container, false);
 
+
+
         TextView tvUpIme = (TextView) getActivity().findViewById(R.id.editTextTextPersonName);
         TextView tvGeslo = (TextView) getActivity().findViewById(R.id.editTextTextPassword);
         tvUpIme.setText("");

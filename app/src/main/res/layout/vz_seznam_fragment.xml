@@ -1,0 +1,67 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/v_z_seznam"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="#DCDCDC"
+    tools:context=".ui.main.VZ.VZSeznamFragment">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="vertical">
+
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="right"
+            android:orientation="vertical">
+
+            <Button
+                android:id="@+id/bSNToGlavnoVZ"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Nazaj" />
+        </LinearLayout>
+
+        <RelativeLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:gravity="center_horizontal|center_vertical">
+
+        </RelativeLayout>
+
+        <com.google.android.material.tabs.TabLayout
+            android:id="@+id/snTabsVZ"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="@color/teal_200">
+
+            <com.google.android.material.tabs.TabItem
+                android:id="@+id/seznamDNVZ"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="seznam dn" />
+
+            <com.google.android.material.tabs.TabItem
+                android:id="@+id/obrazecDNVZ"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="obrazec vzdrževanje" />
+
+            <com.google.android.material.tabs.TabItem
+                android:id="@+id/zakljuceniDNVZ"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Prenos dn" />
+        </com.google.android.material.tabs.TabLayout>
+
+        <androidx.viewpager2.widget.ViewPager2
+            android:id="@+id/DNVZViewPager"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent" />
+
+    </LinearLayout>
+</androidx.constraintlayout.widget.ConstraintLayout>

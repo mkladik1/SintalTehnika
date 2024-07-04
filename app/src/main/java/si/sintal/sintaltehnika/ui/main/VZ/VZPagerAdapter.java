@@ -1,4 +1,4 @@
-package si.sintal.sintaltehnika.ui.main;
+package si.sintal.sintaltehnika.ui.main.VZ;
 
 import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
@@ -6,11 +6,8 @@ import androidx.fragment.app.FragmentManager;
 import androidx.lifecycle.Lifecycle;
 import androidx.viewpager2.adapter.FragmentStateAdapter;
 
-import si.sintal.sintaltehnika.ui.main.SN.obrazecSNFragment;
-import si.sintal.sintaltehnika.ui.main.SN.seznamSNFragment;
-import si.sintal.sintaltehnika.ui.main.SN.SNZakljuceniSNFragment;
 
-public class SNPagerAdapter  extends FragmentStateAdapter {
+public class VZPagerAdapter extends FragmentStateAdapter {
 
     int mNoOfTabs;
 
@@ -24,7 +21,7 @@ public class SNPagerAdapter  extends FragmentStateAdapter {
     static String pregledOpis;
     static int senderID;
 
-    public SNPagerAdapter(@NonNull FragmentManager fragmentManager, @NonNull Lifecycle lifecycle) {
+    public VZPagerAdapter(@NonNull FragmentManager fragmentManager, @NonNull Lifecycle lifecycle) {
         super(fragmentManager, lifecycle);
     }
 
@@ -62,11 +59,11 @@ public class SNPagerAdapter  extends FragmentStateAdapter {
         switch(position)
         {
             case 0:
-                return new seznamSNFragment();
+                return new seznamVZDNFragment();
             case 1:
-                return new obrazecSNFragment();
+               return new obrazecVZDNFragment();
             case 2:
-                return new SNZakljuceniSNFragment();
+                return new VZZakljuceniDNFragment();
             default:
                 return null;
         }

@@ -82,7 +82,7 @@ public class seznamSNFragment extends Fragment {
         izbraniServiser = (Spinner) v.findViewById(R.id.spinner_user_SN);
         izbraniServiser.setAdapter(dataAdapter);
 
-        izbraniStatus = (Spinner) v.findViewById(R.id.spinner_status_DN_SN);
+        izbraniStatus = (Spinner) v.findViewById(R.id.spinner_LM_DN_SN);
 
 
         //dodeliSNje = db.GetSeznamSNUporabnik(etSN.getText().toString(), izbraniServiser.getSelectedItem().toString());
@@ -158,7 +158,7 @@ public class seznamSNFragment extends Fragment {
         izbraniServiser = (Spinner) getView().findViewById(R.id.spinner_user_SN);
         izbraniServiser.setAdapter(dataAdapter);
 
-        izbraniStatus = (Spinner) getView().findViewById(R.id.spinner_status_DN_SN);
+        izbraniStatus = (Spinner) getView().findViewById(R.id.spinner_LM_DN_SN);
 
 
         //dodeliSNje = db.GetSeznamSNUporabnik(etSN.getText().toString(), izbraniServiser.getSelectedItem().toString());

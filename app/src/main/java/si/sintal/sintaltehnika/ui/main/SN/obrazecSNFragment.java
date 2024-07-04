@@ -241,12 +241,17 @@ public class obrazecSNFragment extends Fragment {
                             createPdf();
                             //openPdf();
                             //db.updateSNStatusAkt(snID,"Z");
+                            ArrayList<String> parameters = new ArrayList<String>();
+                            parameters.add(String.valueOf(snID));
+                            //parameters.add("Z");
+                            new UpdateZakljucenoOnWeb().execute(parameters);
                             db.updateSNStatusZakljuci(String.valueOf(snID),"Z");
                             bDodajMat.setEnabled(false);
                             bDodajMat2.setEnabled(false);
                             bSNShrani.setEnabled(false);
                             bSign.setEnabled(false);
                             bPdf.setEnabled(false);
+
 
                         } catch (Exception e) {
                             e.printStackTrace();
@@ -757,8 +762,16 @@ public class obrazecSNFragment extends Fragment {
             pNarocnik.add("1. opis objekta");
             document.add(pNarocnik);
 
+            String sektorKraj = "";
             String sektorNaslov = sn.getSektroNaslov().split(",",2)[0];
-            String sektorKraj = sn.getSektroNaslov().split(",",2)[1];
+            if (sn.getSektroNaslov().length() > 0)
+            {
+                sektorKraj = sn.getSektroNaslov().split(",",2)[1];
+            }
+            else
+            {
+                sektorKraj = "";
+            }
             Table table = new Table(UnitValue.createPercentArray(new float[]{5,6,4,6}));
             table.setWidth(UnitValue.createPercentValue(100));
             table.setFixedLayout();
@@ -809,7 +822,7 @@ public class obrazecSNFragment extends Fragment {
             table2.setFont(font);
             table2.addCell(new Cell(1,1).add(new Paragraph("SERVIS NAROČIL")));//.setBorder(Border.NO_BORDER);
             table2.addCell(new Cell(1,1).add(new Paragraph(sn.getOdgovornaOseba())));//.setBorder(Border.NO_BORDER);
-            table2.addCell(new Cell(1,1).add(new Paragraph("TEELFON")));//.setBorder(Border.NO_BORDER);
+            table2.addCell(new Cell(1,1).add(new Paragraph("TELEFON")));//.setBorder(Border.NO_BORDER);
             table2.addCell(new Cell(1,1).add(new Paragraph("")));//.setBorder(Border.NO_BORDER);
             document.add(table2);
 
@@ -852,17 +865,19 @@ public class obrazecSNFragment extends Fragment {
             for(int i = 1;i<artikliDN.size()+1;i++)
             {
                 SNArtikel snArtikel = (SNArtikel) artikliDN.get(i-1);
-                table4.addCell(new Cell(1,1).add(new Paragraph(Integer.toString(i))));
-                table4.addCell(new Cell(1,1).add(new Paragraph(snArtikel.getnaziv())));
-                table4.addCell(new Cell(1,1).add(new Paragraph(String.valueOf(snArtikel.getKolicina()))));
-                if (snArtikel.getZamenjanNov() == 1) {
-                    table4.addCell(new Cell(1, 1).add(new Paragraph("N")));
-                }
-                else if (snArtikel.getZamenjanNov() == 2) {
-                    table4.addCell(new Cell(1, 1).add(new Paragraph("Z")));
-                }
-                else{
-                    table4.addCell(new Cell(1, 1).add(new Paragraph("")));
+                if (snArtikel.getnaziv().equals("VIR"))
+                {}
+                else {
+                    table4.addCell(new Cell(1, 1).add(new Paragraph(Integer.toString(i))));
+                    table4.addCell(new Cell(1, 1).add(new Paragraph(snArtikel.getnaziv())));
+                    table4.addCell(new Cell(1, 1).add(new Paragraph(String.valueOf(snArtikel.getKolicina()))));
+                    if (snArtikel.getZamenjanNov() == 1) {
+                        table4.addCell(new Cell(1, 1).add(new Paragraph("N")));
+                    } else if (snArtikel.getZamenjanNov() == 2) {
+                        table4.addCell(new Cell(1, 1).add(new Paragraph("Z")));
+                    } else {
+                        table4.addCell(new Cell(1, 1).add(new Paragraph("")));
+                    }
                 }
             }
             document.add(table4);
@@ -1099,6 +1114,22 @@ public class obrazecSNFragment extends Fragment {
         }
     }
 
+    private class UpdateZakljucenoOnWeb extends AsyncTask<ArrayList,Void,Void> {
+
+        @Override
+        protected Void doInBackground(ArrayList... arrayLists) {
+            //String datum = "";
+            //DateTimeFormatter dtf = DateTimeFormatter.ofPattern("yyyy-MM-dd");
+            //LocalDateTime now = LocalDateTime.now();
+            //datum = dtf.format(now);
+            for (int i = 0; i<arrayLists[0].size();i++) {
+                updateZakljucenoMySql(arrayLists[0].get(i).toString(), "Z");
+                //updateVodjaPrenosiMySql(arrayLists[0].get(i).toString(), serviser_sn.getSelectedItem().toString(), "D", datum);
+            }
+            return null;
+        }
+    }
+
 
     public int uploadFile(String sourceFileUri) {
 
@@ -1222,6 +1253,42 @@ public class obrazecSNFragment extends Fragment {
             HttpURLConnection htconn = (HttpURLConnection) url.openConnection();
             String username ="sintal_teh";
             String password = "mCuSTArQ*PdWAH#7-updatePodpis";
+            String userpass = username + ":" + password;
+            String basicAuth = "Basic " + new String(Base64.getEncoder().encode(userpass.getBytes()));
+            htconn.setRequestProperty ("Authorization", basicAuth);
+            htconn.connect();
+
+            if (htconn.getResponseCode() == HttpURLConnection.HTTP_OK) {
+                InputStreamReader inputStreamReader = new InputStreamReader(htconn.getInputStream());
+                BufferedReader reader = new BufferedReader(inputStreamReader);
+                StringBuilder stringBuilder = new StringBuilder();
+                String temp;
+
+                while ((temp = reader.readLine()) != null) {
+                    stringBuilder.append(temp);
+                }
+                result = stringBuilder.toString();
+            }else  {
+                result = "error";
+            }
+            htconn.disconnect();
+
+        } catch (Exception  e) {
+            e.printStackTrace();
+        }
+
+    }
+
+    public void updateZakljucenoMySql(String id, String status_akt)
+    {
+        String result = null;
+        try {
+            //uploadFile(StoredPath);
+            String myUrl = "https://www.sintal.si/tehnika/updateSNStatusZakljuceno.php?SNid="+id+"&statusNaloga="+status_akt+"";
+            URL url = new URL(myUrl);
+            HttpURLConnection htconn = (HttpURLConnection) url.openConnection();
+            String username ="sintal_teh";
+            String password = "mCuSTArQ*PdWAH#7-updateSNStatus";
             String userpass = username + ":" + password;
             String basicAuth = "Basic " + new String(Base64.getEncoder().encode(userpass.getBytes()));
             htconn.setRequestProperty ("Authorization", basicAuth);
