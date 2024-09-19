@@ -28,6 +28,7 @@ import java.util.HashMap;
 import java.util.List;
 
 import si.sintal.sintaltehnika.ui.main.DelovniNalogVZ;
+import si.sintal.sintaltehnika.ui.main.DelovniNalogVZPeriodika;
 import si.sintal.sintaltehnika.ui.main.RegCasa;
 import si.sintal.sintaltehnika.ui.main.SNArtikel;
 import si.sintal.sintaltehnika.ui.main.ServisniNalog;
@@ -350,7 +351,7 @@ public class DatabaseHandler extends SQLiteOpenHelper {
 
         String CREATE_TEHNIKA_VZ_PERIODIKA = "CREATE TABLE IF NOT EXISTS sintal_teh_vz_dn_periodika (" +
                 " id int(11) NOT NULL, " +
-                " sintal_vzd_dn_id int(11) NOT NULL,"+
+                //" sintal_vzd_dn_id int(11) NOT NULL,"+
                 " st_del_naloga varchar(50) DEFAULT NULL,"+
                 " STATUS int(11), "+
                 " DATUM_DODELITVE date, "+
@@ -363,7 +364,46 @@ public class DatabaseHandler extends SQLiteOpenHelper {
                 " STEVILO_KM decimal(15,2), "+
                 " DATUM_PODPISA date, "+
                 " PODPIS_NAROCNIK blob DEFAULT NULL, "+
-                " PODPIS_SERVISER blob DEFAULT NULL "+
+                " PODPIS_SERVISER blob DEFAULT NULL, "+
+                " TIP_NAROCILA int(11) NULL, "+
+                " sis_pozar int(11) DEFAULT NULL,"+
+                " sis_vlom int(11) DEFAULT NULL,"+
+                " sis_video int(11) DEFAULT NULL,"+
+                " sis_co int(11) DEFAULT NULL,"+
+                " sis_pristopna int(11) DEFAULT NULL,"+
+                " sis_dimni_banokvci int(11) DEFAULT NULL,"+
+                " sis_ostalo int(11) DEFAULT NULL,"+
+                " periodika_dni int(11) DEFAULT NULL,"+
+                " vzdrzevanje_redno int(11) DEFAULT NULL,"+
+                " vzdrzevanje_izredno int(11) DEFAULT NULL,"+
+                " tip_elementov nvarchar(500) null," +
+                " datum_zadnjega datetime DEFAULT NULL,"+
+                " datum_naslednjega datetime DEFAULT NULL,"+
+                " kontrolor_linije nvarchar(500) null," +
+                " aku_baterije nvarchar(500) null," +
+                " nacin_prenosa nvarchar(500) null," +
+                " institucija_prenosa nvarchar(500) null," +
+                " preizkus1 int(11) null," +
+                " preizkus2 int(11) null," +
+                " preizkus3 int(11) null," +
+                " preizkus4 int(11) null," +
+                " preizkus5 int(11) null," +
+                " preizkus6 int(11) null," +
+                " preizkus7 int(11) null," +
+                " preizkus8 int(11) null," +
+                " preizkus9 int(11) null," +
+                " preizkus10 int(11) null," +
+                " preizkus11 int(11) null," +
+                " preizkus12 int(11) null," +
+                " preizkus13 int(11) null," +
+                " preizkus14 int(11) null," +
+                " preizkus15 int(11) null," +
+                " preizkus16 int(11) null," +
+                " preizkus17 int(11) null," +
+                " preizkus18 int(11) null" +
+                //" redno int(11) null," +
+                //" izredno int(11) null" +
+
                 ");";
         mDatabase.execSQL(CREATE_TEHNIKA_VZ_PERIODIKA);
 
@@ -1128,7 +1168,7 @@ public class DatabaseHandler extends SQLiteOpenHelper {
 
             values.put("DATUM_PODPISA", DATUM_PODPISA);
             values.put("naslov_objekta", NASLOV_OBJEKTA);
-            mDatabase.update("sintal_teh_vz_dn", values, "sintal_vzd_dn_id=?", new String[]{vz_id});
+            mDatabase.update("sintal_teh_vz_dn", values, "id=?", new String[]{id});
 
         }
         else
@@ -1181,6 +1221,210 @@ public class DatabaseHandler extends SQLiteOpenHelper {
             values.put("naslov_objekta", NASLOV_OBJEKTA);
             //values.put("OZNACI",OZNACI);
             mDatabase.insert("sintal_teh_vz_dn",null, values);
+        }
+        mCursor.close();
+
+        //mDatabase.execSQL(INSERT_INTO_USERS_TABLE);
+        mDatabase.close();
+
+        //return myList;
+    }
+
+
+    public void insertUpdateVZDNPeriodika(
+            String id,
+            //String vz_id ,
+            String st_del_naloga ,
+            String status ,
+            String DATUM_DODELITVE,
+            String DATUM_IZVEDBE ,
+            String PRENOS ,
+            String DATUM_PRENOSA ,
+            String OPIS_POSTOPKA ,
+            String URE_PREVOZ ,
+
+            String URE_DELO ,
+            String STEVILO_KM ,
+            String DATUM_PODPISA ,
+            String PODPIS_NAROCNIK ,
+            String PODPIS_SERVISER ,
+            String TIP_NAROCILA ,
+            String sis_pozar ,
+            String sis_vlom ,
+            String sis_video,
+            String sis_co,
+            String sis_pristopna ,
+
+            String sis_dimni_banokvci ,
+            String sis_ostalo ,
+            String periodika_dni ,
+            String vzdrzevanje_redno ,
+            String vzdrzevanje_izredno ,
+            String tip_elementov ,
+            String datum_zadnjega ,
+            String datum_naslednjega ,
+            String kontrolor_linije ,
+            String aku_baterije,
+
+            String nacin_prenosa ,
+            String institucija_prenosa ,
+            String preizkus1 ,
+            String preizkus2 ,
+            String preizkus3 ,
+            String preizkus4 ,
+            String preizkus5 ,
+            String preizkus6 ,
+            String preizkus7 ,
+            String preizkus8 ,
+            String preizkus9 ,
+            String preizkus10 ,
+            String preizkus11 ,
+            String preizkus12 ,
+            String preizkus13 ,
+            String preizkus14 ,
+            String preizkus15 ,
+            String preizkus16 ,
+            String preizkus17 ,
+            String preizkus18
+
+
+    ) {
+
+        //ArrayList<NadzorXML> myList=new ArrayList<NadzorXML>();
+        //List<Nadzor> myList=new ArrayList<Nadzor>();
+        mDatabase = this.getWritableDatabase();
+        String GET_USER = "SELECT * FROM sintal_teh_vz_dn_periodika where id ="+ id;
+        mCursor = mDatabase.rawQuery(GET_USER,null);
+        //NadzorXML n;
+        if (mCursor != null)
+        {
+            mCursor.moveToFirst();
+        }
+        if (mCursor.moveToFirst()) {
+            ContentValues values = new ContentValues();
+
+            //values.put("sintal_vzd_dn_id", vz_id);
+            values.put("st_del_naloga", st_del_naloga);
+            values.put("STATUS", status);
+            values.put("DATUM_DODELITVE", DATUM_DODELITVE);
+            values.put("DATUM_IZVEDBE", DATUM_IZVEDBE);
+            values.put("PRENOS", PRENOS);
+            values.put("DATUM_PRENOSA", DATUM_PRENOSA);
+            values.put("OPIS_POSTOPKA", OPIS_POSTOPKA);
+            values.put("URE_PREVOZ", URE_PREVOZ);
+            values.put("URE_DELO", URE_DELO);
+
+            values.put("STEVILO_KM", STEVILO_KM);
+            values.put("DATUM_PODPISA", DATUM_PODPISA);
+            values.put("PODPIS_NAROCNIK", PODPIS_NAROCNIK);
+            values.put("PODPIS_SERVISER", PODPIS_SERVISER);
+            values.put("TIP_NAROCILA", TIP_NAROCILA);
+            values.put("sis_pozar", sis_pozar);
+            values.put("sis_vlom", sis_vlom);
+            values.put("sis_video", sis_video);
+            values.put("sis_co", sis_co);
+
+            values.put("sis_pristopna", sis_pristopna);
+            values.put("sis_dimni_banokvci", sis_dimni_banokvci);
+            values.put("sis_ostalo", sis_ostalo);
+            values.put("periodika_dni", periodika_dni);
+            values.put("vzdrzevanje_redno", vzdrzevanje_redno);
+            values.put("vzdrzevanje_izredno", vzdrzevanje_izredno);
+            values.put("tip_elementov", tip_elementov);
+            values.put("datum_zadnjega", datum_zadnjega);
+            values.put("datum_naslednjega", datum_naslednjega);
+            values.put("kontrolor_linije", kontrolor_linije);
+
+            values.put("aku_baterije",aku_baterije);
+            values.put("nacin_prenosa", nacin_prenosa);
+            values.put("institucija_prenosa", institucija_prenosa);
+
+            values.put("preizkus1", preizkus1);
+            values.put("preizkus2", preizkus2);
+            values.put("preizkus3", preizkus3);
+            values.put("preizkus4", preizkus4);
+            values.put("preizkus5", preizkus5);
+            values.put("preizkus6", preizkus6);
+            values.put("preizkus7", preizkus7);
+            values.put("preizkus8", preizkus8);
+            values.put("preizkus9", preizkus9);
+            values.put("preizkus10", preizkus10);
+            values.put("preizkus11", preizkus11);
+            values.put("preizkus12", preizkus12);
+            values.put("preizkus13", preizkus13);
+            values.put("preizkus14", preizkus14);
+            values.put("preizkus15", preizkus15);
+            values.put("preizkus16", preizkus16);
+            values.put("preizkus17", preizkus17);
+            values.put("preizkus18", preizkus18);
+            //values.put("redno", redno);
+            //values.put("izredno", izredno);
+            mDatabase.update("sintal_teh_vz_dn_periodika", values, "id=?", new String[]{id});
+
+        }
+        else
+        {
+            ContentValues values = new ContentValues();
+            values.put("id", id);
+            //values.put("sintal_vzd_dn_id", vz_id);
+            values.put("st_del_naloga", st_del_naloga);
+            values.put("STATUS", status);
+            values.put("DATUM_DODELITVE", DATUM_DODELITVE);
+            values.put("DATUM_IZVEDBE", DATUM_IZVEDBE);
+            values.put("PRENOS", PRENOS);
+            values.put("DATUM_PRENOSA", DATUM_PRENOSA);
+            values.put("OPIS_POSTOPKA", OPIS_POSTOPKA);
+            values.put("URE_PREVOZ", URE_PREVOZ);
+            values.put("URE_DELO", URE_DELO);
+
+            values.put("STEVILO_KM", STEVILO_KM);
+            values.put("DATUM_PODPISA", DATUM_PODPISA);
+            values.put("PODPIS_NAROCNIK", PODPIS_NAROCNIK);
+            values.put("PODPIS_SERVISER", PODPIS_SERVISER);
+            values.put("TIP_NAROCILA", TIP_NAROCILA);
+            values.put("sis_pozar", sis_pozar);
+            values.put("sis_vlom", sis_vlom);
+            values.put("sis_video", sis_video);
+            values.put("sis_co", sis_co);
+
+            values.put("sis_pristopna", sis_pristopna);
+            values.put("sis_dimni_banokvci", sis_dimni_banokvci);
+            values.put("sis_ostalo", sis_ostalo);
+            values.put("periodika_dni", periodika_dni);
+            values.put("vzdrzevanje_redno", vzdrzevanje_redno);
+            values.put("vzdrzevanje_izredno", vzdrzevanje_izredno);
+            values.put("tip_elementov", tip_elementov);
+            values.put("datum_zadnjega", datum_zadnjega);
+            values.put("datum_naslednjega", datum_naslednjega);
+            values.put("kontrolor_linije", kontrolor_linije);
+
+            values.put("aku_baterije",aku_baterije);
+            values.put("nacin_prenosa", nacin_prenosa);
+            values.put("institucija_prenosa", institucija_prenosa);
+
+            values.put("preizkus1", preizkus1);
+            values.put("preizkus2", preizkus2);
+            values.put("preizkus3", preizkus3);
+            values.put("preizkus4", preizkus4);
+            values.put("preizkus5", preizkus5);
+            values.put("preizkus6", preizkus6);
+            values.put("preizkus7", preizkus7);
+            values.put("preizkus8", preizkus8);
+            values.put("preizkus9", preizkus9);
+            values.put("preizkus10", preizkus10);
+            values.put("preizkus11", preizkus11);
+            values.put("preizkus12", preizkus12);
+            values.put("preizkus13", preizkus13);
+            values.put("preizkus14", preizkus14);
+            values.put("preizkus15", preizkus15);
+            values.put("preizkus16", preizkus16);
+            values.put("preizkus17", preizkus17);
+            values.put("preizkus18", preizkus18);
+
+            //values.put("redno", redno);
+            //values.put("izredno", izredno);
+            //values.put("OZNACI",OZNACI);
+            mDatabase.insert("sintal_teh_vz_dn_periodika",null, values);
         }
         mCursor.close();
 
@@ -1403,7 +1647,6 @@ public class DatabaseHandler extends SQLiteOpenHelper {
         mCursor.close();
         mDatabase.close();
     }
-
 
 
     public void updateSNStatusAkt(String id, String statusAkt) {
@@ -1636,28 +1879,28 @@ public class DatabaseHandler extends SQLiteOpenHelper {
         //query = "SELECT  * FROM sintal_teh_sn where strftime('%d.%m.%Y', DATUM_ZACETEK) = '" + datum + "' and VODJA_NALOGA = '"+vodja_sn+"'";
         if (status.equals("D") == true)
         {
-            query = "select  strftime('%Y',(DATE(datum_zadnjega,'+'||periodika_dni||' days'))) as leto, strftime('%m',(DATE(datum_zadnjega,'+'||periodika_dni||' days'))) as mesec, * from sintal_teh_vz_dn\n" +
-                    "where strftime('%Y',(DATE(datum_zadnjega,'+'||periodika_dni||' days'))) = '"+leto+"' and strftime('%m',(DATE(datum_zadnjega,'+'||periodika_dni||' days'))) = '"+mesec+"'";
+            query = "select  strftime('%Y',(DATE(vz.datum_zadnjega,'+'||vz.periodika_dni||' days'))) as leto, strftime('%m',(DATE(vz.datum_zadnjega,'+'||vz.periodika_dni||' days'))) as mesec, vz.*, case when ifnull(per.id,0) = 0 then 0 else 1 end as per_id, case when ifnull(per.prenos,0) = 0 then 0 else 1 end as prenos_per from sintal_teh_vz_dn vz left join sintal_teh_vz_dn_periodika per on vz.id = per.id\n" +
+                    "where strftime('%Y',(DATE(vz.datum_zadnjega,'+'||vz.periodika_dni||' days'))) = '"+leto+"' and strftime('%m',(DATE(vz.datum_zadnjega,'+'||vz.periodika_dni||' days'))) = '"+mesec+"'";
         }
         else if (status.equals("P") == true)
         {
-            query = "select  strftime('%Y',(DATE(datum_zadnjega,'+'||periodika_dni||' days'))) as leto, strftime('%m',(DATE(datum_zadnjega,'+'||periodika_dni||' days'))) as mesec, * from sintal_teh_vz_dn\n" +
-                    "where strftime('%Y',(DATE(datum_zadnjega,'+'||periodika_dni||' days'))) = '2024' and strftime('%m',(DATE(datum_zadnjega,'+'||periodika_dni||' days'))) = '05'";
+            query = "select  strftime('%Y',(DATE(vz.datum_zadnjega,'+'||vz.periodika_dni||' days'))) as leto, strftime('%m',(DATE(vz.datum_zadnjega,'+'||vz.periodika_dni||' days'))) as mesec, vz.*, case when ifnull(per.id,0) = 0 then 0 else 1 end as per_id, case when ifnull(per.prenos,0) = 0 then 0 else 1 end as prenos_per from sintal_teh_vz_dn vz left join sintal_teh_vz_dn_periodika per on vz.id = per.id\n" +
+                    "where strftime('%Y',(DATE(vz.datum_zadnjega,'+'||vz.periodika_dni||' days'))) = '"+leto+"' and strftime('%m',(DATE(vz.datum_zadnjega,'+'||vz.periodika_dni||' days'))) = '"+mesec+"'";
         }
         else if (status.equals("Z") == true)
         {
-            query = "select  strftime('%Y',(DATE(datum_zadnjega,'+'||periodika_dni||' days'))) as leto, strftime('%m',(DATE(datum_zadnjega,'+'||periodika_dni||' days'))) as mesec, * from sintal_teh_vz_dn\n" +
-                    "where strftime('%Y',(DATE(datum_zadnjega,'+'||periodika_dni||' days'))) = '2024' and strftime('%m',(DATE(datum_zadnjega,'+'||periodika_dni||' days'))) = '05'";
+            query = "select  strftime('%Y',(DATE(vz.datum_zadnjega,'+'||vz.periodika_dni||' days'))) as leto, strftime('%m',(DATE(vz.datum_zadnjega,'+'||vz.periodika_dni||' days'))) as mesec, vz.*, case when ifnull(per.id,0) = 0 then 0 else 1 end as per_id, case when ifnull(per.prenos,0) = 0 then 0 else 1 end as prenos_per from sintal_teh_vz_dn vz left join sintal_teh_vz_dn_periodika per on vz.id = per.id\n" +
+                    "where strftime('%Y',(DATE(vz.datum_zadnjega,'+'||vz.periodika_dni||' days'))) = '"+leto+"' and strftime('%m',(DATE(vz.datum_zadnjega,'+'||vz.periodika_dni||' days'))) = '"+mesec+"'";
         }
         else if (status.equals("X") == true)
         {
-            query = "select  strftime('%Y',(DATE(datum_zadnjega,'+'||periodika_dni||' days'))) as leto, strftime('%m',(DATE(datum_zadnjega,'+'||periodika_dni||' days'))) as mesec, * from sintal_teh_vz_dn\n" +
-                    "where strftime('%Y',(DATE(datum_zadnjega,'+'||periodika_dni||' days'))) = '2024' and strftime('%m',(DATE(datum_zadnjega,'+'||periodika_dni||' days'))) = '05'";
+            query = "select  strftime('%Y',(DATE(vz.datum_zadnjega,'+'||vz.periodika_dni||' days'))) as leto, strftime('%m',(DATE(vz.datum_zadnjega,'+'||vz.periodika_dni||' days'))) as mesec, vz.*, case when ifnull(per.id,0) = 0 then 0 else 1 end as per_id, case when ifnull(per.prenos,0) = 0 then 0 else 1 end as prenos_per from sintal_teh_vz_dn vz left join sintal_teh_vz_dn_periodika per on vz.id = per.id\n" +
+                    "where strftime('%Y',(DATE(vz.datum_zadnjega,'+'||vz.periodika_dni||' days'))) = '"+leto+"' and strftime('%m',(DATE(vz.datum_zadnjega,'+'||vz.periodika_dni||' days'))) = '"+mesec+"'";
         }
         else if (status.equals("Y") == true)
         {
-            query = "select  strftime('%Y',(DATE(datum_zadnjega,'+'||periodika_dni||' days'))) as leto, strftime('%m',(DATE(datum_zadnjega,'+'||periodika_dni||' days'))) as mesec, * from sintal_teh_vz_dn\n" +
-                    "where strftime('%Y',(DATE(datum_zadnjega,'+'||periodika_dni||' days'))) = '2024' and strftime('%m',(DATE(datum_zadnjega,'+'||periodika_dni||' days'))) = '05'";
+            query = "select  strftime('%Y',(DATE(vz.datum_zadnjega,'+'||vz.periodika_dni||' days'))) as leto, strftime('%m',(DATE(vz.datum_zadnjega,'+'||vz.periodika_dni||' days'))) as mesec, vz.*, case when ifnull(per.id,0) = 0 then 0 else 1 end as per_id, case when ifnull(per.prenos,0) = 0 then 0 else 1 end as prenos_per from sintal_teh_vz_dn vz left join sintal_teh_vz_dn_periodika per on vz.id = per.id\n" +
+                    "where strftime('%Y',(DATE(vz.datum_zadnjega,'+'||vz.periodika_dni||' days'))) = '"+leto+"' and strftime('%m',(DATE(vz.datum_zadnjega,'+'||vz.periodika_dni||' days'))) = '"+mesec+"'";
         }
 
         mDatabase = this.getReadableDatabase();
@@ -1671,6 +1914,8 @@ public class DatabaseHandler extends SQLiteOpenHelper {
             sn.setKontaktna_oseba(mCursor.getString(mCursor.getColumnIndex("kontaktna_oseba")));
             sn.setDatum_zadnjega(mCursor.getString(mCursor.getColumnIndex("datum_zadnjega")));
             sn.setDatum_naslednjega(mCursor.getString(mCursor.getColumnIndex("datum_naslednjega")));
+            sn.setPeridika_kreirana(mCursor.getInt(mCursor.getColumnIndex("per_id")));
+            sn.setPrenos_per(mCursor.getInt(mCursor.getColumnIndex("prenos_per")));
             //sn.setOznacen(0);
             list.add(sn);
         }
@@ -1770,6 +2015,78 @@ public class DatabaseHandler extends SQLiteOpenHelper {
             //vzDelN.setDatumKonec(mCursor.getString(mCursor.getColumnIndex("DATUM_KONEC")));
 
             //sn.setOznacen(0);
+
+        }
+
+        mCursor.close();
+        mDatabase.close();
+        return  vzDelN;
+    }
+
+    public DelovniNalogVZPeriodika vrniVZDNPre(int idVZDN){
+
+        DelovniNalogVZPeriodika vzDelN = new DelovniNalogVZPeriodika();
+        String query = "SELECT * FROM sintal_teh_vz_dn_periodika where id ="+idVZDN+"";
+
+        mDatabase = this.getReadableDatabase();
+        mCursor = mDatabase.rawQuery(query, null);
+        while (mCursor.moveToNext()){
+            //ServisniNalog sn = new ServisniNalog();
+            vzDelN.setid(mCursor.getInt(mCursor.getColumnIndex("id")));
+            vzDelN.setDelovniNalog(mCursor.getString(mCursor.getColumnIndex("st_del_naloga")));
+            vzDelN.setPeriodika_dni(mCursor.getInt(mCursor.getColumnIndex("periodika_dni")));
+            vzDelN.setOpomba(mCursor.getString(mCursor.getColumnIndex("OPIS_POSTOPKA")));
+            vzDelN.setTipNarocila(mCursor.getInt(mCursor.getColumnIndex("TIP_NAROCILA")));
+
+            vzDelN.setStatus(mCursor.getInt(mCursor.getColumnIndex("STATUS")));
+            vzDelN.setSis_pozar(mCursor.getInt(mCursor.getColumnIndex("sis_pozar")));
+            vzDelN.setSis_co(mCursor.getInt(mCursor.getColumnIndex("sis_co")));
+            vzDelN.setSis_vlom(mCursor.getInt(mCursor.getColumnIndex("sis_vlom")));
+            vzDelN.setSis_video(mCursor.getInt(mCursor.getColumnIndex("sis_video")));
+            vzDelN.setSis_pristopna(mCursor.getInt(mCursor.getColumnIndex("sis_pristopna")));
+            vzDelN.setSis_dimni_bankovci(mCursor.getInt(mCursor.getColumnIndex("sis_dimni_banokvci")));
+
+            vzDelN.setRedno(mCursor.getInt(mCursor.getColumnIndex("vzdrzevanje_redno")));
+            vzDelN.setIzredno(mCursor.getInt(mCursor.getColumnIndex("vzdrzevanje_izredno")));
+            vzDelN.setTip_elementov(mCursor.getString(mCursor.getColumnIndex("tip_elementov")));
+            vzDelN.setDatum_prejsenjega(mCursor.getString(mCursor.getColumnIndex("datum_zadnjega")));
+            vzDelN.setDatum_naslednjega(mCursor.getString(mCursor.getColumnIndex("datum_naslednjega")));
+            vzDelN.setkontrolor(mCursor.getString(mCursor.getColumnIndex("kontrolor_linije")));
+            vzDelN.setaku_bat(mCursor.getString(mCursor.getColumnIndex("aku_baterije")));
+
+            vzDelN.setnacin_prenosa(mCursor.getString(mCursor.getColumnIndex("nacin_prenosa")));
+            vzDelN.setprenos_inst(mCursor.getString(mCursor.getColumnIndex("institucija_prenosa")));
+
+            vzDelN.setPr1(mCursor.getInt(mCursor.getColumnIndex("preizkus1")));
+            vzDelN.setPr2(mCursor.getInt(mCursor.getColumnIndex("preizkus2")));
+            vzDelN.setPr3(mCursor.getInt(mCursor.getColumnIndex("preizkus3")));
+            vzDelN.setPr4(mCursor.getInt(mCursor.getColumnIndex("preizkus4")));
+            vzDelN.setPr5(mCursor.getInt(mCursor.getColumnIndex("preizkus5")));
+
+            vzDelN.setPr6(mCursor.getInt(mCursor.getColumnIndex("preizkus6")));
+            vzDelN.setPr7(mCursor.getInt(mCursor.getColumnIndex("preizkus7")));
+            vzDelN.setPr8(mCursor.getInt(mCursor.getColumnIndex("preizkus8")));
+            vzDelN.setPr9(mCursor.getInt(mCursor.getColumnIndex("preizkus9")));
+            vzDelN.setPr10(mCursor.getInt(mCursor.getColumnIndex("preizkus10")));
+
+            vzDelN.setPr11(mCursor.getInt(mCursor.getColumnIndex("preizkus11")));
+            vzDelN.setPr12(mCursor.getInt(mCursor.getColumnIndex("preizkus12")));
+            vzDelN.setPr13(mCursor.getInt(mCursor.getColumnIndex("preizkus13")));
+            vzDelN.setPr14(mCursor.getInt(mCursor.getColumnIndex("preizkus14")));
+            vzDelN.setPr15(mCursor.getInt(mCursor.getColumnIndex("preizkus15")));
+
+            vzDelN.setPr16(mCursor.getInt(mCursor.getColumnIndex("preizkus16")));
+            vzDelN.setPr17(mCursor.getInt(mCursor.getColumnIndex("preizkus17")));
+            vzDelN.setPr18(mCursor.getInt(mCursor.getColumnIndex("preizkus18")));
+
+            vzDelN.setUrePrevoz(mCursor.getDouble(mCursor.getColumnIndex("URE_PREVOZ")));
+            vzDelN.setUreDelo(mCursor.getDouble(mCursor.getColumnIndex("URE_DELO")));
+            vzDelN.setStKm(mCursor.getDouble(mCursor.getColumnIndex("STEVILO_KM")));
+            vzDelN.setDatumPodpisa(mCursor.getString(mCursor.getColumnIndex("DATUM_PODPISA")));
+
+
+            vzDelN.setDATUM_IZVEDBE(mCursor.getString(mCursor.getColumnIndex("DATUM_IZVEDBE")));
+
 
         }
 
@@ -2016,6 +2333,18 @@ public class DatabaseHandler extends SQLiteOpenHelper {
     }
 
     public void updatePodpis(String snID, byte[] image, String datum){
+        mDatabase = this.getWritableDatabase();
+        ContentValues cv = new ContentValues();
+        cv.put("PODPIS_NAROCNIK",image);
+        cv.put("DATUM_PODPISA", datum);
+        cv.put("STATUS_AKT", "P");
+        mDatabase.update("sintal_teh_sn",cv,"id = "+snID,null);
+
+        //mDatabase.execSQL(INSERT_INTO_USERS_TABLE);
+        mDatabase.close();
+    }
+
+    public void updatePodpisVZDN(String snID, byte[] image, String datum){
         mDatabase = this.getWritableDatabase();
         ContentValues cv = new ContentValues();
         cv.put("PODPIS_NAROCNIK",image);

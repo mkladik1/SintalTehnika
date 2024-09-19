@@ -686,7 +686,7 @@ public class obrazecSNFragment extends Fragment {
             BitmapFactory.Options options = new BitmapFactory.Options();
             options.inScaled = false;
             options.inMutable = true;
-            File file = new File(getContext().getFilesDir()+"/"+snID+".bmp");
+            File file = new File(getContext().getFilesDir()+"/"+snID+"-SN.bmp");
             Bitmap _scratch =  BitmapFactory.decodeByteArray(podpis, 0, podpis.length);
             Drawable d = new BitmapDrawable(_scratch);
             mSignature.setBackground(d);
@@ -1098,7 +1098,7 @@ public class obrazecSNFragment extends Fragment {
             //datum = dtf.format(now);
             byte[] podpis = data;
             String StoredPath = "";
-            StoredPath = getContext().getFilesDir()+"/"+snID+".bmp";
+            StoredPath = getContext().getFilesDir()+"/"+snID+"-SN.bmp";
             try {
                 FileOutputStream fos = new FileOutputStream(StoredPath);
                 fos.write(podpis);

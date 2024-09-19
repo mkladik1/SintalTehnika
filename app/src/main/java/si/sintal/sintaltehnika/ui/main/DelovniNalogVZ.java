@@ -51,6 +51,8 @@ public class DelovniNalogVZ {
     double stKm;
     String datumPodpisa;
     String naslov;
+    int periodika_kreirana;
+    int prenos_per;
     //int tipNarocila;
 
 
@@ -62,6 +64,19 @@ public class DelovniNalogVZ {
         this.id = newId;
     }
 
+    public int getPeridika_kreirana() {
+        return periodika_kreirana;
+    }
+    public void setPeridika_kreirana(int newperidika_kreirana) {
+        this.periodika_kreirana = newperidika_kreirana;
+    }
+
+    public int getPrenos_per() {
+        return prenos_per;
+    }
+    public void setPrenos_per(int newprenos_per) {
+        this.prenos_per = newprenos_per;
+    }
 
     public int getSis_pozar() {
         return sis_pozar;

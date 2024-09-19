@@ -1,6 +1,7 @@
 package si.sintal.sintaltehnika.ui.main.VZ;
 
 import android.content.Context;
+import android.graphics.Color;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -19,7 +20,6 @@ import java.util.ArrayList;
 import si.sintal.sintaltehnika.DatabaseHandler;
 import si.sintal.sintaltehnika.R;
 import si.sintal.sintaltehnika.ui.main.DelovniNalogVZ;
-import si.sintal.sintaltehnika.ui.main.ServisniNalog;
 
 public class SeznamUpoVZDNAdapter extends ArrayAdapter<DelovniNalogVZ> implements Filterable {
 
@@ -106,6 +106,18 @@ public class SeznamUpoVZDNAdapter extends ArrayAdapter<DelovniNalogVZ> implement
         holder.nazivServisa.setText(n.getNaziv_servisa());
         holder.narocnik.setText("");
         holder.opomba.setText(n.getOpomba());
+        if (n.getPeridika_kreirana() == 1)
+        {
+            convertView.setBackgroundColor(Color.parseColor("#F7F14A"));
+        }
+        else if(n.getPrenos_per() == 1)
+        {
+            convertView.setBackgroundColor(Color.parseColor("#A4CC44"));
+        }
+        else
+        {
+            convertView.setBackgroundColor(Color.parseColor("#FFFFFFFF"));
+        }
         //holder.kodaObjekta.setText(n.getIme().toString());
         //holder.opisNapakeSNja.setText(n.getOpis().toString());
         //String datumDod = "dodeljen: " + n.getDatumDodelitve().toString();
@@ -189,32 +201,34 @@ public class SeznamUpoVZDNAdapter extends ArrayAdapter<DelovniNalogVZ> implement
             FilterResults results = new FilterResults();
 
             if (constraint != null && constraint.length() > 0) {
-                ArrayList<ServisniNalog> filterList = new ArrayList<ServisniNalog>();
+                ArrayList<DelovniNalogVZ> filterList = new ArrayList<DelovniNalogVZ>();
 
                 for (int i = 0; i < originalData.size(); i++) {
                     if ((originalData.get(i).getNaziv_servisa().toUpperCase())
                             .contains(constraint.toString().toUpperCase())) {
-/*
-                        ServisniNalog n = new ServisniNalog();
+
+                        DelovniNalogVZ n = new DelovniNalogVZ();
                         //n.setStNadzora(filteredData.get(i).getStNadzora());
-                        n.setStNadzora(Integer.parseInt(originalData.get(i).getStNadzora()));
-                        n.setVrstaN(originalData.get(i).getVrstaN());
-                        n.setOsebaNadzora(originalData.get(i).getOsebaNadzora());
-                        n.setOsebaIzkaznica(originalData.get(i).getOsebaIzkaznica());
-                        n.setKrajNadzora(originalData.get(i).getKrajNadzora());
-                        n.setDatumNadzora(originalData.get(i).getDatumNadzora());
-                        n.setUraZacetkaNadzora(originalData.get(i).getUraZacetkaNadzora());
-                        n.setUraKoncaNadzora(originalData.get(i).getUraKoncaNadzora());
-                        n.setRegStevilka(originalData.get(i).getRegStevilka());
+                        n.setid(originalData.get(i).getid());
                         n.setDelovniNalog(originalData.get(i).getDelovniNalog());
-                        n.setObjekt(originalData.get(i).getObjekt());
-                        n.setDodatnoPolje1(originalData.get(i).getDodatnoPolje1());
-                        n.setDodatnoPolje2(originalData.get(i).getDodatnoPolje2());
-                        n.setDodatnoPolje3(originalData.get(i).getDodatnoPolje3());
-                        n.setOpomba(originalData.get(i).getOpomba());
-                        n.setStatus(originalData.get(i).getStatus());
+                        n.setNaziv_servisa(originalData.get(i).getNaziv_servisa());
+                        //n.setVrstaN(originalData.get(i).getVrstaN());
+                        //n.setOsebaNadzora(originalData.get(i).getOsebaNadzora());
+                        //n.setOsebaIzkaznica(originalData.get(i).getOsebaIzkaznica());
+                        //n.setKrajNadzora(originalData.get(i).getKrajNadzora());
+                        //n.setDatumNadzora(originalData.get(i).getDatumNadzora());
+                        //n.setUraZacetkaNadzora(originalData.get(i).getUraZacetkaNadzora());
+                        //n.setUraKoncaNadzora(originalData.get(i).getUraKoncaNadzora());
+                        //n.setRegStevilka(originalData.get(i).getRegStevilka());
+                        //n.setDelovniNalog(originalData.get(i).getDelovniNalog());
+                        //n.setObjekt(originalData.get(i).getObjekt());
+                        //n.setDodatnoPolje1(originalData.get(i).getDodatnoPolje1());
+                        //n.setDodatnoPolje2(originalData.get(i).getDodatnoPolje2());
+                        //n.setDodatnoPolje3(originalData.get(i).getDodatnoPolje3());
+                        //n.setOpomba(originalData.get(i).getOpomba());
+                        //n.setStatus(originalData.get(i).getStatus());
                         filterList.add(n);
-                        */
+
 
                     }
                 }

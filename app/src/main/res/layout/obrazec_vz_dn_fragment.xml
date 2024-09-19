@@ -287,7 +287,7 @@
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:orientation="horizontal" >
+                android:orientation="horizontal">
 
             </LinearLayout>
 
@@ -381,43 +381,40 @@
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:weightSum="4"
-                android:orientation="horizontal">
+                android:orientation="horizontal"
+                android:weightSum="4">
 
                 <CheckBox
                     android:id="@+id/cbPozar"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
-                    android:text="Požar"
                     android:buttonTint="@color/black"
-                    />
+                    android:text="Požar" />
 
                 <CheckBox
                     android:id="@+id/cbPlin"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
-                    android:text="Plin"
                     android:buttonTint="@color/black"
-                    />
+                    android:text="Plin" />
 
                 <CheckBox
                     android:id="@+id/cbVlom"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
-                    android:text="Vlom"
                     android:buttonTint="@color/black"
-                    />
+                    android:text="Vlom" />
 
                 <CheckBox
                     android:id="@+id/cbVideo"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
-                    android:text="Video"
-                    android:buttonTint="@color/black"/>
+                    android:buttonTint="@color/black"
+                    android:text="Video" />
 
             </LinearLayout>
 
@@ -431,16 +428,16 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
-                    android:text="Pristop"
-                    android:buttonTint="@color/black"/>
+                    android:buttonTint="@color/black"
+                    android:text="Pristop" />
 
                 <CheckBox
                     android:id="@+id/cbDim"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
-                    android:text="Dim. bank."
-                    android:buttonTint="@color/black"/>
+                    android:buttonTint="@color/black"
+                    android:text="Dim. bank." />
 
                 <TextView
                     android:id="@+id/textView41"
@@ -476,16 +473,16 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
-                    android:text="Redno"
-                    android:buttonTint="@color/black"/>
+                    android:buttonTint="@color/black"
+                    android:text="Redno" />
 
                 <CheckBox
                     android:id="@+id/cbIzredno"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
-                    android:text="Izredno"
-                    android:buttonTint="@color/black"/>
+                    android:buttonTint="@color/black"
+                    android:text="Izredno" />
 
                 <TextView
                     android:id="@+id/textView411"
@@ -641,24 +638,23 @@
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:orientation="horizontal"
-                android:weightSum="2"
-                >
+                android:weightSum="2">
 
                 <CheckBox
-                    android:id="@+id/chInstalacija"
+                    android:id="@+id/cbInstalacija"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
-                    android:text="Inštalacija in pravilna namestitev elementov"
-                    android:buttonTint="@color/black"/>
+                    android:buttonTint="@color/black"
+                    android:text="Inštalacija in pravilna namestitev elementov" />
 
                 <CheckBox
                     android:id="@+id/cbDelovanjeElementovProtivlom"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
-                    android:text="Delovanje elementov protivlomnega varovanja"
-                    android:buttonTint="@color/black"/>
+                    android:buttonTint="@color/black"
+                    android:text="Delovanje elementov protivlomnega varovanja" />
             </LinearLayout>
 
             <LinearLayout
@@ -666,24 +662,23 @@
                 android:layout_height="match_parent"
 
                 android:orientation="horizontal"
-                android:weightSum="2"
-                >
+                android:weightSum="2">
 
                 <CheckBox
                     android:id="@+id/cbNapetostAku"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
-                    android:text="Napetost akumulatorjev in napajalnikov"
-                    android:buttonTint="@color/black"/>
+                    android:buttonTint="@color/black"
+                    android:text="Napetost akumulatorjev in napajalnikov" />
 
                 <CheckBox
                     android:id="@+id/cbDelovanjePanikTipk"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
-                    android:text="Delovanje panik stikal"
-                    android:buttonTint="@color/black"/>
+                    android:buttonTint="@color/black"
+                    android:text="Delovanje panik stikal" />
             </LinearLayout>
 
             <LinearLayout
@@ -691,24 +686,23 @@
                 android:layout_height="match_parent"
 
                 android:orientation="horizontal"
-                android:weightSum="2"
-                >
+                android:weightSum="2">
 
                 <CheckBox
                     android:id="@+id/cbDelovanjeSiren"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
-                    android:text="Delovanje siren"
-                    android:buttonTint="@color/black"/>
+                    android:buttonTint="@color/black"
+                    android:text="Delovanje siren" />
 
                 <CheckBox
                     android:id="@+id/cbCiscenjeElProtivlom"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_weight="3"
-                    android:text="Čiščenje elementov protivlomnega varovanja"
-                    android:buttonTint="@color/black"/>
+                    android:buttonTint="@color/black"
+                    android:text="Čiščenje elementov protivlomnega varovanja" />
             </LinearLayout>
 
             <LinearLayout
@@ -716,18 +710,15 @@
                 android:layout_height="match_parent"
 
                 android:orientation="horizontal"
-                android:weightSum="2"
-                >
+                android:weightSum="2">
 
                 <CheckBox
                     android:id="@+id/cbDelovanjePosameznihLinij"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
-                    android:text="Delovanje posameznih linij"
-                    android:buttonTint="@color/black"/>
-
-
+                    android:buttonTint="@color/black"
+                    android:text="Delovanje posameznih linij" />
 
 
                 <CheckBox
@@ -735,8 +726,8 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
-                    android:text="Delovanje sistema dimnih bankovcev"
-                    android:buttonTint="@color/black"/>
+                    android:buttonTint="@color/black"
+                    android:text="Delovanje sistema dimnih bankovcev" />
             </LinearLayout>
 
             <LinearLayout
@@ -744,24 +735,23 @@
                 android:layout_height="match_parent"
 
                 android:orientation="horizontal"
-                android:weightSum="2"
-                >
+                android:weightSum="2">
 
                 <CheckBox
                     android:id="@+id/cbDelovanjeJavljalnik"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
-                    android:text="Delovanje javljalnikov požara"
-                    android:buttonTint="@color/black"/>
+                    android:buttonTint="@color/black"
+                    android:text="Delovanje javljalnikov požara" />
 
                 <CheckBox
                     android:id="@+id/cbDelovanjeVideoSist"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
-                    android:text="Delovanje video sistema"
-                    android:buttonTint="@color/black"/>
+                    android:buttonTint="@color/black"
+                    android:text="Delovanje video sistema" />
             </LinearLayout>
 
             <LinearLayout
@@ -769,22 +759,22 @@
                 android:layout_height="match_parent"
 
                 android:orientation="horizontal"
-                android:weightSum="2"
-                >
+                android:weightSum="2">
 
                 <CheckBox
                     android:id="@+id/cbDelElZaPlin"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
-                    android:text="Delovanje elementov za zanavanje plinov"
-                    android:buttonTint="@color/black"/>
+                    android:buttonTint="@color/black"
+                    android:text="Delovanje elementov za zanavanje plinov" />
 
                 <CheckBox
                     android:id="@+id/cbPregledArhivaVS"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
+                    android:buttonTint="@color/black"
                     android:text="Pregled arhiva video sistema" />
             </LinearLayout>
 
@@ -793,24 +783,23 @@
                 android:layout_height="match_parent"
 
                 android:orientation="horizontal"
-                android:weightSum="2"
-                >
+                android:weightSum="2">
 
                 <CheckBox
                     android:id="@+id/cbPrenosSigNAVNC"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
-                    android:text="Prenos signala na varnostno-nadzorni center"
-                    android:buttonTint="@color/black"/>
+                    android:buttonTint="@color/black"
+                    android:text="Prenos signala na varnostno-nadzorni center" />
 
                 <CheckBox
                     android:id="@+id/cbCiscanjeELVS"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
-                    android:text="Čiščenje elementov video sistema"
-                    android:buttonTint="@color/black"/>
+                    android:buttonTint="@color/black"
+                    android:text="Čiščenje elementov video sistema" />
             </LinearLayout>
 
             <LinearLayout
@@ -825,16 +814,16 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
-                    android:text="Prenos signala na gasilsko brigado"
-                    android:buttonTint="@color/black"/>
+                    android:buttonTint="@color/black"
+                    android:text="Prenos signala na gasilsko brigado" />
 
                 <CheckBox
                     android:id="@+id/cbDelovanjeKP"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
-                    android:text="Delovanje kontrole pristopa"
-                    android:buttonTint="@color/black"/>
+                    android:buttonTint="@color/black"
+                    android:text="Delovanje kontrole pristopa" />
             </LinearLayout>
 
             <LinearLayout
@@ -849,16 +838,16 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
-                    android:text="Čiščenje elementov požarnega javljanja"
-                    android:buttonTint="@color/black"/>
+                    android:buttonTint="@color/black"
+                    android:text="Čiščenje elementov požarnega javljanja" />
 
                 <CheckBox
                     android:id="@+id/cbDelovanjeRDC"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
-                    android:text="Delovanje registracije delovnega časa"
-                    android:buttonTint="@color/black"/>
+                    android:buttonTint="@color/black"
+                    android:text="Delovanje registracije delovnega časa" />
             </LinearLayout>
 
             <TextView
