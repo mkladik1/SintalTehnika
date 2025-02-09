@@ -117,7 +117,7 @@ public class DodaliSNFragment extends Fragment {
                         spVal = "1";
                         status_akt = "S";
                     }
-                        dodeliSNje = db.GetSeznamSNDodelitev(spVal,status_akt, tehnikID);
+                        dodeliSNje = db.GetSeznamSNDodelitev(spVal,status_akt, tehnikID, etSN.getText().toString());
                         adapterSeznamSNjev = new DodelitevSNAdapter(getActivity(), dodeliSNje);
                         listView.setAdapter(adapterSeznamSNjev);
                         //listView.setChoiceMode(ListView.CHOICE_MODE_SINGLE);
@@ -153,7 +153,7 @@ public class DodaliSNFragment extends Fragment {
                 }
 
                     //dodeliSNje = db.GetSeznamSNDodelitev(etSN.getText().toString(), spVal);
-                    dodeliSNje = db.GetSeznamSNDodelitev( spVal,status_akt, tehnikID);
+                    dodeliSNje = db.GetSeznamSNDodelitev( spVal,status_akt, tehnikID, etSN.getText().toString());
                     adapterSeznamSNjev = new DodelitevSNAdapter(getActivity(), dodeliSNje);
                     listView.setAdapter(adapterSeznamSNjev);
                     //listView.setChoiceMode(ListView.CHOICE_MODE_SINGLE);
@@ -190,7 +190,7 @@ public class DodaliSNFragment extends Fragment {
                 }
                 //db.updateSNOznaciId(etSN.getText().toString());
                 //dodeliSNje = db.GetSeznamSNDodelitev(etSN.getText().toString(), spVal);
-                dodeliSNje = db.GetSeznamSNDodelitev( spVal, status_akt, tehnikID);
+                dodeliSNje = db.GetSeznamSNDodelitev( spVal, status_akt, tehnikID, etSN.getText().toString());
                 adapterSeznamSNjev = new DodelitevSNAdapter(getActivity(), dodeliSNje);
                 listView.setAdapter(adapterSeznamSNjev);
                 //listView.setChoiceMode(ListView.CHOICE_MODE_SINGLE);
@@ -227,7 +227,7 @@ public class DodaliSNFragment extends Fragment {
         }
 
         serviser_sn = (Spinner) v_dodeli_sn.findViewById(R.id.spinner_user_SN_dodeli);
-        List<String> lables = db.getTehnikiFromUserInString(Integer.parseInt(tehnikID));
+        List<String> lables = db.getTehnikiFromUserInString(Integer.parseInt(tehnikID),1);
         final ArrayAdapter<String> dataAdapter = new ArrayAdapter<String>(getActivity(),android.R.layout.test_list_item,lables);
         dataAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         serviser_sn.setAdapter(dataAdapter);
@@ -240,7 +240,7 @@ public class DodaliSNFragment extends Fragment {
 
         //db.updateSNOznaciDatum(etSN.getText().toString());
         //dodeliSNje = db.GetSeznamSNDodelitev(etSN.getText().toString(), spVal);
-        dodeliSNje = db.GetSeznamSNDodelitev( spVal,status_akt, tehnikID);
+        dodeliSNje = db.GetSeznamSNDodelitev( spVal,status_akt, tehnikID, etSN.getText().toString());
         adapterSeznamSNjev = new DodelitevSNAdapter(getActivity(), dodeliSNje);
         listView = (ListView) v_dodeli_sn.findViewById(R.id.seznamSNDodelitve);
         listView.setAdapter(adapterSeznamSNjev);
@@ -291,7 +291,7 @@ public class DodaliSNFragment extends Fragment {
                         spVal = "1";
                         status_akt = "S";
                     }
-                    dodeliSNje = db.GetSeznamSNDodelitev( spVal,status_akt, tehnikID);
+                    dodeliSNje = db.GetSeznamSNDodelitev( spVal,status_akt, tehnikID, etSN.getText().toString());
                     adapterSeznamSNjev = new DodelitevSNAdapter(getActivity(), dodeliSNje);
                     //listView = (ListView) v_dodeli_sn.findViewById(R.id.seznamSNDodelitve);
                     listView.setAdapter(adapterSeznamSNjev);

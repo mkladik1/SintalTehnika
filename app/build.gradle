@@ -41,14 +41,14 @@ dependencies {
     implementation files('C:\\Users\\matejkl\\AndroidStudioProjects\\SintalTehnika\\app\\libs\\additionnal.jar')
     implementation files('C:\\Users\\matejkl\\AndroidStudioProjects\\SintalTehnika\\app\\libs\\gson-2.10.1.jar')
     implementation files('C:\\Users\\matejkl\\AndroidStudioProjects\\SintalTehnika\\app\\libs\\jboss-common-jdbc-wrapper-3.2.3.jar')
+    //implementation 'androidx.wear:wear:1.2.0'
     testImplementation 'junit:junit:4.+'
     androidTestImplementation 'androidx.test.ext:junit:1.1.3'
     androidTestImplementation 'androidx.test.espresso:espresso-core:3.4.0'
     //implementation 'mysql:mysql-connector-java:8.0.29'
     implementation 'com.itextpdf.android:itext7-core-android:7.2.3'
     implementation 'mysql:mysql-connector-java:8.0.11'
-
-
+    //compileOnly 'com.google.android.wearable:wearable:2.9.0'
 
 
 }

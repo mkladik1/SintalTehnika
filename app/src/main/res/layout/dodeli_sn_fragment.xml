@@ -50,14 +50,14 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
-                    android:text="Datum:" />
+                    android:text="Datum začetek:" />
 
                 <EditText
                     android:id="@+id/etDatumSN_dodeli"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
-                    android:inputType="date"
+                    android:inputType="date|numberSigned"
                     android:maxLines="1" />
 
                 <TextView

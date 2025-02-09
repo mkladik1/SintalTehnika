@@ -1455,13 +1455,34 @@ public class DatabaseHandler extends SQLiteOpenHelper {
         return userList;
     }
 
-    public List<String> getTehnikiFromUserInString(int userID) {
+    public List<String> getTehnikiFromUserInString(int userID, int svm) {
         List<String> userList = new ArrayList<String>();
         // Select All Query
-        String selectQuery = "SELECT  sintal_teh_delavci.* FROM sintal_teh_upo " +
-                "left join sintal_teh_upo_delavci on sintal_teh_upo.user_id = sintal_teh_upo_delavci.user_id " +
-                "left join sintal_teh_delavci on  sintal_teh_delavci.tehnik_id = sintal_teh_upo_delavci.tehnik_id " +
-                "where sintal_teh_upo.user_id = "+ String.valueOf(userID);
+        //seznam serviserjev
+        String selectQuery = "";
+        if (svm == 1) {
+            selectQuery = "SELECT  sintal_teh_delavci.* FROM sintal_teh_upo " +
+                    "left join sintal_teh_upo_delavci on sintal_teh_upo.user_id = sintal_teh_upo_delavci.user_id " +
+                    "left join sintal_teh_delavci on  sintal_teh_delavci.tehnik_id = sintal_teh_upo_delavci.tehnik_id " +
+                    "where sintal_teh_upo.user_id = " + String.valueOf(userID) +  " and seznam_servis = 1 order by naziv ";
+
+        }
+        else if (svm == 2)
+        {
+            selectQuery = "SELECT  sintal_teh_delavci.* FROM sintal_teh_upo " +
+                    "left join sintal_teh_upo_delavci on sintal_teh_upo.user_id = sintal_teh_upo_delavci.user_id " +
+                    "left join sintal_teh_delavci on  sintal_teh_delavci.tehnik_id = sintal_teh_upo_delavci.tehnik_id " +
+                    "where sintal_teh_upo.user_id = " + String.valueOf(userID) + " and seznam_vzdrzevanje = 1 order by naziv ";
+
+
+        }
+        else if (svm == 3 )
+        {
+            selectQuery = "SELECT  sintal_teh_delavci.* FROM sintal_teh_upo " +
+                    "left join sintal_teh_upo_delavci on sintal_teh_upo.user_id = sintal_teh_upo_delavci.user_id " +
+                    "left join sintal_teh_delavci on  sintal_teh_delavci.tehnik_id = sintal_teh_upo_delavci.tehnik_id " +
+                    "where sintal_teh_upo.user_id = " + String.valueOf(userID) + " and seznam_montaza = 1 order by naziv ";
+        }
 
         mDatabase = this.getReadableDatabase();
         mCursor = mDatabase.rawQuery(selectQuery, null);
@@ -1739,20 +1760,20 @@ public class DatabaseHandler extends SQLiteOpenHelper {
     }
 
 
-    public ArrayList<ServisniNalog> GetSeznamSNDodelitev(String vodja_sn, String status_akt, String userid){
+    public ArrayList<ServisniNalog> GetSeznamSNDodelitev(String vodja_sn, String status_akt, String userid, String datum){
 
         ArrayList<ServisniNalog> list = new ArrayList<ServisniNalog>();
-        String query = "SELECT  * FROM sintal_teh_sn where datum_dodelitve <> null and status_akt = '"+ status_akt + "' and substr(DELOVNI_NALOG,3,2) in (select podjetje from sintal_teh_upo_podjetje where user_id = "+userid+") order by DATUM_ZACETEK desc";
+        String query = "SELECT  * FROM sintal_teh_sn where datum_dodelitve <> null and status_akt = '"+ status_akt + "' and substr(DELOVNI_NALOG,3,2) in (select podjetje from sintal_teh_upo_podjetje where user_id = "+userid+") and DATUM_ZACETEK = '"+datum+" 00:00:00' order by DATUM_ZACETEK desc";
         if (vodja_sn.equals("-1"))
         {
-            query = "SELECT  * FROM sintal_teh_sn where  VODJA_NALOGA = '' and STATUS_AKT = '"+status_akt+"' and substr(DELOVNI_NALOG,3,2) in (select podjetje from sintal_teh_upo_podjetje where user_id = "+userid+") order by DATUM_ZACETEK desc";
+            query = "SELECT  * FROM sintal_teh_sn where  VODJA_NALOGA = '' and STATUS_AKT = '"+status_akt+"' and substr(DELOVNI_NALOG,3,2) in (select podjetje from sintal_teh_upo_podjetje where user_id = "+userid+") and DATUM_ZACETEK = '"+datum+" 00:00:00' order by DATUM_ZACETEK desc";
         }
         else if (vodja_sn.equals("0")) {
-            query = "SELECT  * FROM sintal_teh_sn where  VODJA_NALOGA <> '' and STATUS_AKT = '"+status_akt+"'  and substr(DELOVNI_NALOG,3,2) in (select podjetje from sintal_teh_upo_podjetje where user_id = "+userid+") order by DATUM_ZACETEK desc";
+            query = "SELECT  * FROM sintal_teh_sn where  VODJA_NALOGA <> '' and STATUS_AKT = '"+status_akt+"'  and substr(DELOVNI_NALOG,3,2) in (select podjetje from sintal_teh_upo_podjetje where user_id = "+userid+") and DATUM_ZACETEK = '"+datum+" 00:00:00' order by DATUM_ZACETEK desc";
         }
         else if (vodja_sn.equals("1"))
         {
-            query = "SELECT  * FROM sintal_teh_sn where STATUS_AKT = '"+status_akt+"'  and substr(DELOVNI_NALOG,3,2) in (select podjetje from sintal_teh_upo_podjetje where user_id = "+userid+") order by DATUM_ZACETEK desc ;";
+            query = "SELECT  * FROM sintal_teh_sn where STATUS_AKT = '"+status_akt+"'  and substr(DELOVNI_NALOG,3,2) in (select podjetje from sintal_teh_upo_podjetje where user_id = "+userid+") and DATUM_ZACETEK = '"+datum+" 00:00:00' order by DATUM_ZACETEK desc ;";
         }
         mDatabase = this.getReadableDatabase();
         mCursor = mDatabase.rawQuery(query, null);

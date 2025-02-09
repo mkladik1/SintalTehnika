@@ -82,6 +82,7 @@ import si.sintal.sintaltehnika.DatabaseHandler;
 import si.sintal.sintaltehnika.R;
 import si.sintal.sintaltehnika.ui.main.SNArtikel;
 import si.sintal.sintaltehnika.ui.main.SNPagerAdapter;
+import si.sintal.sintaltehnika.ui.main.SNPetrolActivity;
 import si.sintal.sintaltehnika.ui.main.SendEmailService;
 import si.sintal.sintaltehnika.ui.main.ServisniNalog;
 
@@ -312,6 +313,28 @@ public class obrazecSNFragment extends Fragment {
                         } catch (Exception e) {
                             e.printStackTrace();
                         }
+                    }
+                }
+        );
+
+        Button bSNPetrol = (Button) v.findViewById(R.id.bSNPetrol);
+        bSNPetrol.setOnClickListener(
+                new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+
+                        //SNPetrolFragment novFragment = new SNPetrolFragment();
+                        Intent intent = new Intent(getActivity(), SNPetrolActivity.class);
+                        intent.putExtra("userID", userID);
+                        intent.putExtra("tehnikID",tehnikID);
+                        intent.putExtra("snID",snID);
+                        //intent.putExtra("userName", nadzornik);
+                        //intent.putExtra("email", email);
+                        //intent.putExtra("admin",admin_dostop);
+                        //intent.putExtra("servis",servis);
+                        //intent.putExtra("montaza",montaza);
+                        //intent.putExtra("vzdrzevanje",vzdrzevanje);
+                         startActivity(intent);
                     }
                 }
         );

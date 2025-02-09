@@ -263,10 +263,6 @@ public class SNSeznamZakljucenihSNAdapter extends ArrayAdapter<ServisniNalog> im
                         bw2.append(json);
                         bw2.close();
                         fw2.close();
-
-
-
-
                         //ArrayList<String> parameters = new ArrayList<String>();
                         //parameters.add(String.valueOf(n.getid()));
                         //parameters.add("X");
