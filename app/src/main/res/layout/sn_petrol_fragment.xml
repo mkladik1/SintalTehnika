@@ -551,14 +551,16 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
-                    android:text="Button" />
+                    android:text="Button"
+                    android:visibility="invisible" />
 
                 <Button
                     android:id="@+id/button2"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
-                    android:text="Button" />
+                    android:text="Button"
+                    tools:visibility="invisible" />
 
                 <Button
                     android:id="@+id/bIzpisiPetrolPdf"
