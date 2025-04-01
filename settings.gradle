@@ -1,3 +1,6 @@
+plugins {
+    id 'org.gradle.toolchains.foojay-resolver-convention' version '0.8.0'
+}
 include ':gson-2.10.1'
 include ':mail'
 include ':additionnal'

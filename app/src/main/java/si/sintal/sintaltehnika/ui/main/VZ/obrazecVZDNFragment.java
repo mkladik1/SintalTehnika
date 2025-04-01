@@ -236,13 +236,15 @@ public class obrazecVZDNFragment extends Fragment {
         TextView test = (TextView) getView().findViewById(R.id.idObrazecVZDN);
         test.setText(Integer.toString(vzDN.getid()));
         test = (TextView) getView().findViewById(R.id.tvVZDNNarocnikNaziv);
-        test.setText(vzDN.getNaziv_servisa());
+        test.setText(vzDN.getNarocnik());
         test = (TextView) getView().findViewById(R.id.tvStevilkaVZDN);
         test.setText(vzDN.getDelovniNalog());
         test = (TextView) getView().findViewById(R.id.tvVZDNNarocnikNaslov);
-        test.setText(vzDN.getIme()+", "+vzDN.getNaslov());
+        test.setText(vzDN.getNarocnikNaslov());
+        test = (TextView) getView().findViewById(R.id.tvVZDNImeSektorja);
+        test.setText(vzDN.getObjekt());
         test = (TextView) getView().findViewById(R.id.tvVZDNImeSekNaslov);
-        test.setText(vzDN.getNaslov());
+        test.setText(vzDN.getObjektNaslov());
 
         test = (TextView) getView().findViewById(R.id.tvVZDNKontaktnaOseba);
         test.setText(vzDN.getKontaktna_oseba());

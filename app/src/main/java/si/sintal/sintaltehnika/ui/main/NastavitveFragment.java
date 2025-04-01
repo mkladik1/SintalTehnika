@@ -237,8 +237,8 @@ public class NastavitveFragment extends Fragment {
                         String sis_ostalo = object.getString("sis_ostalo");
                         String oprema = object.getString("oprema");
                         String prenos_alarma = object.getString("prenos_alarma");
-                        String Dok_BD = object.getString("Dok_BD");
-                        String datum_veljavnosti_Dok_BD = object.getString("datum_veljavnosti_Dok_BD");
+                        //String Dok_BD = object.getString("Dok_BD");
+                        //String datum_veljavnosti_Dok_BD = object.getString("datum_veljavnosti_Dok_BD");
                         String servis_izvajalec = object.getString("servis_izvajalec");
                         String koda_objekta = object.getString("koda_objekta");
                         //String PODPIS_NAROCNIK = object.getString("PODPIS_NAROCNIK");
@@ -255,6 +255,14 @@ public class NastavitveFragment extends Fragment {
                         String STEVILO_KM = object.getString("STEVILO_KM");
                         String DATUM_PODPISA = object.getString("DATUM_PODPISA");
                         String NASLOV_OBJEKTA = object.getString("naslov_objekta");
+
+                        String PODJETJE = object.getString("podjetje");
+
+                        String NAROCNIK = object.getString("narocnik");
+                        String NAROCNIK_NASLOV = object.getString("narocnik_naslov");
+                        String OBJEKT = object.getString("objekt");
+
+
 
                         //String DATUM_DODELITVE = object.getString("DATUM_DODELITVE");
 
@@ -288,8 +296,8 @@ public class NastavitveFragment extends Fragment {
                                 sis_ostalo,
                                 oprema,
                                 prenos_alarma,
-                                Dok_BD,
-                                datum_veljavnosti_Dok_BD,
+                                //"",
+                                //"",
                                 servis_izvajalec,
                                 koda_objekta,
 
@@ -305,7 +313,11 @@ public class NastavitveFragment extends Fragment {
                                 STEVILO_KM,
 
                                 DATUM_PODPISA,
-                                NASLOV_OBJEKTA
+                                NASLOV_OBJEKTA,
+                                PODJETJE,
+                                NAROCNIK,
+                                NAROCNIK_NASLOV,
+                                OBJEKT
                         );
                     }
                     //getString("user_id");//.getString("user_id");

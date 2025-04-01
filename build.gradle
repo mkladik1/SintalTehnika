@@ -3,9 +3,12 @@ buildscript {
     repositories {
         google()
         jcenter()
+        flatDir {
+            dirs("libs")
+        }
     }
     dependencies {
-        classpath "com.android.tools.build:gradle:4.1.2";
+        classpath 'com.android.tools.build:gradle:8.9.1';
 
         //implementation 'com.google.code.gson:gson:jar:2.10.1';
         //implementation 'com.itextpdf.android:itext7-core-android:7.2.3'
@@ -28,6 +31,6 @@ allprojects {
     }
 }
 
-task clean(type: Delete) {
-    delete rootProject.buildDir
-}
+//task clean(type: Delete) {
+//    delete rootProject.buildDir
+//}

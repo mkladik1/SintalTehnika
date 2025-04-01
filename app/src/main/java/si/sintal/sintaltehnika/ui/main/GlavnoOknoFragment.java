@@ -67,7 +67,8 @@ public class GlavnoOknoFragment extends Fragment {
         Button bNastavitve = (Button) view.findViewById(R.id.bNastavitve);
         Button bDodeliSN = (Button) view.findViewById(R.id.bDodeliSN);
         Button bRegCasa = (Button) view.findViewById(R.id.bRegistracija);
-        Button bVzdrzevanje = (Button) view.findViewById(R.id.bVzrdzevanje);
+        Button bVzdrzevanje = (Button) view.findViewById(R.id.bVzdrzevanje);
+        Button bMontaza = (Button) view.findViewById(R.id.bMontaza);
 
         bOdjava.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -156,6 +157,28 @@ public class GlavnoOknoFragment extends Fragment {
                 if (vzdrzevanje.equals("1")) {
                     //new LoadVZDNFromWeb().execute();
                     Intent intent = new Intent(getActivity(), VZSeznamActivity.class);
+                    intent.putExtra("userID", tehnikID);
+                    intent.putExtra("userName", tehnikNaziv);
+                    intent.putExtra("email", tehnikEmail);
+                    intent.putExtra("admin", tehnikAdminDostop);
+                    intent.putExtra("servis", servis);
+                    intent.putExtra("montaza", montaza);
+                    intent.putExtra("vzdrzevanje", vzdrzevanje);
+                    startActivity(intent);
+                }
+                else
+                {
+                    Toast.makeText(getContext(),"Nimate pravic do tega modula!", Toast.LENGTH_LONG).show();
+                }
+            }
+        });
+
+        bMontaza.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if (montaza.equals("1")) {
+                    //new LoadVZDNFromWeb().execute();
+                    Intent intent = new Intent(getActivity(), MontazaActivity.class);
                     intent.putExtra("userID", tehnikID);
                     intent.putExtra("userName", tehnikNaziv);
                     intent.putExtra("email", tehnikEmail);
@@ -283,8 +306,11 @@ public class GlavnoOknoFragment extends Fragment {
                         String DATUM_PODPISA = object.getString("DATUM_PODPISA");
                         String NASLOV_OBJEKTA = object.getString("naslov_objekta");
 
-                        //String DATUM_DODELITVE = object.getString("DATUM_DODELITVE");
+                        String PODJETJE = object.getString("podjetje");
 
+                        String NAROCNIK = object.getString("narocnik");
+                        String NAROCNIK_NASLOV = object.getString("narocnik_naslov");
+                        String OBJEKT = object.getString("objekt");
 
                         DatabaseHandler db = new DatabaseHandler(getContext());
                         db.insertUpdateVZDN(
@@ -315,8 +341,8 @@ public class GlavnoOknoFragment extends Fragment {
                                 sis_ostalo,
                                 oprema,
                                 prenos_alarma,
-                                Dok_BD,
-                                datum_veljavnosti_Dok_BD,
+                                //Dok_BD,
+                                //datum_veljavnosti_Dok_BD,
                                 servis_izvajalec,
                                 koda_objekta,
 
@@ -332,7 +358,11 @@ public class GlavnoOknoFragment extends Fragment {
                                 STEVILO_KM,
 
                                 DATUM_PODPISA,
-                                NASLOV_OBJEKTA
+                                NASLOV_OBJEKTA,
+                                PODJETJE,
+                                NAROCNIK,
+                                NAROCNIK_NASLOV,
+                                OBJEKT
                         );
                     }
                     //getString("user_id");//.getString("user_id");

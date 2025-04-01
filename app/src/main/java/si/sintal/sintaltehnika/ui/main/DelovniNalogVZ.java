@@ -53,6 +53,10 @@ public class DelovniNalogVZ {
     String naslov;
     int periodika_kreirana;
     int prenos_per;
+    String narocnik;
+    String narocnik_naslov;
+    String objekt;
+    String objekt_naslov;
     //int tipNarocila;
 
 
@@ -264,6 +268,34 @@ public class DelovniNalogVZ {
     }
     public void setMc_ime_objekta(String newImeObjekta) {
         this.mc_ime_objekta = newImeObjekta;
+    }
+
+    public String getNarocnik() {
+        return narocnik;
+    }
+    public void setNarocnik(String newNarocnik) {
+        this.narocnik = newNarocnik;
+    }
+
+    public String getNarocnikNaslov() {
+        return narocnik_naslov;
+    }
+    public void setNarocnikNaslov(String newNarocnikNaslov) {
+        this.narocnik_naslov = newNarocnikNaslov;
+    }
+
+    public String getObjekt() {
+        return objekt;
+    }
+    public void setObjekt(String newObjekt) {
+        this.objekt = newObjekt;
+    }
+
+    public String getObjektNaslov() {
+        return objekt_naslov;
+    }
+    public void setObjektNaslov(String newObjektNaslov) {
+        this.objekt_naslov = newObjektNaslov;
     }
 
     public void setDatumPodpisa(String newDatumPodpisa) {this.datumPodpisa = newDatumPodpisa;  }

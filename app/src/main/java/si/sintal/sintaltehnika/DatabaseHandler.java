@@ -326,8 +326,8 @@ public class DatabaseHandler extends SQLiteOpenHelper {
                 " sis_ostalo int(11) DEFAULT NULL,"+
                 " oprema varchar(255) DEFAULT NULL,"+
                 " prenos_alarma varchar(255) DEFAULT NULL,"+
-                " Dok_BD int(11) DEFAULT NULL,"+
-                " datum_veljavnosti_Dok_BD datetime DEFAULT NULL, "+
+                //" Dok_BD int(11) DEFAULT NULL,"+
+                //" datum_veljavnosti_Dok_BD datetime DEFAULT NULL, "+
                 " servis_izvajalec int(11) DEFAULT NULL, "+
                 " koda_objekta varchar(10) DEFAULT NULL, "+
                 " PODPIS_NAROCNIK blob DEFAULT NULL, "+
@@ -343,7 +343,18 @@ public class DatabaseHandler extends SQLiteOpenHelper {
                 " URE_DELO decimal(15,2), "+
                 " STEVILO_KM decimal(15,2), "+
                 " DATUM_PODPISA date, "+
-                " naslov_objekta varchar(200)" +
+                " naslov_objekta varchar(200), " +
+                " podjetje varchar(3), " +
+                " projekt varchar(15), " +
+                " IP_urejanja varchar(255), "+
+                " xuser varchar(3), " +
+                " xdatetime datetime, " +
+                " st_del_naloga_dc_all varchar(50), " +
+                " naziv_servisa_dc_all varchar(255), " +
+                " koda_objekta_dc_all varchar(15) , " +
+                " narocnik varchar(200) ," +
+                " narocnik_naslov varchar(500), " +
+                " objekt varchar(200) " +
                 ") " ;
         mDatabase.execSQL(CREATE_TEHNIKA_VZ_DN);
 
@@ -1091,8 +1102,8 @@ public class DatabaseHandler extends SQLiteOpenHelper {
             String sis_ostalo ,
             String oprema ,
             String prenos_alarma ,
-            String Dok_BD ,
-            String datum_veljavnosti_Dok_BD ,
+            //String Dok_BD ,
+            //String datum_veljavnosti_Dok_BD ,
             String servis_izvajalec ,
             String koda_objekta ,
             String STATUS ,
@@ -1107,7 +1118,11 @@ public class DatabaseHandler extends SQLiteOpenHelper {
             String URE_DELO ,
             String STEVILO_KM ,
             String DATUM_PODPISA,
-            String NASLOV_OBJEKTA
+            String NASLOV_OBJEKTA,
+            String PODJETJE,
+            String NAROCNIK,
+            String NAROCNIK_NASLOV,
+            String OBJEKT
 
     ) {
 
@@ -1150,8 +1165,8 @@ public class DatabaseHandler extends SQLiteOpenHelper {
             values.put("sis_ostalo", sis_ostalo);
             values.put("oprema", oprema);
             values.put("prenos_alarma", prenos_alarma);
-            values.put("Dok_BD", Dok_BD);
-            values.put("datum_veljavnosti_Dok_BD", datum_veljavnosti_Dok_BD);
+            //values.put("Dok_BD", Dok_BD);
+            //values.put("datum_veljavnosti_Dok_BD", datum_veljavnosti_Dok_BD);
             values.put("servis_izvajalec", servis_izvajalec);
             values.put("koda_objekta", koda_objekta);
             values.put("STATUS", STATUS);
@@ -1168,6 +1183,13 @@ public class DatabaseHandler extends SQLiteOpenHelper {
 
             values.put("DATUM_PODPISA", DATUM_PODPISA);
             values.put("naslov_objekta", NASLOV_OBJEKTA);
+
+            values.put("podjetje", PODJETJE);
+            values.put("narocnik", NAROCNIK);
+            values.put("narocnik_naslov", NAROCNIK_NASLOV);
+            values.put("objekt", OBJEKT);
+
+
             mDatabase.update("sintal_teh_vz_dn", values, "id=?", new String[]{id});
 
         }
@@ -1201,8 +1223,8 @@ public class DatabaseHandler extends SQLiteOpenHelper {
             values.put("sis_ostalo", sis_ostalo);
             values.put("oprema", oprema);
             values.put("prenos_alarma", prenos_alarma);
-            values.put("Dok_BD", Dok_BD);
-            values.put("datum_veljavnosti_Dok_BD", datum_veljavnosti_Dok_BD);
+            //values.put("Dok_BD", Dok_BD);
+            //values.put("datum_veljavnosti_Dok_BD", datum_veljavnosti_Dok_BD);
             values.put("servis_izvajalec", servis_izvajalec);
             values.put("koda_objekta", koda_objekta);
             values.put("STATUS", STATUS);
@@ -1219,7 +1241,10 @@ public class DatabaseHandler extends SQLiteOpenHelper {
 
             values.put("DATUM_PODPISA", DATUM_PODPISA);
             values.put("naslov_objekta", NASLOV_OBJEKTA);
-            //values.put("OZNACI",OZNACI);
+            values.put("podjetje", PODJETJE);
+            values.put("narocnik", NAROCNIK);
+            values.put("narocnik_naslov", NAROCNIK_NASLOV);
+            values.put("objekt", OBJEKT);
             mDatabase.insert("sintal_teh_vz_dn",null, values);
         }
         mCursor.close();
@@ -1937,6 +1962,8 @@ public class DatabaseHandler extends SQLiteOpenHelper {
             sn.setDatum_naslednjega(mCursor.getString(mCursor.getColumnIndex("datum_naslednjega")));
             sn.setPeridika_kreirana(mCursor.getInt(mCursor.getColumnIndex("per_id")));
             sn.setPrenos_per(mCursor.getInt(mCursor.getColumnIndex("prenos_per")));
+            sn.setObjekt(mCursor.getString(mCursor.getColumnIndex("objekt")));
+            sn.setObjektNaslov(mCursor.getString(mCursor.getColumnIndex("naslov_objekta")));
             //sn.setOznacen(0);
             list.add(sn);
         }
@@ -2031,6 +2058,11 @@ public class DatabaseHandler extends SQLiteOpenHelper {
             vzDelN.setUreDelo(mCursor.getDouble(mCursor.getColumnIndex("URE_DELO")));
             vzDelN.setStKm(mCursor.getDouble(mCursor.getColumnIndex("STEVILO_KM")));
             vzDelN.setDatumPodpisa(mCursor.getString(mCursor.getColumnIndex("DATUM_PODPISA")));
+            vzDelN.setNarocnik(mCursor.getString(mCursor.getColumnIndex("narocnik")));
+            vzDelN.setNarocnikNaslov(mCursor.getString(mCursor.getColumnIndex("narocnik_naslov")));
+            vzDelN.setObjekt(mCursor.getString(mCursor.getColumnIndex("objekt")));
+            vzDelN.setObjektNaslov(mCursor.getString(mCursor.getColumnIndex("naslov_objekta")));
+
             //vzDelN.setPodpis(mCursor.getBlob(mCursor.getColumnIndex("PODPIS_NAROCNIK")));
             //vzDelN.setDatumDodelitve(mCursor.getString(mCursor.getColumnIndex("DATUM_DODELITVE")));
             //vzDelN.setDatumKonec(mCursor.getString(mCursor.getColumnIndex("DATUM_KONEC")));
