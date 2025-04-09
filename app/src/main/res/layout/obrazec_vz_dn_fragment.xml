@@ -191,22 +191,6 @@
                     android:enabled="false"
                     android:inputType="text" />
 
-                <TextView
-                    android:id="@+id/textView19"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="ŠT."
-                    android:visibility="invisible" />
-
-                <EditText
-                    android:id="@+id/tvVZDNNarocnikHisnaSt"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:ems="1"
-                    android:enabled="false"
-                    android:inputType="number|text"
-                    tools:visibility="invisible" />
-
             </LinearLayout>
 
             <LinearLayout
@@ -265,21 +249,6 @@
                     android:enabled="false"
                     android:inputType="text" />
 
-                <TextView
-                    android:id="@+id/textView25"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="ŠT."
-                    tools:visibility="invisible" />
-
-                <EditText
-                    android:id="@+id/tvVZDNImeSekHisnaSt"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:ems="3"
-                    android:enabled="false"
-                    android:inputType="text"
-                    tools:visibility="invisible" />
             </LinearLayout>
 
             <LinearLayout

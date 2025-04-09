@@ -329,6 +329,141 @@ public class NastavitveFragment extends Fragment {
 
             }
 
+            result = null;
+
+            try {
+                URL url = new URL("https://www.sintal.si/tehnika/getVZD_dt.php");
+                HttpURLConnection conn = (HttpURLConnection) url.openConnection();
+                String username ="sintal_teh";
+                String password = "mCuSTArQ*PdWAH#7-getVZD-dt";
+                String userpass = username + ":" + password;
+                String basicAuth = "Basic " + new String(Base64.getEncoder().encode(userpass.getBytes()));
+                conn.setRequestProperty ("Authorization", basicAuth);
+                conn.connect();
+
+                if (conn.getResponseCode() == HttpURLConnection.HTTP_OK) {
+                    InputStreamReader inputStreamReader = new InputStreamReader(conn.getInputStream());
+                    BufferedReader reader = new BufferedReader(inputStreamReader);
+                    StringBuilder stringBuilder = new StringBuilder();
+                    String temp;
+
+                    while ((temp = reader.readLine()) != null) {
+                        stringBuilder.append(temp);
+                    }
+                    result = stringBuilder.toString();
+                }else  {
+                    result = "error";
+                }
+                conn.disconnect();
+
+            } catch (Exception  e) {
+                e.printStackTrace();
+            }
+            //return result;
+
+            if (result != null)
+            {
+                JSONObject obj = null;
+                try {
+                    obj = new JSONObject(result);
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
+                try {
+                    JSONArray dataArray = obj.getJSONArray("vz_dn_dt");
+                    //int pageName = obj.getJSONArray("users").length();
+                    for (int i=0; i < dataArray.length() ; i++)
+                    {
+                        JSONObject object = dataArray.getJSONObject(i);
+
+                        //String id = object.getString("id");
+                        String Company = object.getString("Company");
+                        String projekt = object.getString("Job No_");
+                        String st_del_naloga = object.getString("Job Task No_");
+                        String datum = object.getString("datum");
+                        String opomba = object.getString("opomba");
+                        String ip_urejanja = object.getString("IP_urejanja");
+                        String xuser = object.getString("xuser");
+                        String xdatetime = object.getString("xdatetime");
+
+
+                        //String DATUM_DODELITVE = object.getString("DATUM_DODELITVE");
+
+
+                        DatabaseHandler db = new DatabaseHandler(getContext());
+                        db.insertUpdateVZDNPeriodika(
+                                "0",
+                                st_del_naloga,
+                                "",
+                                "",
+                                datum,
+                                "",
+                                "",
+                                "",
+                                "",
+                                "",
+                                "",
+                                "",
+                                opomba,
+                                "",
+                                "",
+                                "",
+                                "0",
+                                "0",
+                                "0",
+                                "0",
+
+                                "0",
+                                "0",
+                                "0",
+                                "0",
+                                "0",
+                                //"",
+                                //"",
+                                "0",
+                                "",
+
+                                "",
+                                "",
+                                "",
+                                "",
+                                "",
+                                "",
+                                "",
+                                "",
+                                "",
+                                "",
+
+                                "",
+                                "",
+                                "",
+                                "",
+                                "",
+                                "",
+                                "",
+                                "",
+                                "",
+                                "",
+                                "",
+                                "",
+                                "",
+                                Company,
+                                projekt,
+                                opomba,
+                                ip_urejanja,
+                                xuser,
+                                xdatetime
+                        );
+                    }
+                    //getString("user_id");//.getString("user_id");
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
+
+
+
+            }
+
             return null;
         }
 

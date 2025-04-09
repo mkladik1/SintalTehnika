@@ -1,4 +1,4 @@
-package si.sintal.sintaltehnika.ui.main.SN;
+package si.sintal.sintaltehnika.ui.main.VZ;
 
 import android.content.Context;
 import android.content.Intent;
@@ -39,17 +39,19 @@ import java.util.Base64;
 import si.sintal.sintaltehnika.DatabaseHandler;
 import si.sintal.sintaltehnika.DialogPodatkiOSNActivity;
 import si.sintal.sintaltehnika.R;
+import si.sintal.sintaltehnika.ui.main.DelovniNalogVZ;
+import si.sintal.sintaltehnika.ui.main.DelovniNalogVZPeriodika;
 import si.sintal.sintaltehnika.ui.main.DialogPodatkiOSNFragment;
 import si.sintal.sintaltehnika.ui.main.SNArtikel;
 import si.sintal.sintaltehnika.ui.main.ServisniNalog;
 
-public class SNSeznamZakljucenihSNAdapter extends ArrayAdapter<ServisniNalog> implements Filterable {
+public class VZDNSeznamZakljucenihAdapter extends ArrayAdapter<DelovniNalogVZ> implements Filterable {
 
     private Context context;
     private LayoutInflater inflater;
-    private ArrayList<ServisniNalog> originalData;
-    private ArrayList<ServisniNalog> seznamSNjev;
-    SNSeznamZakljucenihSNAdapter.ItemFilter mFilter;
+    private ArrayList<DelovniNalogVZ> originalData;
+    private ArrayList<DelovniNalogVZ> seznamDNjev;
+    VZDNSeznamZakljucenihAdapter.ItemFilter mFilter;
     private int mySNid;
     private String  userID;
     private int pos;
@@ -61,23 +63,21 @@ public class SNSeznamZakljucenihSNAdapter extends ArrayAdapter<ServisniNalog> im
     //private static final String USER = "sintal87_tehnika";
     //private static final String PASSWORD = "64AyUev83zg78s4";
 
-    public SNSeznamZakljucenihSNAdapter(Context context, ArrayList<ServisniNalog> seznamSNjev, String userID,String tehnikID) {
-        super(context, 0, seznamSNjev);
+    public VZDNSeznamZakljucenihAdapter(Context context, ArrayList<DelovniNalogVZ> seznamDNjev, String userID, String tehnikID) {
+        super(context, 0, seznamDNjev);
         this.context = context;
-        this.seznamSNjev = new ArrayList<ServisniNalog>();
-        this.seznamSNjev.addAll(seznamSNjev);
-        this.originalData = new ArrayList<ServisniNalog>();
-        this.originalData.addAll(seznamSNjev);
+        this.seznamDNjev = new ArrayList<DelovniNalogVZ>();
+        this.seznamDNjev.addAll(seznamDNjev);
+        this.originalData = new ArrayList<DelovniNalogVZ>();
+        this.originalData.addAll(seznamDNjev);
         this.userID = userID;
         this.tehnikID = tehnikID;
-
-
 
     }
 
     @Override
     public int getCount() {
-        return seznamSNjev.size();
+        return seznamDNjev.size();
     }
 
 
@@ -87,8 +87,8 @@ public class SNSeznamZakljucenihSNAdapter extends ArrayAdapter<ServisniNalog> im
     }
 
     private class ViewHolder {
-        TextView stSNja;
-        TextView idSNja;
+        TextView stDNja;
+        TextView idDNja;
         TextView nazivNarocnikSNja;
         TextView opisNapakeSNja;
         CheckBox cbOznacen;
@@ -102,18 +102,18 @@ public class SNSeznamZakljucenihSNAdapter extends ArrayAdapter<ServisniNalog> im
 
     public View getView(final int position, View convertView, ViewGroup parent) {
 
-        SNSeznamZakljucenihSNAdapter.ViewHolder holder = null;
+        VZDNSeznamZakljucenihAdapter.ViewHolder holder = null;
         if (convertView == null) {
             inflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-            convertView = inflater.inflate(R.layout.vz_seznam_zakljucenih_vz, null);
-            holder = new SNSeznamZakljucenihSNAdapter.ViewHolder();
-            holder.stSNja = (TextView) convertView.findViewById(R.id.labelstevilkaVZ);
-            holder.idSNja = (TextView) convertView.findViewById(R.id.labelidVZ);
-            holder.nazivNarocnikSNja = (TextView) convertView.findViewById(R.id.labelVZNarocnik);
-            holder.opisNapakeSNja = (TextView) convertView.findViewById(R.id.labelVZOpisNapke);
-            holder.datumZakljucenSN = (TextView) convertView.findViewById(R.id.labelidVZDodeljeno);
-            holder.datumZakljucenoSN = (TextView) convertView.findViewById(R.id.labelidVZZakljuceno);
-            holder.poslanoSN = (TextView) convertView.findViewById(R.id.labelidVZPoslano);
+            convertView = inflater.inflate(R.layout.sn_seznam_zakljucenih_sn, null);
+            holder = new VZDNSeznamZakljucenihAdapter.ViewHolder();
+            holder.stDNja = (TextView) convertView.findViewById(R.id.labelstevilkaSN);
+            holder.idDNja = (TextView) convertView.findViewById(R.id.labelidSN);
+            holder.nazivNarocnikSNja = (TextView) convertView.findViewById(R.id.labelSNNarocnik);
+            holder.opisNapakeSNja = (TextView) convertView.findViewById(R.id.labelSNOpisNapke);
+            holder.datumZakljucenSN = (TextView) convertView.findViewById(R.id.labelidSNDodeljeno);
+            holder.datumZakljucenoSN = (TextView) convertView.findViewById(R.id.labelidSNZakljuceno);
+            holder.poslanoSN = (TextView) convertView.findViewById(R.id.labelidSNPoslano);
             //holder.cbOznacen = (CheckBox) convertView.findViewById(R.id.cbDodeli);
             //holder.continent = (TextView) convertView.findViewById(R.id.continent);
             //holder.region = (TextView) convertView.findViewById(R.id.region);
@@ -121,51 +121,40 @@ public class SNSeznamZakljucenihSNAdapter extends ArrayAdapter<ServisniNalog> im
             convertView.setTag(holder);
 
         } else {
-            holder = (SNSeznamZakljucenihSNAdapter.ViewHolder) convertView.getTag();
+            holder = (VZDNSeznamZakljucenihAdapter.ViewHolder) convertView.getTag();
         }
 
-        ServisniNalog n = seznamSNjev.get(position);
-        if (n.getVodjaNaloga().equals(""))
-        {
-            holder.stSNja.setText(n.getDelovniNalog().toString());
-        }
-        else{
-            holder.stSNja.setText(n.getDelovniNalog().toString()+"; "+n.getVodjaNaloga().toString());
-        }
+        DelovniNalogVZ n = seznamDNjev.get(position);
+        //if (n.getVodjaNaloga().equals(""))
+        //{
+        //    holder.stDNja.setText(n.getDelovniNalog().toString());
+        //}
+        //else{
+            //holder.stDNja.setText(n.getDelovniNalog().toString()+"; "+n.getVodjaNaloga().toString());
+        //}
 
-        holder.idSNja.setText(Integer.toString(n.getid()));
-        holder.nazivNarocnikSNja.setText(n.getNarocnikNaziv().toString()+", "+n.getNarocnikNaslov().toString());
-        holder.opisNapakeSNja.setText(n.getOpis().toString());
-        String datumDod = "Podpisano: " + n.getDatumPodpisa().toString();
+        DatabaseHandler db = new DatabaseHandler(getContext());
+        DelovniNalogVZPeriodika dnPer = new DelovniNalogVZPeriodika();
+        dnPer = db.vrniVZDNPre(n.getid(),0,"");
+        holder.stDNja.setText(n.getDelovniNalog().toString());
+        holder.idDNja.setText(Integer.toString(n.getid()));
+        //holder.nazivNarocnikSNja.setText(n.getNarocnik().toString()+", "+n.getNarocnikNaslov().toString());
+        holder.nazivNarocnikSNja.setText(n.getNarocnik() +", "+n.getNarocnikNaslov());
+        holder.opisNapakeSNja.setText(n.getObjekt() +", "+n.getObjektNaslov());
+        //holder.opisNapakeSNja.setText(n.getOpis().toString());
+        String datumDod = "Datum izvedbe: " + n.getDATUM_IZVEDBE().toString();
         holder.datumZakljucenSN.setText(datumDod);
 
-        datumDod = "Zaključeno: " + n.getDatumKonec().toString();
-        holder.datumZakljucenoSN.setText(datumDod);
-        DatabaseHandler db = new DatabaseHandler(getContext());
+        //datumDod = "Zaključeno: " + n.getDatumKonec().toString();
+        //holder.datumZakljucenoSN.setText(datumDod);
+
         String poslanoStr = db.vrniPoslano(n.getid(),"");
         holder.poslanoSN.setText("Poslano : "+poslanoStr);
 
-        /*
-        Button bIzpolniSN = (Button) convertView.findViewById(R.id.bIzpolniSN);
-        bIzpolniSN.setOnClickListener(new View.OnClickListener() {
-                                          @Override
-                                          public void onClick(View v) {
-                                              Fragment my = FragmentManager.findFragment(v);
-                                              ViewPager2 viewPager =(ViewPager2) my.getActivity().findViewById(R.id.SNViewPager);
-                                              DatabaseHandler db = new DatabaseHandler(getContext());
-                                              int tehnik = Integer.parseInt(db.getTehnikId(n.getVodjaNaloga()));
-                                              SNPagerAdapter.setParameters(n.getid(),tehnik,0);
-                                              viewPager.setCurrentItem(1);
 
-                                              //.findFragmentById(getItemId(index).toInt())
-                                          }
-                                      }
-        );
 
-         */
-
-        Button bPodatkiOSN = (Button) convertView.findViewById(R.id.bPodatkiSN);
-        bPodatkiOSN.setOnClickListener(new View.OnClickListener() {
+        Button bPodatkiODN = (Button) convertView.findViewById(R.id.bPodatkiSN);
+        bPodatkiODN.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 //Nadzor n = (Nadzor) adapter.getItem(position);
@@ -173,12 +162,14 @@ public class SNSeznamZakljucenihSNAdapter extends ArrayAdapter<ServisniNalog> im
                 Bundle bundle = new Bundle();
                 //DatabaseHandler db = new DatabaseHandler(getContext());
                 //ServisniNalog sn = new ServisniNalog();
-                String datumSNja = n.getDatumZacetek();
+                String datumSNja = n.getDATUM_IZVEDBE();
                 String stSNja = n.getDelovniNalog();
-                String opisSNja = n.getOpis();
-                String vodjaSNja = n.getVodjaNaloga();
-                String odgOsebaSNja = n.getOdgovornaOseba();
-                String narocnikSNja = n.getNarocnikNaziv() + ", " + n.getNarocnikNaslov();
+                String opisSNja = n.getOpomba();
+                //String vodjaSNja = n.getVodjaNaloga();
+                //String odgOsebaSNja = n.getOdgovornaOseba();
+                DelovniNalogVZ dn = new DelovniNalogVZ();
+                dn = db.vrniVZDN(n.getid());
+                String narocnikSNja = dn.getNarocnik() + ", " + dn.getNarocnikNaslov();
                 int id = n.getid();
 
                 DialogPodatkiOSNFragment myFrag = new DialogPodatkiOSNFragment();
@@ -188,8 +179,8 @@ public class SNSeznamZakljucenihSNAdapter extends ArrayAdapter<ServisniNalog> im
                 intent.putExtra("idSNja", id);
                 intent.putExtra("datumSNja", datumSNja);
                 intent.putExtra("opisSNja", opisSNja);
-                intent.putExtra("vodjaSNja", vodjaSNja);
-                intent.putExtra("odgOsebaSNja", odgOsebaSNja);
+                //intent.putExtra("vodjaSNja", vodjaSNja);
+                //intent.putExtra("odgOsebaSNja", odgOsebaSNja);
                 intent.putExtra("narocnikSNja", narocnikSNja);
                 getContext().startActivity(intent);
             }
@@ -201,8 +192,10 @@ public class SNSeznamZakljucenihSNAdapter extends ArrayAdapter<ServisniNalog> im
             @Override
             public void onClick(View v) {
                 //JSONObject sendSn = new JSONObject();
-                if (n.getStatus().equals("Z") == true) {
+                if (n.getStatus() == 0) {
+
                     try {
+/*
                         DatabaseHandler db = new DatabaseHandler(getContext());
                         ArrayList<SNArtikel> seznamSNArtikli;
                         mySNid = n.getid();
@@ -245,8 +238,6 @@ public class SNSeznamZakljucenihSNAdapter extends ArrayAdapter<ServisniNalog> im
                         bw.close();
                         fw.close();
 
-
-
                         //json = gson.toJson(jsonArray);
                         JSONArray jsonObj = new JSONArray();
                         jsonObj = db.vrniEmailLog(n.getid(),userID);
@@ -269,11 +260,13 @@ public class SNSeznamZakljucenihSNAdapter extends ArrayAdapter<ServisniNalog> im
                         //parameters.add(datum);
                         //parameters.add(bArray);
 
-                        new SNSeznamZakljucenihSNAdapter.SendOnWeb().execute();
+                         */
+
+                        new VZDNSeznamZakljucenihAdapter.SendOnWeb().execute();
 
 
                         //new InfoAsyncTask().execute();
-                    } catch (IOException e) {
+                    } catch (Exception e) { //(IOException e) {
                         // TODO Auto-generated catch block
                         e.printStackTrace();
                     }
@@ -309,7 +302,7 @@ public class SNSeznamZakljucenihSNAdapter extends ArrayAdapter<ServisniNalog> im
             StoredPath2 = getContext().getFilesDir()+"/"+userID+"-sn-art.json";
             try {
                 uploadFile(StoredPath2);
-                String rezultat = refreshSNArtikliMysql(userID);
+                String rezultat = refreshDNArtikliMysql(userID);
                 if (rezultat.equals("\tInserted all articles") == true)
                 {
                     //DatabaseHandler db = new DatabaseHandler(getContext());
@@ -343,7 +336,7 @@ public class SNSeznamZakljucenihSNAdapter extends ArrayAdapter<ServisniNalog> im
             StoredPath3 = getContext().getFilesDir()+"/"+userID+"-sn-email.json";
             try {
                 uploadFile(StoredPath3);
-                String rezultat = refreshSNEmailLogMysql(userID);
+                String rezultat = refreshDNEmailLogMysql(userID);
                 if (rezultat.equals("\tInserted all logs") == true)
                 {
                     //DatabaseHandler db = new DatabaseHandler(getContext());
@@ -358,7 +351,7 @@ public class SNSeznamZakljucenihSNAdapter extends ArrayAdapter<ServisniNalog> im
             StoredPath4 = getContext().getFilesDir()+"/"+String.valueOf(mySNid)+".bmp";
             try {
                 uploadFile(StoredPath4);
-                String rezultat = refreshSNPodpisBlobMysql(String.valueOf(mySNid));
+                String rezultat = refreshDNPodpisBlobMysql(String.valueOf(mySNid));
                 if (rezultat.equals("Update succesful") == true)
                 {
                     //DatabaseHandler db = new DatabaseHandler(getContext());
@@ -382,13 +375,13 @@ public class SNSeznamZakljucenihSNAdapter extends ArrayAdapter<ServisniNalog> im
             if (vrni.equals("\tUpdate succesful") == true)
             {
                 Toast.makeText(getContext(), "Uspešno ste prenesli podatke o SN", Toast.LENGTH_LONG).show();
-                seznamSNjev.remove(seznamSNjev.get(pos));
+                seznamDNjev.remove(seznamDNjev.get(pos));
                 notifyDataSetChanged();
 
             }
             else if (vrni.equals("\tAlready transfered") == true)
             {
-                Toast.makeText(getContext(), "Ta SN je že prenešen", Toast.LENGTH_LONG).show();
+                Toast.makeText(getContext(), "Ta DN je že prenešen", Toast.LENGTH_LONG).show();
                 notifyDataSetChanged();
             }
             else
@@ -435,7 +428,7 @@ public class SNSeznamZakljucenihSNAdapter extends ArrayAdapter<ServisniNalog> im
                 FileInputStream fileInputStream = new FileInputStream(sourceFile);
                 //FileInputStream fileInputStream = new FileInputStream("/data/data/si.sintal.sintaltehnika/files/6-sn-artiki.json");
 
-                java.net.URL url = new URL("https://www.sintal.si/tehnika/uploadFile.php");
+                URL url = new URL("https://www.sintal.si/tehnika/uploadFile.php");
                 String username ="sintal_teh";
                 String password = "mCuSTArQ*PdWAH#7-uploadImage";
                 String userpass = username + ":" + password;
@@ -532,7 +525,7 @@ public class SNSeznamZakljucenihSNAdapter extends ArrayAdapter<ServisniNalog> im
 
             // open a URL connection to the Servlet
             //FileInputStream fileInputStream = new FileInputStream(sourceFile);
-            java.net.URL url = new URL("https://www.sintal.si/tehnika/postPodatkiSN.php?jsonFile=" + myUserID + "-sn.json");
+            URL url = new URL("https://www.sintal.si/tehnika/postPodatkiSN.php?jsonFile=" + myUserID + "-sn.json");
             String username = "sintal_teh";
             String password = "mCuSTArQ*PdWAH#7-posodobiSN";
             String userpass = username + ":" + password;
@@ -575,7 +568,7 @@ public class SNSeznamZakljucenihSNAdapter extends ArrayAdapter<ServisniNalog> im
         return result;
     }
 
-    public String refreshSNArtikliMysql(String myUserID) {
+    public String refreshDNArtikliMysql(String myUserID) {
 
         String result = "";
         //String fileName = sourceFileUri;
@@ -585,7 +578,7 @@ public class SNSeznamZakljucenihSNAdapter extends ArrayAdapter<ServisniNalog> im
 
             // open a URL connection to the Servlet /data/user/0/si.sintal.sintaltehnika/files/6-sn-artiki.json
             //FileInputStream fileInputStream = new FileInputStream(sourceFile);
-            java.net.URL url = new URL("https://www.sintal.si/tehnika/postPodatkiArtikliSN.php?jsonFile=" + myUserID + "-sn-art.json");
+            URL url = new URL("https://www.sintal.si/tehnika/postPodatkiArtikliSN.php?jsonFile=" + myUserID + "-sn-art.json");
             String username = "sintal_teh";
             String password = "mCuSTArQ*PdWAH#7-posodobiSN";
             String userpass = username + ":" + password;
@@ -624,7 +617,7 @@ public class SNSeznamZakljucenihSNAdapter extends ArrayAdapter<ServisniNalog> im
         return result;
     }
 
-    public String refreshSNEmailLogMysql(String myUserID) {
+    public String refreshDNEmailLogMysql(String myUserID) {
 
         String result = "";
         //String fileName = sourceFileUri;
@@ -634,7 +627,7 @@ public class SNSeznamZakljucenihSNAdapter extends ArrayAdapter<ServisniNalog> im
 
             // open a URL connection to the Servlet
             //FileInputStream fileInputStream = new FileInputStream(sourceFile);
-            java.net.URL url = new URL("https://www.sintal.si/tehnika/postPodatkiSNEmail.php?jsonFile=" + myUserID + "-sn-email.json");
+            URL url = new URL("https://www.sintal.si/tehnika/postPodatkiSNEmail.php?jsonFile=" + myUserID + "-sn-email.json");
             String username = "sintal_teh";
             String password = "mCuSTArQ*PdWAH#7-posodobiSN";
             String userpass = username + ":" + password;
@@ -673,7 +666,7 @@ public class SNSeznamZakljucenihSNAdapter extends ArrayAdapter<ServisniNalog> im
         return result;
     }
 
-    public String refreshSNPodpisBlobMysql(String snID) {
+    public String refreshDNPodpisBlobMysql(String snID) {
 
         String result = "";
         //String fileName = sourceFileUri;
@@ -683,7 +676,7 @@ public class SNSeznamZakljucenihSNAdapter extends ArrayAdapter<ServisniNalog> im
 
             // open a URL connection to the Servlet
             //FileInputStream fileInputStream = new FileInputStream(sourceFile);
-            java.net.URL url = new URL("https://www.sintal.si/tehnika/updateSNBlobPodpis.php?SNid="+snID);
+            URL url = new URL("https://www.sintal.si/tehnika/updateSNBlobPodpis.php?SNid="+snID);
             String username = "sintal_teh";
             String password = "mCuSTArQ*PdWAH#7-updatePodpis";
             String userpass = username + ":" + password;
@@ -729,7 +722,7 @@ public class SNSeznamZakljucenihSNAdapter extends ArrayAdapter<ServisniNalog> im
 
     public Filter getFilter() {
         if (mFilter == null) {
-            mFilter = new SNSeznamZakljucenihSNAdapter.ItemFilter();
+            mFilter = new VZDNSeznamZakljucenihAdapter.ItemFilter();
         }
         //return valueFilter;
         return mFilter;
@@ -745,29 +738,8 @@ public class SNSeznamZakljucenihSNAdapter extends ArrayAdapter<ServisniNalog> im
                 ArrayList<ServisniNalog> filterList = new ArrayList<ServisniNalog>();
 
                 for (int i = 0; i < originalData.size(); i++) {
-                    if ((originalData.get(i).getOpis().toUpperCase())
+                    if ((originalData.get(i).getOpomba().toUpperCase())
                             .contains(constraint.toString().toUpperCase())) {
-/*
-                        ServisniNalog n = new ServisniNalog();
-                        //n.setStNadzora(filteredData.get(i).getStNadzora());
-                        n.setStNadzora(Integer.parseInt(originalData.get(i).getStNadzora()));
-                        n.setVrstaN(originalData.get(i).getVrstaN());
-                        n.setOsebaNadzora(originalData.get(i).getOsebaNadzora());
-                        n.setOsebaIzkaznica(originalData.get(i).getOsebaIzkaznica());
-                        n.setKrajNadzora(originalData.get(i).getKrajNadzora());
-                        n.setDatumNadzora(originalData.get(i).getDatumNadzora());
-                        n.setUraZacetkaNadzora(originalData.get(i).getUraZacetkaNadzora());
-                        n.setUraKoncaNadzora(originalData.get(i).getUraKoncaNadzora());
-                        n.setRegStevilka(originalData.get(i).getRegStevilka());
-                        n.setDelovniNalog(originalData.get(i).getDelovniNalog());
-                        n.setObjekt(originalData.get(i).getObjekt());
-                        n.setDodatnoPolje1(originalData.get(i).getDodatnoPolje1());
-                        n.setDodatnoPolje2(originalData.get(i).getDodatnoPolje2());
-                        n.setDodatnoPolje3(originalData.get(i).getDodatnoPolje3());
-                        n.setOpomba(originalData.get(i).getOpomba());
-                        n.setStatus(originalData.get(i).getStatus());
-                        filterList.add(n);
-                        */
 
                     }
                 }
@@ -790,49 +762,14 @@ public class SNSeznamZakljucenihSNAdapter extends ArrayAdapter<ServisniNalog> im
         protected void publishResults(CharSequence constraint, FilterResults results) {
             //beanList = (ArrayList<Bean>) results.values;
             //notifyDataSetChanged();
-            seznamSNjev = (ArrayList<ServisniNalog>) results.values;
+            seznamDNjev = (ArrayList<DelovniNalogVZ>) results.values;
             notifyDataSetChanged();
             clear();
-            for (int i = 0, l = seznamSNjev.size(); i < l; i++)
-                add(seznamSNjev.get(i));
+            for (int i = 0, l = seznamDNjev.size(); i < l; i++)
+                add(seznamDNjev.get(i));
             notifyDataSetInvalidated();
         }
 
-
-
-    }
-    /*
-    @SuppressLint("StaticFieldLeak")
-    public class InfoAsyncTask extends AsyncTask<Void, Void, Map<String, String>> {
-        @Override
-        protected Map<String, String> doInBackground(Void... voids) {
-            Map<String, String> info = new HashMap<>();
-
-            try {
-                Class.forName("com.mysql.jdbc.Driver");
-                Connection connection = DriverManager.getConnection(URL, USER, PASSWORD);
-                String sql = "SELECT  * FROM sintal_teh_sn where strftime('%d.%m.%Y', DATUM_ZACETEK) = '16.02.2023' and VODJA_NALOGA = 'null'";
-                PreparedStatement statement = connection.prepareStatement(sql);
-                ResultSet resultSet = statement.executeQuery();
-                if (resultSet.next()) {
-                    //info.put("name", resultSet.getString("name"));
-                    //info.put("address", resultSet.getString("address"));
-                    //info.put("phone_number", resultSet.getString("phone_number"));
-                }
-            } catch (Exception e) {
-                Log.e("InfoAsyncTask", "Error reading school information", e);
-            }
-
-            return info;
-        }
-
-        @Override
-        protected void onPostExecute(Map<String, String> result) {
-            if (!result.isEmpty()) {
-                Log.e("update!","uspešno updateed db");
-            }
-        }
     }
 
-     */
 }

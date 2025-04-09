@@ -8,8 +8,11 @@ public class DelovniNalogVZPeriodika {
 
     int id;
     //int sintal_vzd_dn_id;
+    String podjetje;
+    String projekt;
     String st_del_naloga;
     int tipNarocila;
+
 
     int sis_pozar;
     int sis_vlom;
@@ -64,6 +67,9 @@ public class DelovniNalogVZPeriodika {
     int pr17;
     int pr18;
     byte[] podpis;
+    String IP_urejanja;
+    String xuser;
+    String xdatetime;
 
     public int getid() {
         return id;
@@ -71,6 +77,57 @@ public class DelovniNalogVZPeriodika {
     public void setid(int newId) {
         this.id = newId;
     }
+
+    public String getPodjetje() { return podjetje; }
+    public void setPodjetje(String newPodjetje) {this.podjetje = newPodjetje;}
+
+    public String getProjekt() {return projekt; }
+    public void setProjekt(String newProjekt){ this.projekt = newProjekt;}
+
+    public String getDelovniNalog() {
+        return st_del_naloga;
+    }
+    public void setDelovniNalog(String newDelovniNalog) {
+        this.st_del_naloga = newDelovniNalog;
+    }
+
+    public String getDATUM_IZVEDBE() {
+        //return datumKonec;
+        String vrniStr = "";
+        if (DATUM_IZVEDBE == null)
+        {
+            vrniStr = "";
+        }
+        else if (DATUM_IZVEDBE.equals("null"))
+        {
+            vrniStr = "";
+        }
+        else {
+            vrniStr = vrniDatum(DATUM_IZVEDBE);
+        }
+        return vrniStr;
+    }
+    public void setDATUM_IZVEDBE(String newDatumIZV) {
+        this.DATUM_IZVEDBE = newDatumIZV;
+    }
+
+    public String getOpomba() {
+        return opomba;
+    }
+    public void setOpomba(String newopomba) {
+        this.opomba = newopomba;
+    }
+
+    public String getIP_urejanja() {return  IP_urejanja;}
+    public void setIP_urejanja(String newIP_urejanja) {this.IP_urejanja = newIP_urejanja;}
+
+    public String getXUser() {return  xuser;}
+    public void setXuser(String newXuser) {this.xuser = newXuser;}
+
+    public String getXdatetime() {return xdatetime;}
+    public void setXdatetime(String newXdatetime) {this.xdatetime = newXdatetime;}
+
+
 
     public int getSis_pozar() {
         return sis_pozar;
@@ -130,12 +187,7 @@ public class DelovniNalogVZPeriodika {
     }
     public void setStKm(double newStKm){this.stKm = newStKm;}
 
-    public String getDelovniNalog() {
-        return st_del_naloga;
-    }
-    public void setDelovniNalog(String newDelovniNalog) {
-        this.st_del_naloga = newDelovniNalog;
-    }
+
 
     public String getDatum_prejsnjega() {
         //return datumZacet
@@ -171,27 +223,6 @@ public class DelovniNalogVZPeriodika {
     }
     public void setDatum_naslednjega(String newDatumKonec) {
         this.datum_naslednjega = newDatumKonec;
-    }
-
-
-    public String getDATUM_IZVEDBE() {
-        //return datumKonec;
-        String vrniStr = "";
-        if (DATUM_IZVEDBE == null)
-        {
-            vrniStr = "";
-        }
-        else if (DATUM_IZVEDBE.equals("null"))
-        {
-            vrniStr = "";
-        }
-        else {
-            vrniStr = vrniDatum(DATUM_IZVEDBE);
-        }
-        return vrniStr;
-    }
-    public void setDATUM_IZVEDBE(String newDatumIZV) {
-        this.DATUM_IZVEDBE = newDatumIZV;
     }
 
     public int getServiser_izvajalec() {
@@ -425,12 +456,7 @@ public class DelovniNalogVZPeriodika {
         this.tip_elementov = newtip_elementov ;
     }
 
-    public String getOpomba() {
-        return opomba;
-    }
-    public void setOpomba(String newopomba) {
-        this.opomba = newopomba;
-    }
+
 
     /*String kontrolor;
     String aku_bat;

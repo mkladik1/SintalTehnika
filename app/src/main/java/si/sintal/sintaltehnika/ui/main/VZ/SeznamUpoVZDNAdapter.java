@@ -1,6 +1,7 @@
 package si.sintal.sintaltehnika.ui.main.VZ;
 
 import android.content.Context;
+import android.content.Intent;
 import android.graphics.Color;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -31,8 +32,9 @@ public class SeznamUpoVZDNAdapter extends ArrayAdapter<DelovniNalogVZ> implement
     public int id;
     private  int tehnikID;
     private int userID;
+    private String mes_obr;
 
-    public SeznamUpoVZDNAdapter(Context context, ArrayList<DelovniNalogVZ> seznamDNjev, int tehID, int upoId) {
+    public SeznamUpoVZDNAdapter(Context context, ArrayList<DelovniNalogVZ> seznamDNjev, int tehID, int upoId, String mesObr) {
         super(context, 0, seznamDNjev);
         this.context = context;
         this.seznamDNjev = new ArrayList<DelovniNalogVZ>();
@@ -41,6 +43,8 @@ public class SeznamUpoVZDNAdapter extends ArrayAdapter<DelovniNalogVZ> implement
         this.originalData.addAll(seznamDNjev);
         this.tehnikID = tehID;
         this.userID = upoId;
+        this.mes_obr = mesObr;
+
 
     }
 
@@ -131,8 +135,15 @@ public class SeznamUpoVZDNAdapter extends ArrayAdapter<DelovniNalogVZ> implement
                     ViewPager2 viewPager =(ViewPager2) my.getActivity().findViewById(R.id.DNVZViewPager);
                     DatabaseHandler db = new DatabaseHandler(getContext());
                     int tehnik = 7;
-                    VZPagerAdapter.setParameters(n.getid(),tehnik,0);
+                    VZPagerAdapter.setParameters(n.getid(),tehnik,0,n.getPrenos_per(),mes_obr);
+                    //Intent intent = new Intent(getContext(), obrazecVZDNFragment.class);
+                    //intent.putExtra("userID", userID);
+                    //intent.putExtra("tehnikId", tehnikID );
+                    //intent.putExtra("perPre", n.getPrenos_per());
+                    //getContext().startActivity(intent);
+                    //intent.putExtra("leto_mesec", );
                     //SNPagerAdapter.setParameters(n.getid(),tehnik,0);
+
                     viewPager.setCurrentItem(1);
 
                             //.findFragmentById(getItemId(index).toInt())

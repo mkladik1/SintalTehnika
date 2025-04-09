@@ -14,6 +14,7 @@ import android.graphics.RectF;
 import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
 import android.net.Uri;
+import android.net.wifi.WifiManager;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.util.AttributeSet;
@@ -66,6 +67,7 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
+import java.net.NetworkInterface;
 import java.net.URL;
 import java.text.DateFormat;
 import java.text.ParseException;
@@ -74,7 +76,10 @@ import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Base64;
+import java.util.Calendar;
+import java.util.Collections;
 import java.util.Date;
+import java.util.List;
 
 import si.sintal.sintaltehnika.BuildConfig;
 import si.sintal.sintaltehnika.DatabaseHandler;
@@ -85,9 +90,11 @@ import si.sintal.sintaltehnika.ui.main.DelovniNalogVZPeriodika;
 public class obrazecVZDNFragment extends Fragment {
 
     private ObrazecVZDNViewModel mViewModel;
-    private String tehnikID;
+    private int tehnikID;
     private String userID;
     private int vzDNID;
+    private int perPre;
+    private String mes_obr;
     Dialog dialog;
     private String vzDelNalST;
     int serverResponseCode = 0;
@@ -113,12 +120,15 @@ public class obrazecVZDNFragment extends Fragment {
         DatabaseHandler db = new DatabaseHandler(getContext());
         Intent intent= getActivity().getIntent();
         userID = intent.getStringExtra("userID");
-        tehnikID = intent.getStringExtra("tehnikID");
+        //tehnikID = intent.getStringExtra("tehnikID");
+        perPre = intent.getIntExtra("per_prenos",0);
+        tehnikID = VZPagerAdapter.getTehnikID();
+        perPre = VZPagerAdapter.getPer_prenos();
         vzDNID = VZPagerAdapter.getParameters();
-
+        mes_obr = VZPagerAdapter.getMes_obr();
         //TextView tvDN = TextView
         vzDN = db.vrniVZDN(vzDNID);
-        vzDNPer = db.vrniVZDNPre(vzDNID);
+        vzDNPer = db.vrniVZDNPre(vzDNID, perPre,mes_obr);
         Button bShowVZDN = (Button) v.findViewById(R.id.buttonVZDNPrikazi);
         bShowVZDN.setOnClickListener(
                 new View.OnClickListener() {
@@ -220,14 +230,34 @@ public class obrazecVZDNFragment extends Fragment {
 
         DatabaseHandler db = new DatabaseHandler(getContext());
         vzDNID = VZPagerAdapter.getParameters();
+        perPre = VZPagerAdapter.getPer_prenos();
+        mes_obr = VZPagerAdapter.getMes_obr();
+
 
         //TextView tvDN = TextView
         vzDN = db.vrniVZDN(vzDNID);
+        vzDNPer = db.vrniVZDNPre(vzDNID,perPre,mes_obr);
+
+
 
 
         Button bSNShrani = (Button) getView().findViewById(R.id.bVZDNShrani);
         Button bPdf = (Button) getView().findViewById(R.id.bVZDNZakljuci);
         Button bSign = (Button) getView().findViewById(R.id.bVZDNPodisStranka);
+
+        if (perPre == 1)
+        {
+            bSNShrani.setEnabled(false);
+            bPdf.setEnabled(false);
+            bSign.setEnabled(false);
+
+        }
+        else {
+            bSNShrani.setEnabled(true);
+            bPdf.setEnabled(true);
+            bSign.setEnabled(true);
+
+        }
 
         String tehnikID = "";//this.tehnikID;
 
@@ -561,11 +591,18 @@ public class obrazecVZDNFragment extends Fragment {
                 if ((isValidFormat("yyyy-MM-dd",tvVZDNDatumIzvedbe) == true)
                         || (tvVZDNDatumIzvedbe.equals("")))
                 {
+                    String mac = getMacAddress(getContext());
+                    String tehnik = tehnikID;
+                    Date todayDate = Calendar.getInstance().getTime();
+                    SimpleDateFormat formatter = new SimpleDateFormat("yyyy-mm-dd");
+                    String todayString = formatter.format(todayDate);
                     DatabaseHandler db = new DatabaseHandler(getContext());
                     db.insertUpdateVZDNPeriodika(String.valueOf(vzDNID), vzDN,"A",tvVZDNDatumDodelitve, tvVZDNDatumIzvedbe,"0","",tvVZDBOpombe,etSNUrePrevoz,etSNUreDelo,etSNStKm,
-                            "","","", String.valueOf(tipNarocila), sisPozar,sisVlom,sisVideo,sisPlin,sisPristop,sisDim,"0", spVZDN, redno, izredno,
-                            tipEl, datumPrejsne, datumNasl, kontrolorLinije, baterije, nacinP, institucija,pr1,pr2,pr3,pr4,pr5,pr6,pr7,pr8,pr9,pr10,pr11,pr12,pr13,pr14,pr15,pr16,pr17,pr18
-
+                            "","","", String.valueOf(tipNarocila),
+                            sisPozar,sisVlom,sisVideo,sisPlin,sisPristop,sisDim,"0", spVZDN, redno, izredno,
+                            tipEl, datumPrejsne, datumNasl, kontrolorLinije, baterije, nacinP, institucija,
+                            pr1,pr2,pr3,pr4,pr5,pr6,pr7,pr8,pr9,pr10,pr11,pr12,pr13,pr14,pr15,pr16,pr17,pr18,
+                            "","",tvVZDBOpombe,mac,tehnik,todayString
                     );
 
                     Toast.makeText(getView().getContext(),"Podatki o servisnem nalogu uspešno shranjeni",Toast.LENGTH_LONG).show();
@@ -607,7 +644,7 @@ public class obrazecVZDNFragment extends Fragment {
          */
 
         //methodA(); // this is called ...
-        DelovniNalogVZPeriodika dnvp = db.vrniVZDNPre(vzDNID);
+        DelovniNalogVZPeriodika dnvp = db.vrniVZDNPre(vzDNID, perPre,mes_obr);
         if (dnvp.getid() != 0)
         {
             azurirajPodatke(dnvp);
@@ -650,7 +687,7 @@ public class obrazecVZDNFragment extends Fragment {
             vzDNPdf = db.vrniVZDN(vzDNID);
 
             DelovniNalogVZPeriodika vzDNPdfPer = new DelovniNalogVZPeriodika();
-            vzDNPdfPer = db.vrniVZDNPre(vzDNID);
+            vzDNPdfPer = db.vrniVZDNPre(vzDNID,perPre,mes_obr);
 
             FileOutputStream fOut = new FileOutputStream(file);
 
@@ -703,22 +740,24 @@ public class obrazecVZDNFragment extends Fragment {
             table.setFixedLayout();
             table.setFont(font);
             table.addCell(new Cell(1,1).add(new Paragraph("NAROČNIK")));//.setBorder(Border.NO_BORDER);
-            table.addCell(new Cell(1,3).add(new Paragraph(vzDNPdf.getNaziv_servisa())));//.setBorder(Border.NO_BORDER);
+            //table.addCell(new Cell(1,3).add(new Paragraph(vzDNPdf.getNaziv_servisa())));//.setBorder(Border.NO_BORDER);
+            table.addCell(new Cell(1,3).add(new Paragraph(vzDNPdf.getNarocnik())));//.setBorder(Border.NO_BORDER);
 
-            table.addCell(new Cell().add(new Paragraph("ULICA (naročnik)")));//.setBorder(Border.NO_BORDER);
-            table.addCell(new Cell().add(new Paragraph(vzDNPdf.getNaslov())));//.setBorder(Border.NO_BORDER);
-            table.addCell(new Cell().add(new Paragraph("KRAJ")));//.setBorder(Border.NO_BORDER);
-            table.addCell(new Cell().add(new Paragraph("")));//.setBorder(Border.NO_BORDER);
+            table.addCell(new Cell(1,1).add(new Paragraph("ULICA (naročnik)")));//.setBorder(Border.NO_BORDER);
+            //table.addCell(new Cell().add(new Paragraph(vzDNPdf.getNaslov())));//.setBorder(Border.NO_BORDER);
+            table.addCell(new Cell(1,3).add(new Paragraph(vzDNPdf.getNarocnikNaslov())));//.setBorder(Border.NO_BORDER);
+            //table.addCell(new Cell().add(new Paragraph("KRAJ")));//.setBorder(Border.NO_BORDER);
+            //table.addCell(new Cell().add(new Paragraph("")));//.setBorder(Border.NO_BORDER);
 
             table.addCell(new Cell().add(new Paragraph("IME OBJEKTA")));//.setBorder(Border.NO_BORDER);
-            table.addCell(new Cell().add(new Paragraph(vzDNPdf.getNaziv_servisa())));//.setBorder(Border.NO_BORDER);
+            table.addCell(new Cell().add(new Paragraph(vzDNPdf.getObjekt())));//.setBorder(Border.NO_BORDER);
             table.addCell(new Cell().add(new Paragraph("AD 1. SEKTOR")));//.setBorder(Border.NO_BORDER);
             table.addCell(new Cell().add(new Paragraph("")));//.setBorder(Border.NO_BORDER);
 
-            table.addCell(new Cell().add(new Paragraph("ULICA (objekt)")));//.setBorder(Border.NO_BORDER);
-            table.addCell(new Cell().add(new Paragraph(sektorNaslov)));//.setBorder(Border.NO_BORDER);
-            table.addCell(new Cell().add(new Paragraph("KRAJ")));//.setBorder(Border.NO_BORDER);
-            table.addCell(new Cell().add(new Paragraph(sektorKraj)));//.setBorder(Border.NO_BORDER);
+            table.addCell(new Cell(1,1).add(new Paragraph("ULICA (objekt)")));//.setBorder(Border.NO_BORDER);
+            table.addCell(new Cell(1,3).add(new Paragraph(vzDNPdf.getObjektNaslov())));//.setBorder(Border.NO_BORDER);
+            //table.addCell(new Cell().add(new Paragraph("KRAJ")));//.setBorder(Border.NO_BORDER);
+            //table.addCell(new Cell().add(new Paragraph(sektorKraj)));//.setBorder(Border.NO_BORDER);
 
             table.addCell(new Cell().add(new Paragraph("KONTAKTNA OSEBA")));//.setBorder(Border.NO_BORDER);
             table.addCell(new Cell().add(new Paragraph(vzDNPdf.getKontaktna_oseba())));//.setBorder(Border.NO_BORDER);
@@ -1001,8 +1040,9 @@ public class obrazecVZDNFragment extends Fragment {
             table9.setWidth(UnitValue.createPercentValue(100));
             table9.setFixedLayout();
             table9.setFont(font);
+            String tehnik = db.getUporabnikNaziv(tehnikID);
             table9.addCell(new Cell(1,1).add(new Paragraph("NALOG NAPISAL")));//.setBorder(Border.NO_BORDER);
-            table9.addCell(new Cell(1,1).add(new Paragraph("")));//.setBorder(Border.NO_BORDER);
+            table9.addCell(new Cell(1,1).add(new Paragraph(tehnik.toUpperCase())));//.setBorder(Border.NO_BORDER);
             table9.addCell(new Cell(1,1).add(new Paragraph(vzDNPdfPer.getDATUM_IZVEDBE())));//.setBorder(Border.NO_BORDER);
             table9.addCell(new Cell(1,1).add(new Paragraph("")));//.setBorder(Border.NO_BORDER);
             table9.addCell(new Cell(1,1).add(new Paragraph("NAROČNIK")));//.setBorder(Border.NO_BORDER);
@@ -1569,7 +1609,7 @@ public class obrazecVZDNFragment extends Fragment {
         view = mContent;
         DatabaseHandler db = new DatabaseHandler(getContext());
         DelovniNalogVZPeriodika vz_per =  new DelovniNalogVZPeriodika();
-        vz_per = db.vrniVZDNPre(vzDNID);
+        vz_per = db.vrniVZDNPre(vzDNID,perPre, mes_obr);
         mSignature.clear();
 
         mClear.setOnClickListener(new View.OnClickListener() {
@@ -1755,4 +1795,14 @@ public class obrazecVZDNFragment extends Fragment {
         }
 
     }
+
+    public String getMacAddress(Context context) {
+        WifiManager wimanager = (WifiManager) context.getSystemService(Context.WIFI_SERVICE);
+        String macAddress = wimanager.getConnectionInfo().getMacAddress();
+        if (macAddress == null) {
+            macAddress = "Device don't have mac address or wi-fi is disabled";
+        }
+        return macAddress;
+    }
 }
+

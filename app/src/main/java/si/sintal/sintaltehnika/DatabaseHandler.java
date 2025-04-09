@@ -12,6 +12,8 @@ import android.database.sqlite.SQLiteOpenHelper;
 import android.net.Uri;
 import android.os.Bundle;
 
+import com.itextpdf.styledxmlparser.jsoup.internal.StringUtil;
+
 import org.jetbrains.annotations.NotNull;
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -332,7 +334,7 @@ public class DatabaseHandler extends SQLiteOpenHelper {
                 " koda_objekta varchar(10) DEFAULT NULL, "+
                 " PODPIS_NAROCNIK blob DEFAULT NULL, "+
                 " PODPIS_SERVISER blob DEFAULT NULL, "+
-                " STATUS int(11), "+
+                " STATUS VARCHAR(1), "+
                 " DATUM_DODELITVE date, "+
                 " DATUM_IZVEDBE date, "+
                 " PRENOS int(11), "+
@@ -362,9 +364,8 @@ public class DatabaseHandler extends SQLiteOpenHelper {
 
         String CREATE_TEHNIKA_VZ_PERIODIKA = "CREATE TABLE IF NOT EXISTS sintal_teh_vz_dn_periodika (" +
                 " id int(11) NOT NULL, " +
-                //" sintal_vzd_dn_id int(11) NOT NULL,"+
                 " st_del_naloga varchar(50) DEFAULT NULL,"+
-                " STATUS int(11), "+
+                " STATUS varchar(1), "+
                 " DATUM_DODELITVE date, "+
                 " DATUM_IZVEDBE date, "+
                 " PRENOS int(11), "+
@@ -411,10 +412,13 @@ public class DatabaseHandler extends SQLiteOpenHelper {
                 " preizkus15 int(11) null," +
                 " preizkus16 int(11) null," +
                 " preizkus17 int(11) null," +
-                " preizkus18 int(11) null" +
-                //" redno int(11) null," +
-                //" izredno int(11) null" +
-
+                " preizkus18 int(11) null," +
+                " podjetje varchar(2) null," +
+                " projekt varchar(20) null," +
+                " opomba varchar(1000) null," +
+                " ip_urejanja varchar(255) null," +
+                " xuser varchar(3) null," +
+                " xdatetime datetime null" +
                 ");";
         mDatabase.execSQL(CREATE_TEHNIKA_VZ_PERIODIKA);
 
@@ -1310,17 +1314,21 @@ public class DatabaseHandler extends SQLiteOpenHelper {
             String preizkus15 ,
             String preizkus16 ,
             String preizkus17 ,
-            String preizkus18
+            String preizkus18 ,
+            String podjetje ,
+            String projekt ,
+            String opomba ,
+            String ip_urejanja,
+            String xuser,
+            String xdatetime
 
 
     ) {
 
-        //ArrayList<NadzorXML> myList=new ArrayList<NadzorXML>();
-        //List<Nadzor> myList=new ArrayList<Nadzor>();
         mDatabase = this.getWritableDatabase();
-        String GET_USER = "SELECT * FROM sintal_teh_vz_dn_periodika where id ="+ id;
+        String GET_USER = "SELECT * FROM sintal_teh_vz_dn_periodika where st_del_naloga ='"+ st_del_naloga +"' and DATUM_IZVEDBE = '" +DATUM_IZVEDBE +"';";
         mCursor = mDatabase.rawQuery(GET_USER,null);
-        //NadzorXML n;
+
         if (mCursor != null)
         {
             mCursor.moveToFirst();
@@ -1328,7 +1336,6 @@ public class DatabaseHandler extends SQLiteOpenHelper {
         if (mCursor.moveToFirst()) {
             ContentValues values = new ContentValues();
 
-            //values.put("sintal_vzd_dn_id", vz_id);
             values.put("st_del_naloga", st_del_naloga);
             values.put("STATUS", status);
             values.put("DATUM_DODELITVE", DATUM_DODELITVE);
@@ -1338,7 +1345,6 @@ public class DatabaseHandler extends SQLiteOpenHelper {
             values.put("OPIS_POSTOPKA", OPIS_POSTOPKA);
             values.put("URE_PREVOZ", URE_PREVOZ);
             values.put("URE_DELO", URE_DELO);
-
             values.put("STEVILO_KM", STEVILO_KM);
             values.put("DATUM_PODPISA", DATUM_PODPISA);
             values.put("PODPIS_NAROCNIK", PODPIS_NAROCNIK);
@@ -1348,7 +1354,6 @@ public class DatabaseHandler extends SQLiteOpenHelper {
             values.put("sis_vlom", sis_vlom);
             values.put("sis_video", sis_video);
             values.put("sis_co", sis_co);
-
             values.put("sis_pristopna", sis_pristopna);
             values.put("sis_dimni_banokvci", sis_dimni_banokvci);
             values.put("sis_ostalo", sis_ostalo);
@@ -1359,11 +1364,9 @@ public class DatabaseHandler extends SQLiteOpenHelper {
             values.put("datum_zadnjega", datum_zadnjega);
             values.put("datum_naslednjega", datum_naslednjega);
             values.put("kontrolor_linije", kontrolor_linije);
-
             values.put("aku_baterije",aku_baterije);
             values.put("nacin_prenosa", nacin_prenosa);
             values.put("institucija_prenosa", institucija_prenosa);
-
             values.put("preizkus1", preizkus1);
             values.put("preizkus2", preizkus2);
             values.put("preizkus3", preizkus3);
@@ -1382,9 +1385,15 @@ public class DatabaseHandler extends SQLiteOpenHelper {
             values.put("preizkus16", preizkus16);
             values.put("preizkus17", preizkus17);
             values.put("preizkus18", preizkus18);
-            //values.put("redno", redno);
-            //values.put("izredno", izredno);
-            mDatabase.update("sintal_teh_vz_dn_periodika", values, "id=?", new String[]{id});
+            values.put("podjetje" ,podjetje);
+            values.put("projekt" ,projekt);
+            values.put("opomba" ,opomba);
+            values.put("ip_urejanja" ,ip_urejanja);
+            values.put("xuser" ,xuser);
+            values.put("xdatetime" ,xdatetime);
+            values.put("opomba",opomba);
+            String[] selectionArgs = { "st_del_naloga" };
+            mDatabase.update("sintal_teh_vz_dn_periodika", values, " st_del_naloga = '"+st_del_naloga +"' and DATUM_IZVEDBE = '"+DATUM_IZVEDBE+"'", null);
 
         }
         else
@@ -1445,6 +1454,12 @@ public class DatabaseHandler extends SQLiteOpenHelper {
             values.put("preizkus16", preizkus16);
             values.put("preizkus17", preizkus17);
             values.put("preizkus18", preizkus18);
+            values.put("podjetje" ,podjetje);
+            values.put("projekt" ,projekt);
+            values.put("ip_urejanja" ,ip_urejanja);
+            values.put("xuser" ,xuser);
+            values.put("xdatetime" ,xdatetime);
+            values.put("opomba",opomba);
 
             //values.put("redno", redno);
             //values.put("izredno", izredno);
@@ -1923,6 +1938,7 @@ public class DatabaseHandler extends SQLiteOpenHelper {
         String leto = LetoMesec.substring(0,4);
         String mesec = LetoMesec.substring(4,6);
         //query = "SELECT  * FROM sintal_teh_sn where strftime('%d.%m.%Y', DATUM_ZACETEK) = '" + datum + "' and VODJA_NALOGA = '"+vodja_sn+"'";
+        /*
         if (status.equals("D") == true)
         {
             query = "select  strftime('%Y',(DATE(vz.datum_zadnjega,'+'||vz.periodika_dni||' days'))) as leto, strftime('%m',(DATE(vz.datum_zadnjega,'+'||vz.periodika_dni||' days'))) as mesec, vz.*, case when ifnull(per.id,0) = 0 then 0 else 1 end as per_id, case when ifnull(per.prenos,0) = 0 then 0 else 1 end as prenos_per from sintal_teh_vz_dn vz left join sintal_teh_vz_dn_periodika per on vz.id = per.id\n" +
@@ -1949,6 +1965,79 @@ public class DatabaseHandler extends SQLiteOpenHelper {
                     "where strftime('%Y',(DATE(vz.datum_zadnjega,'+'||vz.periodika_dni||' days'))) = '"+leto+"' and strftime('%m',(DATE(vz.datum_zadnjega,'+'||vz.periodika_dni||' days'))) = '"+mesec+"'";
         }
 
+         */
+
+        query = " select  \n" +
+                " strftime('%Y',(DATE(vz.datum_naslednjega))) as leto,\n" +
+                " strftime('%m',(DATE(vz.datum_naslednjega))) as mesec,\n" +
+                " vz.*, vz.datum_naslednjega as DATUM_IZVEDBE, '' as opomba,\n" +
+                " 0  as per_id,\n" +
+                " 0 as prenos_per \n" +
+                " from sintal_teh_vz_dn vz \n" +
+                " where  strftime('%Y',(DATE(vz.datum_naslednjega))) = '"+leto+"'  \n" +
+                " and  strftime('%m',(DATE(vz.datum_naslednjega))) = '"+mesec+"'  \n" +
+                " and vz.st_del_naloga not in (select per.st_del_naloga from sintal_teh_vz_dn_periodika per where strftime('%Y',(DATE(per.DATUM_IZVEDBE))) = '"+leto+"' and strftime('%m',(DATE(per.DATUM_IZVEDBE))) = '"+mesec+"' )\n" +
+                " UNION\n" +
+                " select  \n" +
+                " strftime('%Y',(DATE(per.DATUM_IZVEDBE))) as leto,\n" +
+                " strftime('%m',(DATE(per.DATUM_IZVEDBE))) as mesec,\n" +
+                " vz.*, per.DATUM_IZVEDBE as DATUM_IZVEDBE, per.opomba,\n" +
+                " case when ifnull(per.id,0) = 0 then 0 else 1 end as per_id,\n" +
+                " case when ifnull(per.prenos,0) = 0 then 0 else 1 end as prenos_per \n" +
+                " from sintal_teh_vz_dn vz \n" +
+                " left join sintal_teh_vz_dn_periodika per on vz.st_del_naloga = per.st_del_naloga \n" +
+                " where strftime('%Y',(DATE(per.DATUM_IZVEDBE))) = '"+leto+"' \n" +
+                " and strftime('%m',(DATE(per.DATUM_IZVEDBE))) = '"+mesec+"'" ;
+
+        if (status.equals('Z')){
+            query = /*" select  \n" +
+                    " strftime('%Y',(DATE(vz.datum_naslednjega))) as leto,\n" +
+                    " strftime('%m',(DATE(vz.datum_naslednjega))) as mesec,\n" +
+                    " vz.*, vz.datum_naslednjega as DATUM_IZVEDBE, '' as opomba,\n" +
+                    " 0  as per_id,\n" +
+                    " 0 as prenos_per \n" +
+                    " from sintal_teh_vz_dn vz \n" +
+                    //" where  strftime('%Y',(DATE(vz.datum_naslednjega))) = '"+leto+"'  \n" +
+                    //" and  strftime('%m',(DATE(vz.datum_naslednjega))) = '"+mesec+"'  \n" +
+                    //" and vz.st_del_naloga not in (select per.st_del_naloga from sintal_teh_vz_dn_periodika per where strftime('%Y',(DATE(per.DATUM_IZVEDBE))) = '"+leto+"' and strftime('%m',(DATE(per.DATUM_IZVEDBE))) = '"+mesec+"' )\n" +
+                    " UNION\n" +*/
+                    " select  \n" +
+                    " strftime('%Y',(DATE(per.DATUM_IZVEDBE))) as leto,\n" +
+                    " strftime('%m',(DATE(per.DATUM_IZVEDBE))) as mesec,\n" +
+                    " vz.*, per.DATUM_IZVEDBE as DATUM_IZVEDBE, per.opomba,\n" +
+                    " case when ifnull(per.id,0) = 0 then 0 else 1 end as per_id,\n" +
+                    " case when ifnull(per.prenos,0) = 0 then 0 else 1 end as prenos_per \n" +
+                    " from sintal_teh_vz_dn vz \n" +
+                    " left join sintal_teh_vz_dn_periodika per on vz.st_del_naloga = per.st_del_naloga \n" +
+                    //" where strftime('%Y',(DATE(per.DATUM_IZVEDBE))) = '"+leto+"' \n" +
+                    //" and strftime('%m',(DATE(per.DATUM_IZVEDBE))) = '"+mesec+"'" ;
+                    " where per.status = 'Z'";
+        }
+        if (status.equals('X')){
+            query = /*" select  \n" +
+                    " strftime('%Y',(DATE(vz.datum_naslednjega))) as leto,\n" +
+                    " strftime('%m',(DATE(vz.datum_naslednjega))) as mesec,\n" +
+                    " vz.*, vz.datum_naslednjega as DATUM_IZVEDBE, '' as opomba,\n" +
+                    " 0  as per_id,\n" +
+                    " 0 as prenos_per \n" +
+                    " from sintal_teh_vz_dn vz \n" +
+                    //" where  strftime('%Y',(DATE(vz.datum_naslednjega))) = '"+leto+"'  \n" +
+                    //" and  strftime('%m',(DATE(vz.datum_naslednjega))) = '"+mesec+"'  \n" +
+                    //" and vz.st_del_naloga not in (select per.st_del_naloga from sintal_teh_vz_dn_periodika per where strftime('%Y',(DATE(per.DATUM_IZVEDBE))) = '"+leto+"' and strftime('%m',(DATE(per.DATUM_IZVEDBE))) = '"+mesec+"' )\n" +
+                    " UNION\n" +*/
+                    " select  \n" +
+                            " strftime('%Y',(DATE(per.DATUM_IZVEDBE))) as leto,\n" +
+                            " strftime('%m',(DATE(per.DATUM_IZVEDBE))) as mesec,\n" +
+                            " vz.*, per.DATUM_IZVEDBE as DATUM_IZVEDBE, per.opomba,\n" +
+                            " case when ifnull(per.id,0) = 0 then 0 else 1 end as per_id,\n" +
+                            " case when ifnull(per.prenos,0) = 0 then 0 else 1 end as prenos_per \n" +
+                            " from sintal_teh_vz_dn vz \n" +
+                            " left join sintal_teh_vz_dn_periodika per on vz.st_del_naloga = per.st_del_naloga \n" +
+                            //" where strftime('%Y',(DATE(per.DATUM_IZVEDBE))) = '"+leto+"' \n" +
+                            //" and strftime('%m',(DATE(per.DATUM_IZVEDBE))) = '"+mesec+"'" ;
+                            " where per.status = 'X'";
+        }
+
         mDatabase = this.getReadableDatabase();
         mCursor = mDatabase.rawQuery(query, null);
         while (mCursor.moveToNext()){
@@ -1964,6 +2053,8 @@ public class DatabaseHandler extends SQLiteOpenHelper {
             sn.setPrenos_per(mCursor.getInt(mCursor.getColumnIndex("prenos_per")));
             sn.setObjekt(mCursor.getString(mCursor.getColumnIndex("objekt")));
             sn.setObjektNaslov(mCursor.getString(mCursor.getColumnIndex("naslov_objekta")));
+            sn.setOpomba(mCursor.getString(mCursor.getColumnIndex("opomba")));
+            sn.setDATUM_IZVEDBE(mCursor.getString(mCursor.getColumnIndex("DATUM_IZVEDBE")));
             //sn.setOznacen(0);
             list.add(sn);
         }
@@ -2076,10 +2167,55 @@ public class DatabaseHandler extends SQLiteOpenHelper {
         return  vzDelN;
     }
 
-    public DelovniNalogVZPeriodika vrniVZDNPre(int idVZDN){
+    public DelovniNalogVZPeriodika vrniVZDNPre(int idVZDN, int periodika_prenos, String mes_obr){
 
         DelovniNalogVZPeriodika vzDelN = new DelovniNalogVZPeriodika();
-        String query = "SELECT * FROM sintal_teh_vz_dn_periodika where id ="+idVZDN+"";
+        String query = "";
+        if ( periodika_prenos == 0)
+        {
+             query = "SELECT * FROM sintal_teh_vz_dn_periodika where id ="+idVZDN+"";
+        }
+        else {
+             query = "select  \n" +
+                     "strftime('%Y',(DATE(per.DATUM_IZVEDBE))) as leto,\n" +
+                     "strftime('%m',(DATE(per.DATUM_IZVEDBE))) as mesec,\n" +
+                     "vz.*, per.DATUM_IZVEDBE as DATUM_IZVEDBE, per.opomba,\n" +
+                     "case when ifnull(per.id,0) = 0 then 0 else 1 end as per_id,\n" +
+                     "case when ifnull(per.prenos,0) = 0 then 0 else 1 end as prenos_per \n" +
+                     " ,per.TIP_NAROCILA \n" +
+                     " , per.preizkus1 \n" +
+                     " , per.preizkus2 \n" +
+                     " , per.preizkus3 \n" +
+                     " , per.preizkus4 \n" +
+                     " , per.preizkus5 \n" +
+                     " , per.preizkus6 \n" +
+                     " , per.preizkus7 \n" +
+                     " , per.preizkus8 \n" +
+                     " , per.preizkus9 \n" +
+                     " , per.preizkus10 \n" +
+                     " , per.preizkus11 \n" +
+                     " , per.preizkus12 \n" +
+                     " , per.preizkus13 \n" +
+                     " , per.preizkus14 \n" +
+                     " , per.preizkus15 \n" +
+                     " , per.preizkus16 \n" +
+                     " , per.preizkus17 \n" +
+                     " , per.preizkus18 \n" +
+                     " , per.vzdrzevanje_redno \n" +
+                     " , per.vzdrzevanje_izredno \n" +
+                     " , per.tip_elementov \n" +
+                     " , per.kontrolor_linije \n" +
+                     " , per.aku_baterije \n" +
+                     " , per.nacin_prenosa \n" +
+                     " , per.institucija_prenosa \n" +
+                     " from sintal_teh_vz_dn vz \n" +
+                     " left join sintal_teh_vz_dn_periodika per on vz.st_del_naloga = per.st_del_naloga \n" +
+                     " where strftime('%Y',(DATE(per.DATUM_IZVEDBE))) = '"+mes_obr.substring(0,4)+"' \n" +
+                     " and strftime('%m',(DATE(per.DATUM_IZVEDBE))) = '"+mes_obr.substring(4,6)+"'\n" +
+                     " and vz.id = "+idVZDN+";";
+        }
+
+
 
         mDatabase = this.getReadableDatabase();
         mCursor = mDatabase.rawQuery(query, null);
@@ -2139,6 +2275,7 @@ public class DatabaseHandler extends SQLiteOpenHelper {
 
 
             vzDelN.setDATUM_IZVEDBE(mCursor.getString(mCursor.getColumnIndex("DATUM_IZVEDBE")));
+            vzDelN.setOpomba(mCursor.getString(mCursor.getColumnIndex("opomba")));
 
 
         }
@@ -2773,6 +2910,59 @@ public class DatabaseHandler extends SQLiteOpenHelper {
         return tehnikImeRegala;
     }
 
+
+    public String getTehnikNaziv(int tehnikID)
+    {
+        mDatabase = this.getWritableDatabase();
+        String tehnikNaziv = "";
+        String GET_USER = "SELECT * FROM sintal_teh_delavci where tehnik_id = '" + String.valueOf(tehnikID) + "'";
+        mCursor = mDatabase.rawQuery(GET_USER,null);
+        //NadzorXML n;
+        if (mCursor != null)
+        {
+            mCursor.moveToFirst();
+        }
+        if (mCursor.moveToFirst()) {
+            tehnikNaziv = mCursor.getString(1);
+        }
+
+        mCursor.close();
+
+        //mDatabase.execSQL(INSERT_INTO_USERS_TABLE);
+        mDatabase.close();
+        if (tehnikNaziv.equals(""))
+        {
+            tehnikNaziv = "";
+        }
+        return tehnikNaziv;
+    }
+
+    public String getUporabnikNaziv(int tehnikID)
+    {
+        mDatabase = this.getWritableDatabase();
+        String tehnikNaziv = "";
+        String GET_USER = "SELECT * FROM sintal_teh_upo where user_id = '" + String.valueOf(tehnikID) + "'";
+        mCursor = mDatabase.rawQuery(GET_USER,null);
+        //NadzorXML n;
+        if (mCursor != null)
+        {
+            mCursor.moveToFirst();
+        }
+        if (mCursor.moveToFirst()) {
+            tehnikNaziv = mCursor.getString(2) + " " + mCursor.getString(3);
+            tehnikNaziv = tehnikNaziv.toUpperCase();
+        }
+
+        mCursor.close();
+
+        //mDatabase.execSQL(INSERT_INTO_USERS_TABLE);
+        mDatabase.close();
+        if (tehnikNaziv.equals(""))
+        {
+            tehnikNaziv = "";
+        }
+        return tehnikNaziv;
+    }
 
 
     public ArrayList<String> getUserLogin(String upo_ime, String prijava) {

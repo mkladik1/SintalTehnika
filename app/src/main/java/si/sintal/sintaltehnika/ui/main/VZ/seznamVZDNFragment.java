@@ -102,7 +102,7 @@ public class seznamVZDNFragment extends Fragment {
         izbraniVzdrzevalec.setAdapter(dataAdapter);
 
         dodeliVZDNje = db.GetSeznamVZDNUporabnik(izbraniVzdrzevalec.getSelectedItem().toString(),"D",yearMonthIbr);
-        adaptersSeznamUpoDNjevVZD = new SeznamUpoVZDNAdapter(getActivity(), dodeliVZDNje, Integer.parseInt(tehnikID), Integer.parseInt(userID));
+        adaptersSeznamUpoDNjevVZD = new SeznamUpoVZDNAdapter(getActivity(), dodeliVZDNje, Integer.parseInt(tehnikID), Integer.parseInt(userID),yearMonthIbr);
         listView = (ListView) v.findViewById(R.id.seznamDNUpoLVVZD);
         listView.setAdapter(adaptersSeznamUpoDNjevVZD);
 
@@ -132,7 +132,7 @@ public class seznamVZDNFragment extends Fragment {
                 String yearMonthIbr = izbraniLM.getSelectedItem().toString();
                 //status = status.substring(0,1);
                 dodeliVZDNje = db.GetSeznamVZDNUporabnik(izbraniVzdrzevalec.getSelectedItem().toString(),"D",yearMonthIbr);
-                adaptersSeznamUpoDNjevVZD = new SeznamUpoVZDNAdapter(getActivity(), dodeliVZDNje, Integer.parseInt(tehnikID), Integer.parseInt(userID));
+                adaptersSeznamUpoDNjevVZD = new SeznamUpoVZDNAdapter(getActivity(), dodeliVZDNje, Integer.parseInt(tehnikID), Integer.parseInt(userID), yearMonthIbr);
                 listView = (ListView) v.findViewById(R.id.seznamDNUpoLVVZD);
                 listView.setAdapter(adaptersSeznamUpoDNjevVZD);
                 //Toast.makeText(getActivity(), "Something changed", LENGTH_SHORT).show();
