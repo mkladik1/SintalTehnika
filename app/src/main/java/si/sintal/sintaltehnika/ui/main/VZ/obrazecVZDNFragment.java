@@ -67,7 +67,6 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
-import java.net.NetworkInterface;
 import java.net.URL;
 import java.text.DateFormat;
 import java.text.ParseException;
@@ -77,24 +76,25 @@ import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Base64;
 import java.util.Calendar;
-import java.util.Collections;
 import java.util.Date;
-import java.util.List;
 
 import si.sintal.sintaltehnika.BuildConfig;
 import si.sintal.sintaltehnika.DatabaseHandler;
 import si.sintal.sintaltehnika.R;
 import si.sintal.sintaltehnika.ui.main.DelovniNalogVZ;
 import si.sintal.sintaltehnika.ui.main.DelovniNalogVZPeriodika;
+import si.sintal.sintaltehnika.ui.main.SendEmailService;
 
 public class obrazecVZDNFragment extends Fragment {
 
     private ObrazecVZDNViewModel mViewModel;
     private int tehnikID;
     private String userID;
-    private int vzDNID;
+    //private int vzDNID;
+    private String vzDNStDN;
     private int perPre;
     private String mes_obr;
+    private String datumIzvedbe;
     Dialog dialog;
     private String vzDelNalST;
     int serverResponseCode = 0;
@@ -124,11 +124,14 @@ public class obrazecVZDNFragment extends Fragment {
         perPre = intent.getIntExtra("per_prenos",0);
         tehnikID = VZPagerAdapter.getTehnikID();
         perPre = VZPagerAdapter.getPer_prenos();
-        vzDNID = VZPagerAdapter.getParameters();
+        vzDNStDN = VZPagerAdapter.getVzDNSTDN();
         mes_obr = VZPagerAdapter.getMes_obr();
         //TextView tvDN = TextView
-        vzDN = db.vrniVZDN(vzDNID);
-        vzDNPer = db.vrniVZDNPre(vzDNID, perPre,mes_obr);
+        vzDN = db.vrniVZDN(vzDNStDN);
+        vzDNPer = db.vrniVZDNPre(vzDNStDN, perPre,mes_obr);
+        EditText et1 = (EditText)v.findViewById(R.id.etVZDNDatumIzvedbe);
+        datumIzvedbe = et1.getText().toString();
+
         Button bShowVZDN = (Button) v.findViewById(R.id.buttonVZDNPrikazi);
         bShowVZDN.setOnClickListener(
                 new View.OnClickListener() {
@@ -136,22 +139,26 @@ public class obrazecVZDNFragment extends Fragment {
                     public void onClick(View v) {
                         try {
                             //convertToPdf();
-                            int status = vzDNPer.getStatus();
-                            if (status == 0 )
+                            String status = vzDNPer.getStatus();
+                            EditText et1 = (EditText)getActivity().findViewById(R.id.etVZDNDatumIzvedbe);
+                            datumIzvedbe = et1.getText().toString();
+                            String di = datumIzvedbe.substring(6,10) + datumIzvedbe.substring(3,5) + datumIzvedbe.substring(0,2);
+                            if (status.equals("A" ))
                             {
-                                createPdf();
-                                openPdf();
+                                createPdf(vzDNStDN,di);
+                                openPdf(vzDNStDN,di);
                             }
                             else {
                                 String path = getContext().getFilesDir().getPath();
                                 File dir = new File(path);
-                                File file = new File(dir, vzDNID+".pdf");
+                                File file = new File(dir, vzDNStDN+".pdf");
+                                file = new File(dir, vzDNStDN+"_"+di+".pdf");
                                 if(!file.exists())
                                 {
-                                    createPdf();
+                                    createPdf(vzDNStDN,di);
                                 }
 
-                                openPdf();
+                                openPdf(vzDNStDN,di);
                             }
                             //db.updateSNStatusAkt(snID,"Z");
                         } catch (Exception e) {
@@ -172,6 +179,32 @@ public class obrazecVZDNFragment extends Fragment {
                 }
         );
 
+        Button bPoslji = (Button) v.findViewById(R.id.buttonVZDNPoslji);
+        bPoslji.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                TextView emailTw = (TextView) getView().findViewById(R.id.etSNEmail);
+                String email =  emailTw.getText().toString();
+                String status = vzDNPer.getStatus();
+                EditText et1 = (EditText) getView().findViewById(R.id.etVZDNDatumIzvedbe);
+                datumIzvedbe = et1.getText().toString();
+                if ((status.equals("A") == true) || (status.equals("D") == true) || (status.equals("P") == true)) {
+                    try {
+                        createPdf(vzDNStDN,datumIzvedbe);
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                    }
+                }
+                if (email.equals("") == false) {
+                    new obrazecVZDNFragment.SendEmailNarocnik().execute();
+                }
+                else
+                {
+                    Toast.makeText(getView().getContext(),"Obvezno vnesite email za pošiljanje!",Toast.LENGTH_LONG).show();
+                }
+            }
+        });
+
 
         return v;
 
@@ -185,9 +218,9 @@ public class obrazecVZDNFragment extends Fragment {
         // TODO: Use the ViewModel
     }
 
-    public void openPdf() throws Exception
+    public void openPdf(String stDN, String datumIzv) throws Exception
     {
-        File file = new File(getContext().getFilesDir()+"/"+vzDNID+".pdf");
+        File file = new File(getContext().getFilesDir()+"/"+stDN+"_"+datumIzv+".pdf");
         //Environment.getExternalStorageDirectory().getAbsolutePath()+"/Download/sample.pdf");
         if (file.exists())
         {
@@ -218,6 +251,68 @@ public class obrazecVZDNFragment extends Fragment {
 
     }
 
+    private class SendEmailNarocnik extends AsyncTask {
+        String result = null;
+        @Override
+        protected Object doInBackground(Object... arg0) {
+            result = "";
+            SendEmailService sm = new SendEmailService(getContext());
+            String fn = getContext().getFilesDir()+"/"+vzDNPer+"_"+datumIzvedbe+".pdf";
+            File pdfFile = new File(fn);
+                /*
+                if (pdfFile.exists() == false)
+                {
+                    try {
+                        String status = sn.getStatus();
+                        if ((status.equals("A") == true) || (status.equals("D") == true) || (status.equals("P") == true)) {
+                            createPdf();
+                        }
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                    }
+                }*/
+            TextView emailTw = (TextView) getActivity().findViewById(R.id.etSNEmail);
+            String email =  emailTw.getText().toString();
+            result = sm.SendEmail(fn,email);
+
+            if (result.equals("") == true)
+            {
+                String datum = "";
+                DateTimeFormatter dtf = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
+                LocalDateTime now = LocalDateTime.now();
+                datum = dtf.format(now);
+                DatabaseHandler db = new DatabaseHandler(getContext());
+                DelovniNalogVZPeriodika sn = db.vrniVZDNPreDatumIzvedbe(vzDelNalST,datumIzvedbe);
+                String st = sn.getStatus();
+                if(st.equals("Z") == true)
+                {
+
+                }
+                else
+                {
+                    db.updateVZDNPoslano(vzDelNalST,"P",datumIzvedbe);
+                }
+                db.insertEmailLog(userID,0,vzDNStDN,email,datum);
+            }
+
+            return result;
+        }
+
+        @Override
+        protected void onPostExecute(Object o) {
+            super.onPostExecute(o);
+            if (result.equals("") == true)
+            {
+                Toast.makeText(getActivity(), "Podatki uspešno poslani!", Toast.LENGTH_LONG).show();
+
+            }
+            else{
+                Toast.makeText(getActivity(), "Napaka pri pošiljanju podatkov!", Toast.LENGTH_LONG).show();
+            }
+
+        }
+    }
+
 
     @Override
     public void onResume() {
@@ -229,32 +324,33 @@ public class obrazecVZDNFragment extends Fragment {
         dialog.setCancelable(true);
 
         DatabaseHandler db = new DatabaseHandler(getContext());
-        vzDNID = VZPagerAdapter.getParameters();
+        //vzDNID = VZPagerAdapter.getParameters();
+        vzDNStDN = VZPagerAdapter.getVzDNSTDN();
         perPre = VZPagerAdapter.getPer_prenos();
         mes_obr = VZPagerAdapter.getMes_obr();
 
 
         //TextView tvDN = TextView
-        vzDN = db.vrniVZDN(vzDNID);
-        vzDNPer = db.vrniVZDNPre(vzDNID,perPre,mes_obr);
+        vzDN = db.vrniVZDN(vzDNStDN);
+        vzDNPer = db.vrniVZDNPre(vzDNStDN,perPre,mes_obr);
 
 
 
 
         Button bSNShrani = (Button) getView().findViewById(R.id.bVZDNShrani);
-        Button bPdf = (Button) getView().findViewById(R.id.bVZDNZakljuci);
+        Button bZakljuci = (Button) getView().findViewById(R.id.bVZDNZakljuci);
         Button bSign = (Button) getView().findViewById(R.id.bVZDNPodisStranka);
 
         if (perPre == 1)
         {
             bSNShrani.setEnabled(false);
-            bPdf.setEnabled(false);
+            bZakljuci.setEnabled(false);
             bSign.setEnabled(false);
 
         }
         else {
             bSNShrani.setEnabled(true);
-            bPdf.setEnabled(true);
+            bZakljuci.setEnabled(true);
             bSign.setEnabled(true);
 
         }
@@ -597,7 +693,7 @@ public class obrazecVZDNFragment extends Fragment {
                     SimpleDateFormat formatter = new SimpleDateFormat("yyyy-mm-dd");
                     String todayString = formatter.format(todayDate);
                     DatabaseHandler db = new DatabaseHandler(getContext());
-                    db.insertUpdateVZDNPeriodika(String.valueOf(vzDNID), vzDN,"A",tvVZDNDatumDodelitve, tvVZDNDatumIzvedbe,"0","",tvVZDBOpombe,etSNUrePrevoz,etSNUreDelo,etSNStKm,
+                    db.insertUpdateVZDNPeriodika("0", vzDNStDN,"A",tvVZDNDatumDodelitve, tvVZDNDatumIzvedbe,"0","",tvVZDBOpombe,etSNUrePrevoz,etSNUreDelo,etSNStKm,
                             "","","", String.valueOf(tipNarocila),
                             sisPozar,sisVlom,sisVideo,sisPlin,sisPristop,sisDim,"0", spVZDN, redno, izredno,
                             tipEl, datumPrejsne, datumNasl, kontrolorLinije, baterije, nacinP, institucija,
@@ -644,7 +740,7 @@ public class obrazecVZDNFragment extends Fragment {
          */
 
         //methodA(); // this is called ...
-        DelovniNalogVZPeriodika dnvp = db.vrniVZDNPre(vzDNID, perPre,mes_obr);
+        DelovniNalogVZPeriodika dnvp = db.vrniVZDNPre(vzDNStDN, perPre,mes_obr);
         if (dnvp.getid() != 0)
         {
             azurirajPodatke(dnvp);
@@ -659,7 +755,7 @@ public class obrazecVZDNFragment extends Fragment {
         }
     }
 
-    public void createPdf() throws Exception
+    public void createPdf(String stDN, String datumIZV) throws Exception
     {
         try {
             String path = getContext().getFilesDir().getPath();
@@ -670,7 +766,8 @@ public class obrazecVZDNFragment extends Fragment {
             Log.d("PDFCreator", "PDF Path: " + path);
 
 
-            File file = new File(dir, vzDNID+".pdf");
+            File file = new File(dir, vzDNStDN+".pdf");
+            file = new File(dir, stDN+"_"+datumIZV+".pdf");
             if(!file.exists())
             {
                 //file.delete();
@@ -684,10 +781,10 @@ public class obrazecVZDNFragment extends Fragment {
 
             DatabaseHandler db = new DatabaseHandler(getContext());
             DelovniNalogVZ vzDNPdf = new DelovniNalogVZ();
-            vzDNPdf = db.vrniVZDN(vzDNID);
+            vzDNPdf = db.vrniVZDN(vzDNStDN);
 
             DelovniNalogVZPeriodika vzDNPdfPer = new DelovniNalogVZPeriodika();
-            vzDNPdfPer = db.vrniVZDNPre(vzDNID,perPre,mes_obr);
+            vzDNPdfPer = db.vrniVZDNPre(vzDNStDN,perPre,mes_obr);
 
             FileOutputStream fOut = new FileOutputStream(file);
 
@@ -1413,7 +1510,7 @@ public class obrazecVZDNFragment extends Fragment {
             //datum = dtf.format(now);
             byte[] podpis = data;
             String StoredPath = "";
-            StoredPath = getContext().getFilesDir()+"/"+String.valueOf(vzDNID)+"-VZ.bmp";
+            StoredPath = getContext().getFilesDir()+"/"+String.valueOf(vzDNStDN)+"-VZ.bmp";
             try {
                 FileOutputStream fos = new FileOutputStream(StoredPath);
                 fos.write(podpis);
@@ -1609,7 +1706,7 @@ public class obrazecVZDNFragment extends Fragment {
         view = mContent;
         DatabaseHandler db = new DatabaseHandler(getContext());
         DelovniNalogVZPeriodika vz_per =  new DelovniNalogVZPeriodika();
-        vz_per = db.vrniVZDNPre(vzDNID,perPre, mes_obr);
+        vz_per = db.vrniVZDNPre(vzDNStDN,perPre, mes_obr);
         mSignature.clear();
 
         mClear.setOnClickListener(new View.OnClickListener() {
@@ -1650,7 +1747,7 @@ public class obrazecVZDNFragment extends Fragment {
             BitmapFactory.Options options = new BitmapFactory.Options();
             options.inScaled = false;
             options.inMutable = true;
-            File file = new File(getContext().getFilesDir()+"/"+vzDNID+"-VZ.bmp");
+            File file = new File(getContext().getFilesDir()+"/"+vzDNStDN+"-VZ.bmp");
             Bitmap _scratch =  BitmapFactory.decodeByteArray(podpis, 0, podpis.length);
             Drawable d = new BitmapDrawable(_scratch);
             mSignature.setBackground(d);
@@ -1705,10 +1802,10 @@ public class obrazecVZDNFragment extends Fragment {
                 ByteArrayOutputStream bos = new ByteArrayOutputStream();
                 bitmap.compress(Bitmap.CompressFormat.PNG, 100, bos);
                 byte[] bArray = bos.toByteArray();
-                db.updatePodpisVZDN(String.valueOf(vzDNID),bArray,datum);
+                db.updatePodpisVZDN(String.valueOf(vzDNStDN),bArray,datum,datumIzvedbe);
                 //new obrazecSNFragment().updatePodpisanoMySql(snID,"P",datum,bArray);//.execute();
                 ArrayList<String> parameters = new ArrayList<String>();
-                parameters.add(String.valueOf(vzDNID));
+                parameters.add(String.valueOf(vzDNStDN));
                 parameters.add("P");
                 parameters.add(datum);
                 //parameters.add(bArray);

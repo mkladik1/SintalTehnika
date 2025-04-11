@@ -22,13 +22,14 @@ public class VZPagerAdapter extends FragmentStateAdapter {
     static int senderID;
     static int per_prenos;
     static String mes_obr;
+    static String vzDNSTDN;
 
     public VZPagerAdapter(@NonNull FragmentManager fragmentManager, @NonNull Lifecycle lifecycle) {
         super(fragmentManager, lifecycle);
     }
 
 
-    public static void setParameters(int sID, int tehID, int uID, int perPrenos, String mesObr)
+    public static void setParameters(int sID, int tehID, int uID, int perPrenos, String mesObr, String vzDNstDel)
     {
 
         snID = sID;
@@ -36,6 +37,7 @@ public class VZPagerAdapter extends FragmentStateAdapter {
         userID = uID;
         per_prenos = perPrenos;
         mes_obr = mesObr;
+        vzDNSTDN = vzDNstDel;
        /* nalogaID = nid;
         nsID = nsid;
         sistemID = sid;
@@ -44,6 +46,11 @@ public class VZPagerAdapter extends FragmentStateAdapter {
         senderID = sd;
 
         */
+    }
+
+
+    public static String getVzDNSTDN() {
+        return vzDNSTDN;
     }
 
     public static int getParameters()

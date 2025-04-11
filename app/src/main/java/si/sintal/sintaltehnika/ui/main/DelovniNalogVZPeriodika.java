@@ -34,7 +34,7 @@ public class DelovniNalogVZPeriodika {
     String prenos_inst;
     byte[] podpis_vzdrzevalec;
     byte[] podpis_narocnik;
-    int status;
+    String status;
     String DATUM_DODELITVE;
     String DATUM_IZVEDBE;
     int prenos;
@@ -233,8 +233,8 @@ public class DelovniNalogVZPeriodika {
     }
 
 
-    public void setStatus(int newStatus) { this.status = newStatus; }
-    public int getStatus()  { return status; }
+    public void setStatus(String newStatus) { this.status = newStatus; }
+    public String getStatus()  { return status; }
 
     public void setDatumPodpisa(String newDatumPodpisa) {this.datumPodpisa = newDatumPodpisa;  }
 

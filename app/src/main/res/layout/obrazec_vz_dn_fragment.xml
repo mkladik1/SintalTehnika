@@ -30,6 +30,15 @@
             android:text="Podpiši" />
 
         <Button
+            android:id="@+id/buttonVZDNPoslji_"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="bottom|center_horizontal"
+            android:layout_margin="2dp"
+            android:layout_weight="1"
+            android:text="Zaključi" />
+
+        <Button
             android:id="@+id/bVZDNZakljuci"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
@@ -46,7 +55,8 @@
             android:layout_margin="2dp"
             android:layout_weight="5"
             android:gravity="center"
-            android:text="Shrani spremembe" />
+            android:text="Shrani spremembe"
+            android:visibility="gone" />
     </LinearLayout>
 
     <ScrollView

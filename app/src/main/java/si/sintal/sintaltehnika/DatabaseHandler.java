@@ -1935,8 +1935,8 @@ public class DatabaseHandler extends SQLiteOpenHelper {
 
         ArrayList<DelovniNalogVZ> list = new ArrayList<DelovniNalogVZ>();
         String query ="";// "SELECT  * FROM sintal_teh_sn where datum_zacetek = '" + datum + "' and vodja_sn = 'Null'";
-        String leto = LetoMesec.substring(0,4);
-        String mesec = LetoMesec.substring(4,6);
+
+
         //query = "SELECT  * FROM sintal_teh_sn where strftime('%d.%m.%Y', DATUM_ZACETEK) = '" + datum + "' and VODJA_NALOGA = '"+vodja_sn+"'";
         /*
         if (status.equals("D") == true)
@@ -1966,7 +1966,13 @@ public class DatabaseHandler extends SQLiteOpenHelper {
         }
 
          */
-
+        String leto ="";
+        String mesec = "";
+        if ( status.equals("A") || status.equals("D") )
+        {
+             leto = LetoMesec.substring(0, 4);
+             mesec = LetoMesec.substring(4, 6);
+        }
         query = " select  \n" +
                 " strftime('%Y',(DATE(vz.datum_naslednjega))) as leto,\n" +
                 " strftime('%m',(DATE(vz.datum_naslednjega))) as mesec,\n" +
@@ -2115,10 +2121,10 @@ public class DatabaseHandler extends SQLiteOpenHelper {
         return  list;
     }
 
-    public DelovniNalogVZ vrniVZDN(int idVZDN){
+    public DelovniNalogVZ vrniVZDN(String stDelNal){
 
         DelovniNalogVZ vzDelN = new DelovniNalogVZ();
-        String query = "SELECT * FROM sintal_teh_vz_dn where id ="+idVZDN+"";
+        String query = "SELECT * FROM sintal_teh_vz_dn where st_del_naloga ='"+stDelNal+"'";
 
         mDatabase = this.getReadableDatabase();
         mCursor = mDatabase.rawQuery(query, null);
@@ -2167,13 +2173,13 @@ public class DatabaseHandler extends SQLiteOpenHelper {
         return  vzDelN;
     }
 
-    public DelovniNalogVZPeriodika vrniVZDNPre(int idVZDN, int periodika_prenos, String mes_obr){
+    public DelovniNalogVZPeriodika vrniVZDNPre(String st_del_naloga, int periodika_prenos, String mes_obr){
 
         DelovniNalogVZPeriodika vzDelN = new DelovniNalogVZPeriodika();
         String query = "";
         if ( periodika_prenos == 0)
         {
-             query = "SELECT * FROM sintal_teh_vz_dn_periodika where id ="+idVZDN+"";
+             query = "SELECT * FROM sintal_teh_vz_dn_periodika where st_del_naloga ='"+st_del_naloga+"'";
         }
         else {
              query = "select  \n" +
@@ -2212,7 +2218,7 @@ public class DatabaseHandler extends SQLiteOpenHelper {
                      " left join sintal_teh_vz_dn_periodika per on vz.st_del_naloga = per.st_del_naloga \n" +
                      " where strftime('%Y',(DATE(per.DATUM_IZVEDBE))) = '"+mes_obr.substring(0,4)+"' \n" +
                      " and strftime('%m',(DATE(per.DATUM_IZVEDBE))) = '"+mes_obr.substring(4,6)+"'\n" +
-                     " and vz.id = "+idVZDN+";";
+                     " and vz.st_del_naloga = "+st_del_naloga+";";
         }
 
 
@@ -2227,7 +2233,117 @@ public class DatabaseHandler extends SQLiteOpenHelper {
             vzDelN.setOpomba(mCursor.getString(mCursor.getColumnIndex("OPIS_POSTOPKA")));
             vzDelN.setTipNarocila(mCursor.getInt(mCursor.getColumnIndex("TIP_NAROCILA")));
 
-            vzDelN.setStatus(mCursor.getInt(mCursor.getColumnIndex("STATUS")));
+            vzDelN.setStatus(mCursor.getString(mCursor.getColumnIndex("STATUS")));
+            vzDelN.setSis_pozar(mCursor.getInt(mCursor.getColumnIndex("sis_pozar")));
+            vzDelN.setSis_co(mCursor.getInt(mCursor.getColumnIndex("sis_co")));
+            vzDelN.setSis_vlom(mCursor.getInt(mCursor.getColumnIndex("sis_vlom")));
+            vzDelN.setSis_video(mCursor.getInt(mCursor.getColumnIndex("sis_video")));
+            vzDelN.setSis_pristopna(mCursor.getInt(mCursor.getColumnIndex("sis_pristopna")));
+            vzDelN.setSis_dimni_bankovci(mCursor.getInt(mCursor.getColumnIndex("sis_dimni_banokvci")));
+
+            vzDelN.setRedno(mCursor.getInt(mCursor.getColumnIndex("vzdrzevanje_redno")));
+            vzDelN.setIzredno(mCursor.getInt(mCursor.getColumnIndex("vzdrzevanje_izredno")));
+            vzDelN.setTip_elementov(mCursor.getString(mCursor.getColumnIndex("tip_elementov")));
+            vzDelN.setDatum_prejsenjega(mCursor.getString(mCursor.getColumnIndex("datum_zadnjega")));
+            vzDelN.setDatum_naslednjega(mCursor.getString(mCursor.getColumnIndex("datum_naslednjega")));
+            vzDelN.setkontrolor(mCursor.getString(mCursor.getColumnIndex("kontrolor_linije")));
+            vzDelN.setaku_bat(mCursor.getString(mCursor.getColumnIndex("aku_baterije")));
+
+            vzDelN.setnacin_prenosa(mCursor.getString(mCursor.getColumnIndex("nacin_prenosa")));
+            vzDelN.setprenos_inst(mCursor.getString(mCursor.getColumnIndex("institucija_prenosa")));
+
+            vzDelN.setPr1(mCursor.getInt(mCursor.getColumnIndex("preizkus1")));
+            vzDelN.setPr2(mCursor.getInt(mCursor.getColumnIndex("preizkus2")));
+            vzDelN.setPr3(mCursor.getInt(mCursor.getColumnIndex("preizkus3")));
+            vzDelN.setPr4(mCursor.getInt(mCursor.getColumnIndex("preizkus4")));
+            vzDelN.setPr5(mCursor.getInt(mCursor.getColumnIndex("preizkus5")));
+
+            vzDelN.setPr6(mCursor.getInt(mCursor.getColumnIndex("preizkus6")));
+            vzDelN.setPr7(mCursor.getInt(mCursor.getColumnIndex("preizkus7")));
+            vzDelN.setPr8(mCursor.getInt(mCursor.getColumnIndex("preizkus8")));
+            vzDelN.setPr9(mCursor.getInt(mCursor.getColumnIndex("preizkus9")));
+            vzDelN.setPr10(mCursor.getInt(mCursor.getColumnIndex("preizkus10")));
+
+            vzDelN.setPr11(mCursor.getInt(mCursor.getColumnIndex("preizkus11")));
+            vzDelN.setPr12(mCursor.getInt(mCursor.getColumnIndex("preizkus12")));
+            vzDelN.setPr13(mCursor.getInt(mCursor.getColumnIndex("preizkus13")));
+            vzDelN.setPr14(mCursor.getInt(mCursor.getColumnIndex("preizkus14")));
+            vzDelN.setPr15(mCursor.getInt(mCursor.getColumnIndex("preizkus15")));
+
+            vzDelN.setPr16(mCursor.getInt(mCursor.getColumnIndex("preizkus16")));
+            vzDelN.setPr17(mCursor.getInt(mCursor.getColumnIndex("preizkus17")));
+            vzDelN.setPr18(mCursor.getInt(mCursor.getColumnIndex("preizkus18")));
+
+            vzDelN.setUrePrevoz(mCursor.getDouble(mCursor.getColumnIndex("URE_PREVOZ")));
+            vzDelN.setUreDelo(mCursor.getDouble(mCursor.getColumnIndex("URE_DELO")));
+            vzDelN.setStKm(mCursor.getDouble(mCursor.getColumnIndex("STEVILO_KM")));
+            vzDelN.setDatumPodpisa(mCursor.getString(mCursor.getColumnIndex("DATUM_PODPISA")));
+
+
+            vzDelN.setDATUM_IZVEDBE(mCursor.getString(mCursor.getColumnIndex("DATUM_IZVEDBE")));
+            vzDelN.setOpomba(mCursor.getString(mCursor.getColumnIndex("opomba")));
+
+
+        }
+
+        mCursor.close();
+        mDatabase.close();
+        return  vzDelN;
+    }
+
+    public DelovniNalogVZPeriodika vrniVZDNPreDatumIzvedbe(String stDN, String datumIzvedbe){
+
+        DelovniNalogVZPeriodika vzDelN = new DelovniNalogVZPeriodika();
+        String query = "";
+            query = "select  \n" +
+                    "strftime('%Y',(DATE(per.DATUM_IZVEDBE))) as leto,\n" +
+                    "strftime('%m',(DATE(per.DATUM_IZVEDBE))) as mesec,\n" +
+                    "vz.*, per.DATUM_IZVEDBE as DATUM_IZVEDBE, per.opomba,\n" +
+                    "case when ifnull(per.id,0) = 0 then 0 else 1 end as per_id,\n" +
+                    "case when ifnull(per.prenos,0) = 0 then 0 else 1 end as prenos_per \n" +
+                    " ,per.TIP_NAROCILA \n" +
+                    " , per.preizkus1 \n" +
+                    " , per.preizkus2 \n" +
+                    " , per.preizkus3 \n" +
+                    " , per.preizkus4 \n" +
+                    " , per.preizkus5 \n" +
+                    " , per.preizkus6 \n" +
+                    " , per.preizkus7 \n" +
+                    " , per.preizkus8 \n" +
+                    " , per.preizkus9 \n" +
+                    " , per.preizkus10 \n" +
+                    " , per.preizkus11 \n" +
+                    " , per.preizkus12 \n" +
+                    " , per.preizkus13 \n" +
+                    " , per.preizkus14 \n" +
+                    " , per.preizkus15 \n" +
+                    " , per.preizkus16 \n" +
+                    " , per.preizkus17 \n" +
+                    " , per.preizkus18 \n" +
+                    " , per.vzdrzevanje_redno \n" +
+                    " , per.vzdrzevanje_izredno \n" +
+                    " , per.tip_elementov \n" +
+                    " , per.kontrolor_linije \n" +
+                    " , per.aku_baterije \n" +
+                    " , per.nacin_prenosa \n" +
+                    " , per.institucija_prenosa \n" +
+                    " from sintal_teh_vz_dn vz \n" +
+                    " left join sintal_teh_vz_dn_periodika per on vz.st_del_naloga = per.st_del_naloga \n" +
+                    " where DATUM_IZVEDBE = '"+datumIzvedbe+"' \n" +
+                    " and per.st_del_naloga = "+stDN+";";
+
+
+        mDatabase = this.getReadableDatabase();
+        mCursor = mDatabase.rawQuery(query, null);
+        while (mCursor.moveToNext()){
+            //ServisniNalog sn = new ServisniNalog();
+            vzDelN.setid(mCursor.getInt(mCursor.getColumnIndex("id")));
+            vzDelN.setDelovniNalog(mCursor.getString(mCursor.getColumnIndex("st_del_naloga")));
+            vzDelN.setPeriodika_dni(mCursor.getInt(mCursor.getColumnIndex("periodika_dni")));
+            vzDelN.setOpomba(mCursor.getString(mCursor.getColumnIndex("OPIS_POSTOPKA")));
+            vzDelN.setTipNarocila(mCursor.getInt(mCursor.getColumnIndex("TIP_NAROCILA")));
+
+            vzDelN.setStatus(mCursor.getString(mCursor.getColumnIndex("STATUS")));
             vzDelN.setSis_pozar(mCursor.getInt(mCursor.getColumnIndex("sis_pozar")));
             vzDelN.setSis_co(mCursor.getInt(mCursor.getColumnIndex("sis_co")));
             vzDelN.setSis_vlom(mCursor.getInt(mCursor.getColumnIndex("sis_vlom")));
@@ -2534,13 +2650,13 @@ public class DatabaseHandler extends SQLiteOpenHelper {
         mDatabase.close();
     }
 
-    public void updatePodpisVZDN(String snID, byte[] image, String datum){
+    public void updatePodpisVZDN(String stDN, byte[] image, String datum, String datum_izvedbe){
         mDatabase = this.getWritableDatabase();
         ContentValues cv = new ContentValues();
         cv.put("PODPIS_NAROCNIK",image);
         cv.put("DATUM_PODPISA", datum);
         cv.put("STATUS_AKT", "P");
-        mDatabase.update("sintal_teh_sn",cv,"id = "+snID,null);
+        mDatabase.update("sintal_teh_vz_dn_periodika",cv,"st_del_naloga = "+stDN + " and DATUM_IZVEDBE =" + datum_izvedbe,null);
 
         //mDatabase.execSQL(INSERT_INTO_USERS_TABLE);
         mDatabase.close();
@@ -2564,6 +2680,29 @@ public class DatabaseHandler extends SQLiteOpenHelper {
         //cv.put("DATUM_POSILJANJA", datum);
        //cv.put("STATUS_AKT", "P");
         mDatabase.update("sintal_teh_sn",cv,"id = "+snID,null);
+
+        //mDatabase.execSQL(INSERT_INTO_USERS_TABLE);
+        mDatabase.close();
+    }
+
+    public void updateVZDNPoslano(String vzdnStDel, String status, String datumIzvedbe){
+        mDatabase = this.getWritableDatabase();
+        ContentValues cv = new ContentValues();
+        if (status.equals("X") == true)
+        {
+
+            cv.put("STATUS_AKT",status);
+            cv.put("DATUM_PRENOSA",status);
+            cv.put("PRENOS", 1);
+        }
+        else
+        {
+            cv.put("STATUS_AKT",status);
+        }
+
+        //cv.put("DATUM_POSILJANJA", datum);
+        //cv.put("STATUS_AKT", "P");
+        mDatabase.update("sintal_teh_vz_per",cv,"st_del_naloga = '"+vzdnStDel +"' and DATUM_IZVEDBE = '"+datumIzvedbe+"'",null);
 
         //mDatabase.execSQL(INSERT_INTO_USERS_TABLE);
         mDatabase.close();

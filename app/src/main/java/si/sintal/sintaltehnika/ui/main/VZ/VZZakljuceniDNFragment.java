@@ -1,13 +1,17 @@
 package si.sintal.sintaltehnika.ui.main.VZ;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
+import android.widget.Button;
 import android.widget.ListView;
 import android.widget.Spinner;
+import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -24,6 +28,7 @@ import si.sintal.sintaltehnika.R;
 import si.sintal.sintaltehnika.ui.main.DelovniNalogVZ;
 import si.sintal.sintaltehnika.ui.main.DelovniNalogVZPeriodika;
 import si.sintal.sintaltehnika.ui.main.SN.SNSeznamZakljucenihSNAdapter;
+import si.sintal.sintaltehnika.ui.main.SN.obrazecSNFragment;
 import si.sintal.sintaltehnika.ui.main.ServisniNalog;
 
 public class VZZakljuceniDNFragment extends Fragment {
@@ -47,6 +52,17 @@ public class VZZakljuceniDNFragment extends Fragment {
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container,
                              @Nullable Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.vz_zakljuceni_dn_fragment, container, false);
+
+        Intent intent= getActivity().getIntent();
+        userID = intent.getStringExtra("userID");
+        tehnikID = intent.getStringExtra("tehnikID");
+        tehnikID = String.valueOf(VZPagerAdapter.getTehnikID());
+        //tehnikNaziv = intent.getStringExtra("userName");
+        //tehnikEmail = intent.getStringExtra("email");
+        //tehnikAdminDostop = intent.getStringExtra("admin");
+        //servis = intent.getStringExtra("servis");
+        //montaza = intent.getStringExtra("montaza");
+        //vzdrzevanje = intent.getStringExtra("vzdrzevanje");
 
         db = new DatabaseHandler(getContext());
 
@@ -86,6 +102,8 @@ public class VZZakljuceniDNFragment extends Fragment {
 
             }
         });
+
+
 
 
 

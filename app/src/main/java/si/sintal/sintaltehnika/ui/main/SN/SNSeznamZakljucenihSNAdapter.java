@@ -105,15 +105,15 @@ public class SNSeznamZakljucenihSNAdapter extends ArrayAdapter<ServisniNalog> im
         SNSeznamZakljucenihSNAdapter.ViewHolder holder = null;
         if (convertView == null) {
             inflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-            convertView = inflater.inflate(R.layout.vz_seznam_zakljucenih_vz, null);
+            convertView = inflater.inflate(R.layout.sn_seznam_zakljucenih_sn, null);
             holder = new SNSeznamZakljucenihSNAdapter.ViewHolder();
-            holder.stSNja = (TextView) convertView.findViewById(R.id.labelstevilkaVZ);
-            holder.idSNja = (TextView) convertView.findViewById(R.id.labelidVZ);
-            holder.nazivNarocnikSNja = (TextView) convertView.findViewById(R.id.labelVZNarocnik);
-            holder.opisNapakeSNja = (TextView) convertView.findViewById(R.id.labelVZOpisNapke);
-            holder.datumZakljucenSN = (TextView) convertView.findViewById(R.id.labelidVZDodeljeno);
-            holder.datumZakljucenoSN = (TextView) convertView.findViewById(R.id.labelidVZZakljuceno);
-            holder.poslanoSN = (TextView) convertView.findViewById(R.id.labelidVZPoslano);
+            holder.stSNja = (TextView) convertView.findViewById(R.id.labelstevilkaSN);
+            holder.idSNja = (TextView) convertView.findViewById(R.id.labelidSN);
+            holder.nazivNarocnikSNja = (TextView) convertView.findViewById(R.id.labelSNNarocnik);
+            holder.opisNapakeSNja = (TextView) convertView.findViewById(R.id.labelSNOpisNapke);
+            holder.datumZakljucenSN = (TextView) convertView.findViewById(R.id.labelidSNDodeljeno);
+            holder.datumZakljucenoSN = (TextView) convertView.findViewById(R.id.labelidSNZakljuceno);
+            holder.poslanoSN = (TextView) convertView.findViewById(R.id.labelidSNPoslano);
             //holder.cbOznacen = (CheckBox) convertView.findViewById(R.id.cbDodeli);
             //holder.continent = (TextView) convertView.findViewById(R.id.continent);
             //holder.region = (TextView) convertView.findViewById(R.id.region);

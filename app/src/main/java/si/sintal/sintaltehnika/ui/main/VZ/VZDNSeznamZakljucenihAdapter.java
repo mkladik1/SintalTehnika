@@ -105,15 +105,15 @@ public class VZDNSeznamZakljucenihAdapter extends ArrayAdapter<DelovniNalogVZ> i
         VZDNSeznamZakljucenihAdapter.ViewHolder holder = null;
         if (convertView == null) {
             inflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-            convertView = inflater.inflate(R.layout.sn_seznam_zakljucenih_sn, null);
+            convertView = inflater.inflate(R.layout.vz_seznam_zakljucenih_vz, null);
             holder = new VZDNSeznamZakljucenihAdapter.ViewHolder();
-            holder.stDNja = (TextView) convertView.findViewById(R.id.labelstevilkaSN);
-            holder.idDNja = (TextView) convertView.findViewById(R.id.labelidSN);
-            holder.nazivNarocnikSNja = (TextView) convertView.findViewById(R.id.labelSNNarocnik);
-            holder.opisNapakeSNja = (TextView) convertView.findViewById(R.id.labelSNOpisNapke);
-            holder.datumZakljucenSN = (TextView) convertView.findViewById(R.id.labelidSNDodeljeno);
-            holder.datumZakljucenoSN = (TextView) convertView.findViewById(R.id.labelidSNZakljuceno);
-            holder.poslanoSN = (TextView) convertView.findViewById(R.id.labelidSNPoslano);
+            holder.stDNja = (TextView) convertView.findViewById(R.id.labelstevilkaVZDN);
+            holder.idDNja = (TextView) convertView.findViewById(R.id.labelidVZ);
+            holder.nazivNarocnikSNja = (TextView) convertView.findViewById(R.id.labelVZNarocnik);
+            holder.opisNapakeSNja = (TextView) convertView.findViewById(R.id.labelVZOpisNapke);
+            holder.datumZakljucenSN = (TextView) convertView.findViewById(R.id.labelidVZDodeljeno);
+            holder.datumZakljucenoSN = (TextView) convertView.findViewById(R.id.labelidVZZakljuceno);
+            holder.poslanoSN = (TextView) convertView.findViewById(R.id.labelidVZPoslano);
             //holder.cbOznacen = (CheckBox) convertView.findViewById(R.id.cbDodeli);
             //holder.continent = (TextView) convertView.findViewById(R.id.continent);
             //holder.region = (TextView) convertView.findViewById(R.id.region);
@@ -135,7 +135,7 @@ public class VZDNSeznamZakljucenihAdapter extends ArrayAdapter<DelovniNalogVZ> i
 
         DatabaseHandler db = new DatabaseHandler(getContext());
         DelovniNalogVZPeriodika dnPer = new DelovniNalogVZPeriodika();
-        dnPer = db.vrniVZDNPre(n.getid(),0,"");
+        dnPer = db.vrniVZDNPre(n.getDelovniNalog(),0,"");
         holder.stDNja.setText(n.getDelovniNalog().toString());
         holder.idDNja.setText(Integer.toString(n.getid()));
         //holder.nazivNarocnikSNja.setText(n.getNarocnik().toString()+", "+n.getNarocnikNaslov().toString());
@@ -168,7 +168,7 @@ public class VZDNSeznamZakljucenihAdapter extends ArrayAdapter<DelovniNalogVZ> i
                 //String vodjaSNja = n.getVodjaNaloga();
                 //String odgOsebaSNja = n.getOdgovornaOseba();
                 DelovniNalogVZ dn = new DelovniNalogVZ();
-                dn = db.vrniVZDN(n.getid());
+                dn = db.vrniVZDN(n.getDelovniNalog());
                 String narocnikSNja = dn.getNarocnik() + ", " + dn.getNarocnikNaslov();
                 int id = n.getid();
 

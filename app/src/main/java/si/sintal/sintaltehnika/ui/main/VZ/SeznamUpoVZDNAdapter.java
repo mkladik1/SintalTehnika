@@ -135,7 +135,7 @@ public class SeznamUpoVZDNAdapter extends ArrayAdapter<DelovniNalogVZ> implement
                     ViewPager2 viewPager =(ViewPager2) my.getActivity().findViewById(R.id.DNVZViewPager);
                     DatabaseHandler db = new DatabaseHandler(getContext());
                     int tehnik = 7;
-                    VZPagerAdapter.setParameters(n.getid(),tehnik,0,n.getPrenos_per(),mes_obr);
+                    VZPagerAdapter.setParameters(n.getid(),tehnik,0,n.getPrenos_per(),mes_obr, n.getDelovniNalog());
                     //Intent intent = new Intent(getContext(), obrazecVZDNFragment.class);
                     //intent.putExtra("userID", userID);
                     //intent.putExtra("tehnikId", tehnikID );
