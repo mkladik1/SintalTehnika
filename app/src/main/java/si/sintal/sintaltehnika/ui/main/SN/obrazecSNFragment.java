@@ -85,6 +85,7 @@ import si.sintal.sintaltehnika.ui.main.SNPagerAdapter;
 import si.sintal.sintaltehnika.ui.main.SNPetrolActivity;
 import si.sintal.sintaltehnika.ui.main.SendEmailService;
 import si.sintal.sintaltehnika.ui.main.ServisniNalog;
+import si.sintal.sintaltehnika.ui.main.SN.SNDodajServiserjaActivity;
 
 public class obrazecSNFragment extends Fragment {
 
@@ -139,6 +140,21 @@ public class obrazecSNFragment extends Fragment {
             @Override
             public void onClick(View v) {
                 Intent intent = new Intent(getActivity(), SNDodajArtikel.class);
+
+                intent.putExtra("userID", userID);
+                intent.putExtra("tehnikID", tehnikID);
+                intent.putExtra("snID",snID);
+                intent.putExtra("snDN",snDN);
+                intent.putExtra("vrsta",1);
+                startActivity(intent);
+            }
+        });
+
+        Button bDodajServiserja = (Button) v.findViewById(R.id.bDodajServiserja);
+        bDodajServiserja.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(getActivity(), SNDodajServiserjaActivity.class);
 
                 intent.putExtra("userID", userID);
                 intent.putExtra("tehnikID", tehnikID);

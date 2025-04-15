@@ -33,6 +33,7 @@ import si.sintal.sintaltehnika.ui.main.DelovniNalogVZ;
 import si.sintal.sintaltehnika.ui.main.DelovniNalogVZPeriodika;
 import si.sintal.sintaltehnika.ui.main.RegCasa;
 import si.sintal.sintaltehnika.ui.main.SNArtikel;
+import si.sintal.sintaltehnika.ui.main.Serviser;
 import si.sintal.sintaltehnika.ui.main.ServisniNalog;
 
 public class DatabaseHandler extends SQLiteOpenHelper {
@@ -294,6 +295,13 @@ public class DatabaseHandler extends SQLiteOpenHelper {
                 "  prenos int(11) NOT NULL " +
                 ");";
         mDatabase.execSQL(CREATE_TEHNIKA_RC);
+
+        String CREATE_TEHNIKA_SN_DODATNI_TEHNIK = "CREATE TABLE IF NOT EXISTS sintal_teh_sn_dodatni_tehnik (\n" +
+                " sn_id INTEGER NOT NULL,\n" +
+                " DELOVNI_NALOG varchar(20) NOT NULL,\n" +
+                " tehnik_id intEGER NOT NULL\n" +
+                ");";
+        mDatabase.execSQL(CREATE_TEHNIKA_SN_DODATNI_TEHNIK);
 
 
         String CREATE_TEHNIKA_UPO_PODJETJE = "CREATE TABLE IF NOT EXISTS sintal_teh_upo_podjetje (" +
@@ -891,6 +899,41 @@ public class DatabaseHandler extends SQLiteOpenHelper {
         mDatabase.close();
 
         //return myList;
+    }
+
+    public void dodajSNServiserDodatni(String id, String DN, String tehnikID) {
+
+        //ArrayList<NadzorXML> myList=new ArrayList<NadzorXML>();
+        //List<Nadzor> myList=new ArrayList<Nadzor>();
+        mDatabase = this.getWritableDatabase();
+        String delete_tehnik = "delete FROM sintal_teh_sn_dodatni_tehnik where id ="+id+";";
+        mCursor = mDatabase.rawQuery(delete_tehnik,null);
+        /*
+        mCursor.
+        //NadzorXML n;
+        if (mCursor != null)
+        {
+            mCursor.moveToFirst();
+
+        }
+
+        if (userID.equals("") && podjetje.equals(""))
+        {}
+        else {
+            ContentValues values = new ContentValues();
+            values.put("user_ID", userID);
+            values.put("podjetje", podjetje);
+
+            mDatabase.insert("sintal_teh_upo_podjetje", null, values);
+        }
+        mCursor.close();
+
+        //mDatabase.execSQL(INSERT_INTO_USERS_TABLE);
+        mDatabase.close();
+
+        //return myList;
+
+         */
     }
 
 
@@ -1537,6 +1580,30 @@ public class DatabaseHandler extends SQLiteOpenHelper {
         mDatabase.close();
         // return contact list
         return userList;
+    }
+
+    public ArrayList<Serviser> GetServiserjeUporabnik(String userID){
+        ArrayList<Serviser> serviserList = new ArrayList<Serviser>();
+        String selectQuery = "";
+               selectQuery = "select td.tehnik_id, td.naziv from sintal_teh_upo_delavci ud " +
+                             "left join sintal_teh_delavci td on ud.tehnik_id = td.tehnik_id " +
+                              "where ud.user_id = " + String.valueOf(userID) +  " order by td.naziv;";
+        mDatabase = this.getReadableDatabase();
+        mCursor = mDatabase.rawQuery(selectQuery, null);
+
+        // looping through all rows and adding to list
+        if (mCursor.moveToFirst()) {
+            do {
+                Serviser s = new Serviser();
+                s.setStServiser(mCursor.getString(0));
+                s.setNazivServiser(mCursor.getString(1));
+                serviserList.add(s);// +", " + mCursor.getString(0));
+            } while (mCursor.moveToNext());
+        }
+        mCursor.close();
+        mDatabase.close();
+
+        return serviserList;
     }
 
     public List<String> getPripadnostInString() {
