@@ -263,6 +263,24 @@ public class SNSeznamZakljucenihSNAdapter extends ArrayAdapter<ServisniNalog> im
                         bw2.append(json);
                         bw2.close();
                         fw2.close();
+
+                        /*
+                        JSONArray jsonObjDD = new JSONArray();
+                        jsonObjDD = db.vrniDDSN(n.getid());
+                        json = jsonObjDD.toString();
+                        //json = gson.toJson(jsonObj);
+                        String storePath3 = getContext().getFilesDir() + "/" + userID + "-sn-dd.json";
+                        File file3 = new File(storePath3);
+                        if (file3.exists() == true)
+                        {
+                            file3.delete();
+                        }
+                        FileWriter fw3 = new FileWriter(file3);
+                        BufferedWriter bw3 = new BufferedWriter(fw3);
+                        bw3.append(json);
+                        bw3.close();
+                        fw3.close();
+                        */
                         //ArrayList<String> parameters = new ArrayList<String>();
                         //parameters.add(String.valueOf(n.getid()));
                         //parameters.add("X");
@@ -305,6 +323,25 @@ public class SNSeznamZakljucenihSNAdapter extends ArrayAdapter<ServisniNalog> im
         @Override
         protected Object doInBackground(Object... arg0) {
 
+/*
+            String StoredPath3 = "";
+            StoredPath3 = getContext().getFilesDir()+"/"+userID+"-sn-dd.json";
+            try {
+                uploadFile(StoredPath3);
+                String rezultat = refreshSNDodatniDelavciMysql(userID);
+                if (rezultat.equals("\tInserted all logs") == true)
+                {
+                    //DatabaseHandler db = new DatabaseHandler(getContext());
+                    //db.updateSNPoslano(arrayLists[0].get(0).toString(),"X","");
+                }
+            }
+            catch (Exception e){
+
+            }
+
+*/
+
+
             String StoredPath2 = "";
             StoredPath2 = getContext().getFilesDir()+"/"+userID+"-sn-art.json";
             try {
@@ -339,10 +376,10 @@ public class SNSeznamZakljucenihSNAdapter extends ArrayAdapter<ServisniNalog> im
 
             }
 
-            String StoredPath3 = "";
-            StoredPath3 = getContext().getFilesDir()+"/"+userID+"-sn-email.json";
+            String StoredPath6 = "";
+            StoredPath6 = getContext().getFilesDir()+"/"+userID+"-sn-email.json";
             try {
-                uploadFile(StoredPath3);
+                uploadFile(StoredPath6);
                 String rezultat = refreshSNEmailLogMysql(userID);
                 if (rezultat.equals("\tInserted all logs") == true)
                 {
@@ -623,6 +660,9 @@ public class SNSeznamZakljucenihSNAdapter extends ArrayAdapter<ServisniNalog> im
         }
         return result;
     }
+
+
+
 
     public String refreshSNEmailLogMysql(String myUserID) {
 

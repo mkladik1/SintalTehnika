@@ -84,7 +84,8 @@ public class DatabaseHandler extends SQLiteOpenHelper {
             "  seznam_vzdrzevanje int(11) NOT NULL," +
             "  user_id int(11) NOT NULL," +
             "  ime_regala varchar(20) NULL," +
-            "  ime_vira varchar(20) NULL" +
+            "  ime_vira varchar(20) NULL," +
+            "  user_id int(11) NOT NULL" +
             ");";
         mDatabase.execSQL(CREATE_TEHNIKA_DELAVCI);
 
@@ -901,39 +902,34 @@ public class DatabaseHandler extends SQLiteOpenHelper {
         //return myList;
     }
 
+
+    public void brisiSNServiserDodatni(String id) {
+
+        mDatabase = this.getWritableDatabase();
+        String delete_tehnik = "delete FROM sintal_teh_sn_dodatni_tehnik where sn_id ="+id+";";
+        mDatabase.execSQL(delete_tehnik);
+        mDatabase.close();
+
+    }
+
+
+
     public void dodajSNServiserDodatni(String id, String DN, String tehnikID) {
 
         //ArrayList<NadzorXML> myList=new ArrayList<NadzorXML>();
         //List<Nadzor> myList=new ArrayList<Nadzor>();
         mDatabase = this.getWritableDatabase();
-        String delete_tehnik = "delete FROM sintal_teh_sn_dodatni_tehnik where id ="+id+";";
-        mCursor = mDatabase.rawQuery(delete_tehnik,null);
-        /*
-        mCursor.
-        //NadzorXML n;
-        if (mCursor != null)
-        {
-            mCursor.moveToFirst();
+        String delete_tehnik = "delete FROM sintal_teh_sn_dodatni_tehnik where sn_id ="+id+";";
+        //mCursor = mDatabase.rawQuery(delete_tehnik,null);
+        mDatabase.execSQL(delete_tehnik);
+        ContentValues values = new ContentValues();
+        values.put("sn_id", id);
+        values.put("DELOVNI_NALOG", DN);
+        values.put("tehnik_id", tehnikID);
 
-        }
-
-        if (userID.equals("") && podjetje.equals(""))
-        {}
-        else {
-            ContentValues values = new ContentValues();
-            values.put("user_ID", userID);
-            values.put("podjetje", podjetje);
-
-            mDatabase.insert("sintal_teh_upo_podjetje", null, values);
-        }
-        mCursor.close();
-
-        //mDatabase.execSQL(INSERT_INTO_USERS_TABLE);
+        mDatabase.insert("sintal_teh_sn_dodatni_tehnik", null, values);
         mDatabase.close();
 
-        //return myList;
-
-         */
     }
 
 
@@ -1587,7 +1583,7 @@ public class DatabaseHandler extends SQLiteOpenHelper {
         String selectQuery = "";
                selectQuery = "select td.tehnik_id, td.naziv from sintal_teh_upo_delavci ud " +
                              "left join sintal_teh_delavci td on ud.tehnik_id = td.tehnik_id " +
-                              "where ud.user_id = " + String.valueOf(userID) +  " order by td.naziv;";
+                              "where ud.user_id = " + String.valueOf(userID) +  " and td.user_id <> " + String.valueOf(userID) + " order by td.naziv;";
         mDatabase = this.getReadableDatabase();
         mCursor = mDatabase.rawQuery(selectQuery, null);
 
@@ -1864,6 +1860,25 @@ public class DatabaseHandler extends SQLiteOpenHelper {
         }
 
         return list;
+    }
+
+
+    public List<String> getDodaniServiser(String id) {
+        List<String> list = new ArrayList<String>(2);
+        String query = "select td.tehnik_id, td.naziv \n" +
+                " from sintal_teh_sn_dodatni_tehnik dt left join sintal_teh_delavci td on dt.tehnik_id = td.tehnik_id \n" +
+                " where sn_id = " + id +";";
+
+        mDatabase = this.getReadableDatabase();
+        mCursor = mDatabase.rawQuery(query, null);
+        while (mCursor.moveToNext()) {
+            list.add(mCursor.getString(mCursor.getColumnIndex("tehnik_id")));
+            list.add(mCursor.getString(mCursor.getColumnIndex("naziv")));
+        }
+
+        return list;
+
+
     }
 
 
@@ -2944,6 +2959,36 @@ public class DatabaseHandler extends SQLiteOpenHelper {
         return ja;
     }
 
+    public JSONArray vrniDDSN(int snId) {
+        String query = "select * from sintal_teh_sn_dodatni_tehnik where sn_id = "+ String.valueOf(snId) + ";";
+        mDatabase = this.getReadableDatabase();
+        mCursor = mDatabase.rawQuery(query, null);
+        JSONArray ja = new JSONArray();
+
+        while (mCursor.moveToNext()) {
+
+            try {
+                JSONObject emailLog = new JSONObject();
+                //int userID = ;
+                emailLog.put("sn_id",mCursor.getInt(mCursor.getColumnIndex("sn_id")));
+                emailLog.put("DELOVNI_NALOG",mCursor.getString(mCursor.getColumnIndex("DELOVNI_NALOG")));
+                emailLog.put("tehnik_id",mCursor.getString(mCursor.getColumnIndex("tehnik_id")));
+                ja.put(emailLog);
+            }
+            catch (JSONException e)
+            {
+
+            }
+
+
+        }
+        mCursor.close();
+        mDatabase.close();
+
+        return ja;
+    }
+
+
     public ArrayList<SNArtikel> GetSeznamArtikliIzpisDNSNUporabnik(int userId, int tehnikId, int vrstaId, int SnId)
     {
         ArrayList<SNArtikel> list = new ArrayList<SNArtikel>();
@@ -2953,6 +2998,7 @@ public class DatabaseHandler extends SQLiteOpenHelper {
 
         mDatabase = this.getReadableDatabase();
         mCursor = mDatabase.rawQuery(query, null);
+        //mCursor.moveToFirst();
         while (mCursor.moveToNext()){
             SNArtikel sn = new SNArtikel();
             sn.setid(mCursor.getString(mCursor.getColumnIndex("No_")));
@@ -2978,11 +3024,13 @@ public class DatabaseHandler extends SQLiteOpenHelper {
         String ime_vira = GetImeVira(tehnikId);
         //mDatabase = this.getReadableDatabase();
         mDatabase = this.getReadableDatabase();
-        mCursor = mDatabase.rawQuery(query1, null);
-        while (mCursor.moveToNext()){
-            Float ure_prevoz = mCursor.getFloat(mCursor.getColumnIndex("URE_PREVOZ"));
-            Float ure_delo = mCursor.getFloat(mCursor.getColumnIndex("URE_DELO"));
-            Float stevilo_km = mCursor.getFloat(mCursor.getColumnIndex("STEVILO_KM"));
+        Cursor mCursor1;
+        mCursor1 = mDatabase.rawQuery(query1, null);
+        //mCursor1.moveToFirst();
+        while (mCursor1.moveToNext()){
+            Float ure_prevoz = mCursor1.getFloat(mCursor1.getColumnIndex("URE_PREVOZ"));
+            Float ure_delo = mCursor1.getFloat(mCursor1.getColumnIndex("URE_DELO"));
+            Float stevilo_km = mCursor1.getFloat(mCursor1.getColumnIndex("STEVILO_KM"));
             if (ure_prevoz > 0) {
                 SNArtikel sn = new SNArtikel();
                 sn.setid("S0053");
@@ -2994,9 +3042,9 @@ public class DatabaseHandler extends SQLiteOpenHelper {
                 sn.setZamenjanNov(0);
                 sn.setKolicina(ure_prevoz);
                 sn.setRegal("");
-                sn.setSn_id(mCursor.getInt(mCursor.getColumnIndex("id")));
+                sn.setSn_id(mCursor1.getInt(mCursor1.getColumnIndex("id")));
                 //sn.setSn_artikel_id(mCursor.getInt(mCursor.getColumnIndex("sn_artikel_id")));
-                sn.setDelovniNalog(mCursor.getString(mCursor.getColumnIndex("DELOVNI_NALOG")));
+                sn.setDelovniNalog(mCursor1.getString(mCursor1.getColumnIndex("DELOVNI_NALOG")));
                 sn.setUpoId(String.valueOf(userId));
                 sn.setTehnikId(String.valueOf(tehnikId));
                 list.add(sn);
@@ -3013,9 +3061,9 @@ public class DatabaseHandler extends SQLiteOpenHelper {
                 sn.setZamenjanNov(0);
                 sn.setKolicina(ure_delo);
                 sn.setRegal("");
-                sn.setSn_id(mCursor.getInt(mCursor.getColumnIndex("id")));
+                sn.setSn_id(mCursor1.getInt(mCursor1.getColumnIndex("id")));
                 //sn.setSn_artikel_id(mCursor.getInt(mCursor.getColumnIndex("sn_artikel_id")));
-                sn.setDelovniNalog(mCursor.getString(mCursor.getColumnIndex("DELOVNI_NALOG")));
+                sn.setDelovniNalog(mCursor1.getString(mCursor1.getColumnIndex("DELOVNI_NALOG")));
                 sn.setUpoId(String.valueOf(userId));
                 sn.setTehnikId(String.valueOf(tehnikId));
                 list.add(sn);
@@ -3032,9 +3080,9 @@ public class DatabaseHandler extends SQLiteOpenHelper {
                 sn.setZamenjanNov(0);
                 sn.setKolicina(stevilo_km);
                 sn.setRegal("");
-                sn.setSn_id(mCursor.getInt(mCursor.getColumnIndex("id")));
+                sn.setSn_id(mCursor1.getInt(mCursor1.getColumnIndex("id")));
                 //sn.setSn_artikel_id(mCursor.getInt(mCursor.getColumnIndex("sn_artikel_id")));
-                sn.setDelovniNalog(mCursor.getString(mCursor.getColumnIndex("DELOVNI_NALOG")));
+                sn.setDelovniNalog(mCursor1.getString(mCursor1.getColumnIndex("DELOVNI_NALOG")));
                 sn.setUpoId(String.valueOf(userId));
                 sn.setTehnikId(String.valueOf(tehnikId));
                 list.add(sn);
@@ -3051,16 +3099,114 @@ public class DatabaseHandler extends SQLiteOpenHelper {
                 sn.setZamenjanNov(0);
                 sn.setKolicina(ure_delo + ure_prevoz);
                 sn.setRegal("");
-                sn.setSn_id(mCursor.getInt(mCursor.getColumnIndex("id")));
+                sn.setSn_id(mCursor1.getInt(mCursor1.getColumnIndex("id")));
                 //sn.setSn_artikel_id(mCursor.getInt(mCursor.getColumnIndex("sn_artikel_id")));
-                sn.setDelovniNalog(mCursor.getString(mCursor.getColumnIndex("DELOVNI_NALOG")));
+                sn.setDelovniNalog(mCursor1.getString(mCursor1.getColumnIndex("DELOVNI_NALOG")));
                 sn.setUpoId(String.valueOf(userId));
                 sn.setTehnikId(String.valueOf(tehnikId));
                 list.add(sn);
             }
 
         }
+    mCursor1.close();;
 
+
+        String query2 = "";
+        query2 = " select dt.tehnik_id, sn.URE_PREVOZ as URE_PREVOZ, sn.URE_DELO as URE_DELO, sn.STEVILO_KM as STEVILO_KM, sn.id,sn.DELOVNI_NALOG  as DELOVNI_NALOG from \n" +
+                " sintal_teh_sn_dodatni_tehnik dt left join sintal_teh_sn sn on sn.id = dt.sn_id \n" +
+                " where  dt.sn_id = "+SnId +";";
+
+        //mDatabase = this.getReadableDatabase();
+        mDatabase = this.getReadableDatabase();
+        Cursor mCursor2;
+        mCursor2 = mDatabase.rawQuery(query2, null);
+        //mCursor2.moveToFirst();
+        while (mCursor2.moveToNext()){
+            int tehnik = mCursor2.getInt(mCursor2.getColumnIndex("tehnik_id"));
+            String ime_vira2 = GetImeVira(tehnik);
+            Float ure_prevoz = mCursor2.getFloat(mCursor2.getColumnIndex("URE_PREVOZ"));
+            Float ure_delo = mCursor2.getFloat(mCursor2.getColumnIndex("URE_DELO"));
+            Float stevilo_km = mCursor2.getFloat(mCursor2.getColumnIndex("STEVILO_KM"));
+            /*
+            if (ure_prevoz > 0) {
+                SNArtikel sn = new SNArtikel();
+                sn.setid("S0053");
+                sn.setnaziv("URA SERVISERJA NA VOŽNJI");
+                sn.setnazivIskanje("");
+                sn.setKratkaOznaka("");
+                sn.setmerskaEnota("URA");
+                sn.setSNArtikelId(9997);
+                sn.setZamenjanNov(0);
+                sn.setKolicina(ure_prevoz);
+                sn.setRegal("");
+                sn.setSn_id(mCursor2.getInt(mCursor2.getColumnIndex("id")));
+                //sn.setSn_artikel_id(mCursor.getInt(mCursor.getColumnIndex("sn_artikel_id")));
+                sn.setDelovniNalog(mCursor2.getString(mCursor2.getColumnIndex("DELOVNI_NALOG")));
+                sn.setUpoId(String.valueOf(userId));
+                sn.setTehnikId(String.valueOf(tehnik));
+                list.add(sn);
+            }
+
+            if (ure_delo > 0) {
+                SNArtikel sn = new SNArtikel();
+                sn.setid("S0135");
+                sn.setnaziv("URA SERVISERJA");
+                sn.setnazivIskanje("");
+                sn.setKratkaOznaka("");
+                sn.setmerskaEnota("URA");
+                sn.setSNArtikelId(9998);
+                sn.setZamenjanNov(0);
+                sn.setKolicina(ure_delo);
+                sn.setRegal("");
+                sn.setSn_id(mCursor2.getInt(mCursor2.getColumnIndex("id")));
+                //sn.setSn_artikel_id(mCursor.getInt(mCursor.getColumnIndex("sn_artikel_id")));
+                sn.setDelovniNalog(mCursor2.getString(mCursor2.getColumnIndex("DELOVNI_NALOG")));
+                sn.setUpoId(String.valueOf(userId));
+                sn.setTehnikId(String.valueOf(tehnik));
+                list.add(sn);
+            }
+
+            if (stevilo_km > 0) {
+                SNArtikel sn = new SNArtikel();
+                sn.setid("S0042");
+                sn.setnaziv("Kilometrina");
+                sn.setnazivIskanje("");
+                sn.setKratkaOznaka("");
+                sn.setmerskaEnota("URA");
+                sn.setSNArtikelId(9999);
+                sn.setZamenjanNov(0);
+                sn.setKolicina(stevilo_km);
+                sn.setRegal("");
+                sn.setSn_id(mCursor2.getInt(mCursor2.getColumnIndex("id")));
+                //sn.setSn_artikel_id(mCursor.getInt(mCursor.getColumnIndex("sn_artikel_id")));
+                sn.setDelovniNalog(mCursor2.getString(mCursor2.getColumnIndex("DELOVNI_NALOG")));
+                sn.setUpoId(String.valueOf(userId));
+                sn.setTehnikId(String.valueOf(tehnik));
+                list.add(sn);
+            }
+            */
+            if ( (ure_delo + ure_prevoz > 0) && (ime_vira2.length()>1))
+            {
+                SNArtikel sn = new SNArtikel();
+                sn.setid(ime_vira2);
+                sn.setnaziv("VIR");
+                sn.setnazivIskanje("");
+                sn.setKratkaOznaka("");
+                sn.setmerskaEnota("URA");
+                sn.setSNArtikelId(9996);
+                sn.setZamenjanNov(0);
+                sn.setKolicina(ure_delo + ure_prevoz);
+                sn.setRegal("");
+                sn.setSn_id(mCursor2.getInt(mCursor2.getColumnIndex("id")));
+                //sn.setSn_artikel_id(mCursor.getInt(mCursor.getColumnIndex("sn_artikel_id")));
+                sn.setDelovniNalog(mCursor2.getString(mCursor2.getColumnIndex("DELOVNI_NALOG")));
+                sn.setUpoId(String.valueOf(userId));
+                sn.setTehnikId(String.valueOf(tehnik));
+                list.add(sn);
+            }
+
+        }
+        mCursor2.close();
 
         mCursor.close();
         mDatabase.close();

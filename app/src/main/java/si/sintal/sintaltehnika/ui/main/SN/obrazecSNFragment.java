@@ -76,6 +76,7 @@ import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Base64;
 import java.util.Date;
+import java.util.List;
 
 import si.sintal.sintaltehnika.BuildConfig;
 import si.sintal.sintaltehnika.DatabaseHandler;
@@ -134,6 +135,21 @@ public class obrazecSNFragment extends Fragment {
         snDN = sn.getDelovniNalog();
         String tehnik = sn.getVodjaNaloga();
         tehnikID = db.getTehnikId(tehnik);
+
+        Button bBrisiDodatnegaServiserja = (Button) v.findViewById(R.id.bBrisiServiserja);
+        bBrisiDodatnegaServiserja.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                db.brisiSNServiserDodatni(String.valueOf(snID));
+                TextView test;
+                test = (TextView) getView().findViewById(R.id.twStServierja);
+                test.setText("");
+
+                test = (TextView) getView().findViewById(R.id.twNazivServiserja);
+                test.setText("");
+            }
+        });
+
 
         Button bDodajMat = (Button) v.findViewById(R.id.bSNDodajVMat);
         bDodajMat.setOnClickListener(new View.OnClickListener() {
@@ -230,12 +246,6 @@ public class obrazecSNFragment extends Fragment {
             }
         });
 
-/*
-        dialog = new Dialog(getActivity());
-        dialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
-        dialog.setContentView(R.layout.dialog_signature);
-        dialog.setCancelable(true);
-*/
 
         Button bSign = (Button) v.findViewById(R.id.bSNPodisStranka);
         bSign.setOnClickListener(
@@ -658,6 +668,23 @@ public class obrazecSNFragment extends Fragment {
             bDodajVgrMat.setEnabled(true);
             bDodajNovMat.setEnabled(true);
             bSNShraniSpremembe.setEnabled(false);
+        }
+
+        List<String> dodatniServiser = db.getDodaniServiser(String.valueOf(snID));
+
+        if (dodatniServiser.isEmpty()) {
+            test = (TextView) getView().findViewById(R.id.twStServierja);
+            test.setText("");
+
+            test = (TextView) getView().findViewById(R.id.twNazivServiserja);
+            test.setText("");
+        }
+        else{
+            test = (TextView) getView().findViewById(R.id.twStServierja);
+            test.setText(dodatniServiser.get(0).toString());
+
+            test = (TextView) getView().findViewById(R.id.twNazivServiserja);
+            test.setText(dodatniServiser.get(1).toString());
         }
 
         //methodA(); // this is called ...

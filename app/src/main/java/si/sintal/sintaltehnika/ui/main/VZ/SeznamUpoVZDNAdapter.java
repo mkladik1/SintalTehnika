@@ -155,36 +155,7 @@ public class SeznamUpoVZDNAdapter extends ArrayAdapter<DelovniNalogVZ> implement
         bPodatkiOSN.setOnClickListener(new View.OnClickListener() {
                                            @Override
                                            public void onClick(View v) {
-                                               /*
-                                               //Nadzor n = (Nadzor) adapter.getItem(position);
 
-                                               Bundle bundle = new Bundle();
-                                               //DatabaseHandler db = new DatabaseHandler(getContext());
-
-                                               String datumSNja = n.getDatumZacetek();
-                                               String stSNja = n.getDelovniNalog();
-                                               String opisSNja = n.getOpis();
-                                               String vodjaSNja = n.getVodjaNaloga();
-                                               String odgOsebaSNja = n.getOdgovornaOseba();
-                                               String narocnikSNja = n.getNarocnikNaziv() + ", " + n.getNarocnikNaslov();
-                                               //String tehId = tehnikID;
-                                               //String usId = userID;
-                                               int id = n.getid();
-                                               DialogPodatkiOSNFragment myFrag = new DialogPodatkiOSNFragment();
-                                               myFrag.setArguments(bundle);
-                                               Intent intent = new Intent(getContext(), DialogPodatkiOSNActivity.class);
-                                               intent.putExtra("stSNja", stSNja);
-                                               intent.putExtra("idSNja", id );
-                                               intent.putExtra("datumSNja", datumSNja);
-                                               intent.putExtra("opisSNja", opisSNja);
-                                               intent.putExtra("vodjaSNja", vodjaSNja);
-                                               intent.putExtra("odgOsebaSNja", odgOsebaSNja);
-                                               intent.putExtra("narocnikSNja", narocnikSNja);
-                                               intent.putExtra("tehnikID", tehnikID);
-                                               intent.putExtra("userID", userID);
-                                               getContext().startActivity(intent);
-
-                                                */
                                            }
                                        });
         // Return the completed view to render on screen

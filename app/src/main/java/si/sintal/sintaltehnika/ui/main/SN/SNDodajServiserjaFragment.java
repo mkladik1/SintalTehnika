@@ -69,6 +69,7 @@ public class SNDodajServiserjaFragment extends Fragment {
         });
 
 
+
         return my_v;//inflater.inflate(R.layout.sn_dodaj_serviserja_fragment, container, false);
     }
 

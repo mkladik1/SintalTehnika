@@ -640,14 +640,21 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
-                    android:text="10" />
+                    android:text="  " />
 
                 <TextView
                     android:id="@+id/twNazivServiserja"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_weight="5"
-                    android:text="Ime Priimek" />
+                    android:text="    " />
+
+                <Button
+                    android:id="@+id/bBrisiServiserja"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:text="Briši serviserja" />
 
                 <Button
                     android:id="@+id/bDodajServiserja"

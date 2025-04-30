@@ -91,7 +91,7 @@ public class SNDNServiserAdaprter extends ArrayAdapter<Serviser> {
                 //int vrstaId = vrstaID; //
                 int upoId = Integer.parseInt(userID);
                 int tehnikId = Integer.parseInt(tehnikID);
-                //db.dodajSNServiserDodatni(SNID,SNDN,stServiserja);
+                db.dodajSNServiserDodatni(String.valueOf(SNID),SNDN,snNo_);
                 seznamSNServiserji.remove(position);
                 //refreshList();
             }
