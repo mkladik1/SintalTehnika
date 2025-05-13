@@ -30,7 +30,7 @@
             android:text="Podpiši" />
 
         <Button
-            android:id="@+id/buttonVZDNPoslji_"
+            android:id="@+id/buttonVZDNZakljuci"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="bottom|center_horizontal"
@@ -39,13 +39,14 @@
             android:text="Zaključi" />
 
         <Button
-            android:id="@+id/bVZDNZakljuci"
+            android:id="@+id/bVZDNGumbDodatno"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="bottom|center_horizontal"
             android:layout_margin="2dp"
             android:layout_weight="1"
-            android:text="Zaključi" />
+            android:text="Dodatni gumb"
+            tools:visibility="invisible" />
 
         <Button
             android:id="@+id/bVZDNShraniVZDNPo"

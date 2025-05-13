@@ -83,6 +83,7 @@ import si.sintal.sintaltehnika.DatabaseHandler;
 import si.sintal.sintaltehnika.R;
 import si.sintal.sintaltehnika.ui.main.DelovniNalogVZ;
 import si.sintal.sintaltehnika.ui.main.DelovniNalogVZPeriodika;
+import si.sintal.sintaltehnika.ui.main.SN.obrazecSNFragment;
 import si.sintal.sintaltehnika.ui.main.SendEmailService;
 
 public class obrazecVZDNFragment extends Fragment {
@@ -204,6 +205,41 @@ public class obrazecVZDNFragment extends Fragment {
                 }
             }
         });
+
+        Button bZakljuci = (Button) v.findViewById(R.id.buttonVZDNZakljuci);
+        bZakljuci.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                try {
+                    //convertToPdf();
+
+                    EditText et1 = (EditText)getActivity().findViewById(R.id.etVZDNDatumIzvedbe);
+                    datumIzvedbe = et1.getText().toString();
+                    String di = datumIzvedbe.substring(6,10) +"-"+ datumIzvedbe.substring(3,5) +"-"+ datumIzvedbe.substring(0,2);
+                    createPdf(vzDNStDN,di);
+                    openPdf(vzDNStDN,di);
+
+                    //openPdf();
+                    //db.updateSNStatusAkt(snID,"Z");
+                    //ArrayList<String> parameters = new ArrayList<String>();
+                    //parameters.add(String.valueOf(snID));
+                    //parameters.add("Z");
+                    //new obrazecSNFragment.UpdateZakljucenoOnWeb().execute(parameters);
+                    db.updateVZDNPerStatus(String.valueOf(vzDNStDN), di,"Z");
+                    //bDodajMat.setEnabled(false);
+                    //bDodajMat2.setEnabled(false);
+                    //bSNShrani.setEnabled(false);
+                    bSign.setEnabled(false);
+                    bPoslji.setEnabled(false);
+                    //bPdf.setEnabled(false);
+
+
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+            }
+        });
+
 
 
         return v;
@@ -338,7 +374,7 @@ public class obrazecVZDNFragment extends Fragment {
 
 
         Button bSNShrani = (Button) getView().findViewById(R.id.bVZDNShrani);
-        Button bZakljuci = (Button) getView().findViewById(R.id.bVZDNZakljuci);
+        Button bZakljuci = (Button) getView().findViewById(R.id.buttonVZDNZakljuci);
         Button bSign = (Button) getView().findViewById(R.id.bVZDNPodisStranka);
 
         if (perPre == 1)
@@ -475,7 +511,7 @@ public class obrazecVZDNFragment extends Fragment {
         }
         else
         {
-            test.setText(Double.toString(vzDN.getUrePrevoz()));
+            test.setText(Double.toString(vzDNPer.getUrePrevoz()));
         }
         test = (TextView) getView().findViewById(R.id.etVZDNUreDelo);
         if (vzDN.getUreDelo() == 0.0)
@@ -483,7 +519,7 @@ public class obrazecVZDNFragment extends Fragment {
             test.setText("");
         }
         else {
-            test.setText(Double.toString(vzDN.getUreDelo()));
+            test.setText(Double.toString(vzDNPer.getUreDelo()));
         }
         test = (TextView) getView().findViewById(R.id.etVZDNStKm);
         if (vzDN.getStKm() == 0.0)
@@ -494,12 +530,15 @@ public class obrazecVZDNFragment extends Fragment {
             test.setText(Double.toString(vzDN.getStKm()));
         }
 
+        test = (TextView) getView().findViewById(R.id.etOpombeVZD);
+        test.setText(vzDN.getOpomba().toString());
+
 
         int statusSN = vzDN.getStatus();
 
 
         Button bVZShrani = (Button) getView().findViewById(R.id.bVZDNShrani);
-        bSNShrani.setOnClickListener(new View.OnClickListener() {
+        bVZShrani.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
 
@@ -700,8 +739,9 @@ public class obrazecVZDNFragment extends Fragment {
                             pr1,pr2,pr3,pr4,pr5,pr6,pr7,pr8,pr9,pr10,pr11,pr12,pr13,pr14,pr15,pr16,pr17,pr18,
                             "","",tvVZDBOpombe,mac,tehnik,todayString
                     );
+                    //db.updateVZDNPerMes(vzDNStDN,mes_obr);
 
-                    Toast.makeText(getView().getContext(),"Podatki o servisnem nalogu uspešno shranjeni",Toast.LENGTH_LONG).show();
+                    Toast.makeText(getView().getContext(),"Podatki o delovnem nalogu uspešno shranjeni",Toast.LENGTH_LONG).show();
                 }
                 else
                 {
@@ -714,37 +754,12 @@ public class obrazecVZDNFragment extends Fragment {
             }
         });
 
-
-        /*
-        if (statusSN < 0)
-        {
-
-        }
-        else if (statusSN.equals("Z")){
-            bSign.setEnabled(false);
-            bSNShrani.setEnabled(false);
-            bPdf.setEnabled(false);
-            bDodajVgrMat.setEnabled(false);
-            bDodajNovMat.setEnabled(false);
-            bSNShraniSpremembe.setEnabled(true);
-        }
-        else
-        {
-            bSign.setEnabled(true);
-            bSNShrani.setEnabled(true);
-            bPdf.setEnabled(true);
-            bDodajVgrMat.setEnabled(true);
-            bDodajNovMat.setEnabled(true);
-            bSNShraniSpremembe.setEnabled(false);
-        }
-         */
-
         //methodA(); // this is called ...
         DelovniNalogVZPeriodika dnvp = db.vrniVZDNPre(vzDNStDN, perPre,mes_obr);
-        if (dnvp.getid() != 0)
+        //if (dnvp.getid() != 0)
+        if ( perPre != 0 )
         {
             azurirajPodatke(dnvp);
-
         }
     }
 

@@ -110,6 +110,7 @@ public class SeznamUpoVZDNAdapter extends ArrayAdapter<DelovniNalogVZ> implement
         holder.nazivServisa.setText(n.getNaziv_servisa());
         holder.narocnik.setText(n.getObjekt() + " - " + n.getObjektNaslov());
         holder.opomba.setText("");
+
         if (n.getPeridika_kreirana() == 1)
         {
             convertView.setBackgroundColor(Color.parseColor("#F7F14A"));

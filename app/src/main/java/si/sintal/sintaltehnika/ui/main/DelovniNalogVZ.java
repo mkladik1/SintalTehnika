@@ -57,7 +57,7 @@ public class DelovniNalogVZ {
     String narocnik_naslov;
     String objekt;
     String objekt_naslov;
-    //int tipNarocila;
+    String leto_mes_obr;
 
 
 
@@ -66,6 +66,13 @@ public class DelovniNalogVZ {
     }
     public void setid(int newId) {
         this.id = newId;
+    }
+
+    public String getLetoMesObr() {
+        return leto_mes_obr;
+    }
+    public void setLetoMesObr(String newLetoMesObr) {
+        this.leto_mes_obr = newLetoMesObr;
     }
 
     public int getPeridika_kreirana() {

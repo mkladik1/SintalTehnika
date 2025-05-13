@@ -158,4 +158,31 @@ public class seznamVZDNFragment extends Fragment {
         // TODO: Use the ViewModel
     }
 
+    @Override
+    public void onResume() {
+        super.onResume();
+
+        List<String> listLM = new ArrayList<String>();
+        for (int year = 2024; year <= 2025; year++) {
+            for (int month = 1; month <= 12; month++) {
+                String yearMonth = String.format("%d%02d", year, month);
+                listLM.add(yearMonth);
+            }
+        }
+        final ArrayAdapter<String> dataAdapterLM = new ArrayAdapter<String>(getActivity(),android.R.layout.test_list_item,listLM);
+        dataAdapterLM.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+        izbraniLM = (Spinner) getView().findViewById(R.id.spinner_LM_DN_VZ);
+        izbraniLM.setAdapter(dataAdapterLM);
+        Calendar c = Calendar.getInstance();
+        int yearIz = c.get(Calendar.YEAR);
+        int monthIz = c.get(Calendar.MONTH) + 1;
+        String yearMonthIbr = String.format("%d%02d", yearIz, monthIz);
+        izbraniLM.setSelection(dataAdapterLM.getPosition(yearMonthIbr));
+        dodeliVZDNje = db.GetSeznamVZDNUporabnik(izbraniVzdrzevalec.getSelectedItem().toString(),"D",yearMonthIbr);
+        adaptersSeznamUpoDNjevVZD = new SeznamUpoVZDNAdapter(getActivity(), dodeliVZDNje, Integer.parseInt(tehnikID), Integer.parseInt(userID),yearMonthIbr);
+        listView = (ListView) getView().findViewById(R.id.seznamDNUpoLVVZD);
+        listView.setAdapter(adaptersSeznamUpoDNjevVZD);
+
+    }
+
 }

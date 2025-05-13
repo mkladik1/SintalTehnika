@@ -84,8 +84,8 @@ public class DatabaseHandler extends SQLiteOpenHelper {
             "  seznam_vzdrzevanje int(11) NOT NULL," +
             "  user_id int(11) NOT NULL," +
             "  ime_regala varchar(20) NULL," +
-            "  ime_vira varchar(20) NULL," +
-            "  user_id int(11) NOT NULL" +
+            "  ime_vira varchar(20) NULL" +
+            //"  user_id int(11) NOT NULL" +
             ");";
         mDatabase.execSQL(CREATE_TEHNIKA_DELAVCI);
 
@@ -365,14 +365,15 @@ public class DatabaseHandler extends SQLiteOpenHelper {
                 " koda_objekta_dc_all varchar(15) , " +
                 " narocnik varchar(200) ," +
                 " narocnik_naslov varchar(500), " +
-                " objekt varchar(200) " +
+                " objekt varchar(200), " +
+                " leto_mes_zadnja_per varchar(6)" +
                 ") " ;
         mDatabase.execSQL(CREATE_TEHNIKA_VZ_DN);
 
 
 
         String CREATE_TEHNIKA_VZ_PERIODIKA = "CREATE TABLE IF NOT EXISTS sintal_teh_vz_dn_periodika (" +
-                " id int(11) NOT NULL, " +
+                " id INTEGER PRIMARY KEY   AUTOINCREMENT, " +
                 " st_del_naloga varchar(50) DEFAULT NULL,"+
                 " STATUS varchar(1), "+
                 " DATUM_DODELITVE date, "+
@@ -1438,7 +1439,7 @@ public class DatabaseHandler extends SQLiteOpenHelper {
         else
         {
             ContentValues values = new ContentValues();
-            values.put("id", id);
+            //values.put("id", id);
             //values.put("sintal_vzd_dn_id", vz_id);
             values.put("st_del_naloga", st_del_naloga);
             values.put("STATUS", status);
@@ -1751,6 +1752,27 @@ public class DatabaseHandler extends SQLiteOpenHelper {
         mDatabase.close();
     }
 
+    public void updateVZDNPerMes(String id, String mes_obr) {
+        String GET_USER = "SELECT * FROM sintal_teh_vz_dn where st_del_naloga ='" + id+"'";
+        mDatabase = this.getReadableDatabase();
+        mCursor = mDatabase.rawQuery(GET_USER, null);
+        //NadzorXML n;
+        if (mCursor != null) {
+            mCursor.moveToFirst();
+        }
+        if (mCursor.moveToFirst()) {
+            //String UPDATE_USER ="";
+            ContentValues values = new ContentValues();
+            //values.put("id", id);
+
+            values.put("leto_mes_zadnja_per", mes_obr);
+            mDatabase.update("sintal_teh_vz_dn", values, "st_del_naloga=?", new String[]{id});
+
+        }
+        mCursor.close();
+        mDatabase.close();
+    }
+
     public void updateSNOznaciId(String id, String oznaci) {
         String GET_USER = "SELECT * FROM sintal_teh_sn where id ='" + id+"'";
         mDatabase = this.getReadableDatabase();
@@ -1813,6 +1835,32 @@ public class DatabaseHandler extends SQLiteOpenHelper {
             values.put("DATUM_KONEC",datum);
             //values.put("OZNACI", 0);
             mDatabase.update("sintal_teh_sn", values, "id=?", new String[]{id});
+
+        }
+        mCursor.close();
+        mDatabase.close();
+    }
+
+    public void updateVZDNPerStatus(String id, String di, String statusAkt) {
+        String GET_USER = "SELECT * FROM sintal_teh_vz_dn_periodika where  st_del_naloga = '"+id+"' and DATUM_IZVEDBE = '"+di+"'";
+        mDatabase = this.getReadableDatabase();
+        mCursor = mDatabase.rawQuery(GET_USER, null);
+        //NadzorXML n;
+        if (mCursor != null) {
+            mCursor.moveToFirst();
+        }
+        if (mCursor.moveToFirst()) {
+            //String UPDATE_USER ="";
+            String datum;
+            DateTimeFormatter dtf = DateTimeFormatter.ofPattern("yyyy-MM-dd");
+            LocalDateTime now = LocalDateTime.now();
+            datum = dtf.format(now);
+            //test.setText(datum);
+            ContentValues values = new ContentValues();
+            values.put("STATUS", statusAkt);
+            //values.put("DATUM_KONEC",datum);
+            //values.put("OZNACI", 0);
+            mDatabase.update("sintal_teh_vz_dn_periodika", values, "st_del_naloga = "+id + " and DATUM_IZVEDBE =" + di,null);
 
         }
         mCursor.close();
@@ -2143,6 +2191,7 @@ public class DatabaseHandler extends SQLiteOpenHelper {
             sn.setObjektNaslov(mCursor.getString(mCursor.getColumnIndex("naslov_objekta")));
             sn.setOpomba(mCursor.getString(mCursor.getColumnIndex("opomba")));
             sn.setDATUM_IZVEDBE(mCursor.getString(mCursor.getColumnIndex("DATUM_IZVEDBE")));
+            sn.setLetoMesObr(mCursor.getString(mCursor.getColumnIndex("leto_mes_zadnja_per")));
             //sn.setOznacen(0);
             list.add(sn);
         }
@@ -2300,7 +2349,7 @@ public class DatabaseHandler extends SQLiteOpenHelper {
                      " left join sintal_teh_vz_dn_periodika per on vz.st_del_naloga = per.st_del_naloga \n" +
                      " where strftime('%Y',(DATE(per.DATUM_IZVEDBE))) = '"+mes_obr.substring(0,4)+"' \n" +
                      " and strftime('%m',(DATE(per.DATUM_IZVEDBE))) = '"+mes_obr.substring(4,6)+"'\n" +
-                     " and vz.st_del_naloga = "+st_del_naloga+";";
+                     " and vz.st_del_naloga = '"+st_del_naloga+"';";
         }
 
 
@@ -2825,22 +2874,22 @@ public class DatabaseHandler extends SQLiteOpenHelper {
         mDatabase = this.getWritableDatabase();
         mCursor = mDatabase.rawQuery(query, null);
         int stZapisa = 0;
-        while (mCursor.moveToNext()){
+        while (mCursor.moveToNext()) {
             stZapisa = mCursor.getInt(mCursor.getColumnIndex("st_vrstic"));
-        }
-        if (stZapisa > 0)
-        {
-            ContentValues values = new ContentValues();
-            values.put("sn_id",snId);
-            values.put("DELOVNI_NALOG",delovniNalog);
-            values.put("No_",No_);
-            values.put("kolicina",kolicina);
-            values.put("vrsta_id",vrstaId);
-            values.put("upo_id",userID);
-            values.put("tehnik_id",tehnikID);
-            values.put("REGAL",regal);
 
-            mDatabase.insert("sintal_teh_sn_artikli",null, values);
+            if (stZapisa == 0) {
+                ContentValues values = new ContentValues();
+                values.put("sn_id", snId);
+                values.put("DELOVNI_NALOG", delovniNalog);
+                values.put("No_", No_);
+                values.put("kolicina", kolicina);
+                values.put("vrsta_id", vrstaId);
+                values.put("upo_id", userID);
+                values.put("tehnik_id", tehnikID);
+                values.put("REGAL", regal);
+
+                mDatabase.insert("sintal_teh_sn_artikli", null, values);
+            }
         }
         mCursor.close();
 
@@ -2885,7 +2934,7 @@ public class DatabaseHandler extends SQLiteOpenHelper {
     {
         ArrayList<SNArtikel> list = new ArrayList<SNArtikel>();
         String query = "";
-        query = "select * , 1 as Kolicina from sintal_teh_sn_artikli art,  sintal_teh_artikli snart where art.No_ = snart.No_ " +
+        query = "select * , art.kolicina as Kolicina from sintal_teh_sn_artikli art,  sintal_teh_artikli snart where art.No_ = snart.No_ " +
                 "and art.upo_id = "+ userId +  " and art.tehnik_id = " + tehnikId + " and art.sn_id = " + SnId  + " and art.vrsta_id = "+ vrstaId + " order by art.No_";
 
         mDatabase = this.getReadableDatabase();
