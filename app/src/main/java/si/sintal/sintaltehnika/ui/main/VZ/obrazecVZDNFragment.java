@@ -129,6 +129,7 @@ public class obrazecVZDNFragment extends Fragment {
         mes_obr = VZPagerAdapter.getMes_obr();
         //TextView tvDN = TextView
         vzDN = db.vrniVZDN(vzDNStDN);
+
         vzDNPer = db.vrniVZDNPre(vzDNStDN, perPre,mes_obr);
         EditText et1 = (EditText)v.findViewById(R.id.etVZDNDatumIzvedbe);
         datumIzvedbe = et1.getText().toString();
@@ -140,7 +141,9 @@ public class obrazecVZDNFragment extends Fragment {
                     public void onClick(View v) {
                         try {
                             //convertToPdf();
-                            String status = vzDNPer.getStatus();
+                            DelovniNalogVZPeriodika DNPer;
+                            DNPer = db.vrniVZDNPre(vzDNStDN, perPre,mes_obr);
+                            String status = DNPer.getStatus();
                             EditText et1 = (EditText)getActivity().findViewById(R.id.etVZDNDatumIzvedbe);
                             datumIzvedbe = et1.getText().toString();
                             String di = datumIzvedbe.substring(6,10) + datumIzvedbe.substring(3,5) + datumIzvedbe.substring(0,2);
@@ -184,10 +187,10 @@ public class obrazecVZDNFragment extends Fragment {
         bPoslji.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                TextView emailTw = (TextView) getView().findViewById(R.id.etSNEmail);
+                TextView emailTw = (TextView) getActivity().findViewById(R.id.etVZDNEmail);
                 String email =  emailTw.getText().toString();
                 String status = vzDNPer.getStatus();
-                EditText et1 = (EditText) getView().findViewById(R.id.etVZDNDatumIzvedbe);
+                EditText et1 = (EditText) getActivity().findViewById(R.id.etVZDNDatumIzvedbe);
                 datumIzvedbe = et1.getText().toString();
                 if ((status.equals("A") == true) || (status.equals("D") == true) || (status.equals("P") == true)) {
                     try {
@@ -293,6 +296,7 @@ public class obrazecVZDNFragment extends Fragment {
         protected Object doInBackground(Object... arg0) {
             result = "";
             SendEmailService sm = new SendEmailService(getContext());
+            //String fn = getContext().getFilesDir()+"/"+vzDNPer+"_"+datumIzvedbe+".pdf";
             String fn = getContext().getFilesDir()+"/"+vzDNPer+"_"+datumIzvedbe+".pdf";
             File pdfFile = new File(fn);
                 /*
@@ -307,7 +311,7 @@ public class obrazecVZDNFragment extends Fragment {
                         e.printStackTrace();
                     }
                 }*/
-            TextView emailTw = (TextView) getActivity().findViewById(R.id.etSNEmail);
+            TextView emailTw = (TextView) getActivity().findViewById(R.id.etVZDNEmail);
             String email =  emailTw.getText().toString();
             result = sm.SendEmail(fn,email);
 
@@ -396,7 +400,8 @@ public class obrazecVZDNFragment extends Fragment {
         //tehnikID = db.getTehnikId(sn.getVodjaNaloga());
         //this.tehnikID = tehnikID;
         TextView test = (TextView) getView().findViewById(R.id.idObrazecVZDN);
-        test.setText(Integer.toString(vzDN.getid()));
+        //test.setText(Integer.toString(vzDN.getperid()));
+        test.setText(Integer.toString(perPre));
         test = (TextView) getView().findViewById(R.id.tvVZDNNarocnikNaziv);
         test.setText(vzDN.getNarocnik());
         test = (TextView) getView().findViewById(R.id.tvStevilkaVZDN);
@@ -1479,7 +1484,7 @@ public class obrazecVZDNFragment extends Fragment {
         tv.setText(ure);
 
         tv = (TextView) getView().findViewById(R.id.etVZDNStKm);
-        ure = String.valueOf(dn.getUreDelo());
+        ure = String.valueOf(dn.getStKm());
         ure = ure.replace(',','.');
         tv.setText(ure);
 

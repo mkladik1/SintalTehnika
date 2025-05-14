@@ -58,6 +58,7 @@ public class DelovniNalogVZ {
     String objekt;
     String objekt_naslov;
     String leto_mes_obr;
+    int per_id;
 
 
 
@@ -66,6 +67,13 @@ public class DelovniNalogVZ {
     }
     public void setid(int newId) {
         this.id = newId;
+    }
+
+    public int getperid() {
+        return per_id;
+    }
+    public void setperid(int new_perId) {
+        this.per_id = new_perId;
     }
 
     public String getLetoMesObr() {

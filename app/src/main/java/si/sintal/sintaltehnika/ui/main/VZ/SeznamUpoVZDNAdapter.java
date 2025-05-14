@@ -111,7 +111,7 @@ public class SeznamUpoVZDNAdapter extends ArrayAdapter<DelovniNalogVZ> implement
         holder.narocnik.setText(n.getObjekt() + " - " + n.getObjektNaslov());
         holder.opomba.setText("");
 
-        if (n.getPeridika_kreirana() == 1)
+        if (n.getperid() > 0)
         {
             convertView.setBackgroundColor(Color.parseColor("#F7F14A"));
         }
@@ -136,7 +136,7 @@ public class SeznamUpoVZDNAdapter extends ArrayAdapter<DelovniNalogVZ> implement
                     ViewPager2 viewPager =(ViewPager2) my.getActivity().findViewById(R.id.DNVZViewPager);
                     DatabaseHandler db = new DatabaseHandler(getContext());
                     int tehnik = 7;
-                    VZPagerAdapter.setParameters(n.getid(),tehnik,0,n.getPrenos_per(),mes_obr, n.getDelovniNalog());
+                    VZPagerAdapter.setParameters(n.getid(),tehnik,0,n.getperid(),mes_obr, n.getDelovniNalog());
                     //Intent intent = new Intent(getContext(), obrazecVZDNFragment.class);
                     //intent.putExtra("userID", userID);
                     //intent.putExtra("tehnikId", tehnikID );

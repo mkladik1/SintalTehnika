@@ -2118,7 +2118,7 @@ public class DatabaseHandler extends SQLiteOpenHelper {
                 " strftime('%Y',(DATE(per.DATUM_IZVEDBE))) as leto,\n" +
                 " strftime('%m',(DATE(per.DATUM_IZVEDBE))) as mesec,\n" +
                 " vz.*, per.DATUM_IZVEDBE as DATUM_IZVEDBE, per.opomba,\n" +
-                " case when ifnull(per.id,0) = 0 then 0 else 1 end as per_id,\n" +
+                " case when ifnull(per.id,0) = 0 then 0 else per.id end as per_id,\n" +
                 " case when ifnull(per.prenos,0) = 0 then 0 else 1 end as prenos_per \n" +
                 " from sintal_teh_vz_dn vz \n" +
                 " left join sintal_teh_vz_dn_periodika per on vz.st_del_naloga = per.st_del_naloga \n" +
@@ -2141,7 +2141,7 @@ public class DatabaseHandler extends SQLiteOpenHelper {
                     " strftime('%Y',(DATE(per.DATUM_IZVEDBE))) as leto,\n" +
                     " strftime('%m',(DATE(per.DATUM_IZVEDBE))) as mesec,\n" +
                     " vz.*, per.DATUM_IZVEDBE as DATUM_IZVEDBE, per.opomba,\n" +
-                    " case when ifnull(per.id,0) = 0 then 0 else 1 end as per_id,\n" +
+                    " case when ifnull(per.id,0) = 0 then 0 else per.id end as per_id,\n" +
                     " case when ifnull(per.prenos,0) = 0 then 0 else 1 end as prenos_per \n" +
                     " from sintal_teh_vz_dn vz \n" +
                     " left join sintal_teh_vz_dn_periodika per on vz.st_del_naloga = per.st_del_naloga \n" +
@@ -2165,7 +2165,7 @@ public class DatabaseHandler extends SQLiteOpenHelper {
                             " strftime('%Y',(DATE(per.DATUM_IZVEDBE))) as leto,\n" +
                             " strftime('%m',(DATE(per.DATUM_IZVEDBE))) as mesec,\n" +
                             " vz.*, per.DATUM_IZVEDBE as DATUM_IZVEDBE, per.opomba,\n" +
-                            " case when ifnull(per.id,0) = 0 then 0 else 1 end as per_id,\n" +
+                            " case when ifnull(per.id,0) = 0 then 0 else per.id end as per_id,\n" +
                             " case when ifnull(per.prenos,0) = 0 then 0 else 1 end as prenos_per \n" +
                             " from sintal_teh_vz_dn vz \n" +
                             " left join sintal_teh_vz_dn_periodika per on vz.st_del_naloga = per.st_del_naloga \n" +
@@ -2192,6 +2192,7 @@ public class DatabaseHandler extends SQLiteOpenHelper {
             sn.setOpomba(mCursor.getString(mCursor.getColumnIndex("opomba")));
             sn.setDATUM_IZVEDBE(mCursor.getString(mCursor.getColumnIndex("DATUM_IZVEDBE")));
             sn.setLetoMesObr(mCursor.getString(mCursor.getColumnIndex("leto_mes_zadnja_per")));
+            sn.setperid(mCursor.getInt(mCursor.getColumnIndex("per_id")));
             //sn.setOznacen(0);
             list.add(sn);
         }
@@ -2310,14 +2311,21 @@ public class DatabaseHandler extends SQLiteOpenHelper {
         String query = "";
         if ( periodika_prenos == 0)
         {
-             query = "SELECT * FROM sintal_teh_vz_dn_periodika where st_del_naloga ='"+st_del_naloga+"'";
+             query = " SELECT *, '' as TIP_NAROCILA, 0 AS vzdrzevanje_redno, 0 AS vzdrzevanje_izredno, " +
+                     " 0 AS tip_elementov, 'A' as status_per, '0' as up_per, '0' as ud_per, '0' as st_km_per,   " +
+                     " '' as kontrolor_linije, '' as aku_baterije, '' as nacin_prenosa, '' as institucija_prenosa, " +
+                     " 0 as preizkus1,  0 as preizkus2,  0 as preizkus3,  0 as preizkus4,  0 as preizkus5,   " +
+                     " 0 as preizkus6,  0 as preizkus7,  0 as preizkus8,  0 as preizkus9,  0 as preizkus10,   " +
+                     " 0 as preizkus11,  0 as preizkus12,  0 as preizkus13,  0 as preizkus14,  0 as preizkus15, 0 as preizkus16, " +
+                     " 0 as preizkus17, 0 as preizkus18 " +
+                     "FROM sintal_teh_vz_dn where st_del_naloga ='"+st_del_naloga+"'";
         }
         else {
              query = "select  \n" +
                      "strftime('%Y',(DATE(per.DATUM_IZVEDBE))) as leto,\n" +
                      "strftime('%m',(DATE(per.DATUM_IZVEDBE))) as mesec,\n" +
                      "vz.*, per.DATUM_IZVEDBE as DATUM_IZVEDBE, per.opomba,\n" +
-                     "case when ifnull(per.id,0) = 0 then 0 else 1 end as per_id,\n" +
+                     "case when ifnull(per.id,0) = 0 then 0 else per.id end as per_id,\n" +
                      "case when ifnull(per.prenos,0) = 0 then 0 else 1 end as prenos_per \n" +
                      " ,per.TIP_NAROCILA \n" +
                      " , per.preizkus1 \n" +
@@ -2345,6 +2353,10 @@ public class DatabaseHandler extends SQLiteOpenHelper {
                      " , per.aku_baterije \n" +
                      " , per.nacin_prenosa \n" +
                      " , per.institucija_prenosa \n" +
+                     " , per.URE_DELO as ud_per \n" +
+                     " , per.URE_PREVOZ as up_per \n" +
+                     " , per.STEVILO_KM as st_km_per \n" +
+                     " , per.STATUS as status_per \n" +
                      " from sintal_teh_vz_dn vz \n" +
                      " left join sintal_teh_vz_dn_periodika per on vz.st_del_naloga = per.st_del_naloga \n" +
                      " where strftime('%Y',(DATE(per.DATUM_IZVEDBE))) = '"+mes_obr.substring(0,4)+"' \n" +
@@ -2364,7 +2376,7 @@ public class DatabaseHandler extends SQLiteOpenHelper {
             vzDelN.setOpomba(mCursor.getString(mCursor.getColumnIndex("OPIS_POSTOPKA")));
             vzDelN.setTipNarocila(mCursor.getInt(mCursor.getColumnIndex("TIP_NAROCILA")));
 
-            vzDelN.setStatus(mCursor.getString(mCursor.getColumnIndex("STATUS")));
+            vzDelN.setStatus(mCursor.getString(mCursor.getColumnIndex("status_per")));
             vzDelN.setSis_pozar(mCursor.getInt(mCursor.getColumnIndex("sis_pozar")));
             vzDelN.setSis_co(mCursor.getInt(mCursor.getColumnIndex("sis_co")));
             vzDelN.setSis_vlom(mCursor.getInt(mCursor.getColumnIndex("sis_vlom")));
@@ -2405,9 +2417,9 @@ public class DatabaseHandler extends SQLiteOpenHelper {
             vzDelN.setPr17(mCursor.getInt(mCursor.getColumnIndex("preizkus17")));
             vzDelN.setPr18(mCursor.getInt(mCursor.getColumnIndex("preizkus18")));
 
-            vzDelN.setUrePrevoz(mCursor.getDouble(mCursor.getColumnIndex("URE_PREVOZ")));
-            vzDelN.setUreDelo(mCursor.getDouble(mCursor.getColumnIndex("URE_DELO")));
-            vzDelN.setStKm(mCursor.getDouble(mCursor.getColumnIndex("STEVILO_KM")));
+            vzDelN.setUrePrevoz(mCursor.getDouble(mCursor.getColumnIndex("up_per")));
+            vzDelN.setUreDelo(mCursor.getDouble(mCursor.getColumnIndex("ud_per")));
+            vzDelN.setStKm(mCursor.getDouble(mCursor.getColumnIndex("st_km_per")));
             vzDelN.setDatumPodpisa(mCursor.getString(mCursor.getColumnIndex("DATUM_PODPISA")));
 
 
