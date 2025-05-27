@@ -460,6 +460,48 @@ public class DatabaseHandler extends SQLiteOpenHelper {
         return stZapisov;
     }
 
+    public String getTehnikUporabnik(String userID)
+    {
+        String tehnik = "0";
+        mDatabase = this.getReadableDatabase();
+        String user_tehnik_id = "select * from sintal_teh_delavci where user_id = "+userID+";";
+        mCursor = mDatabase.rawQuery(user_tehnik_id,null);
+        if (mCursor != null)
+        {
+            mCursor.moveToFirst();
+
+        }
+        if (mCursor.moveToFirst()) {
+            //do {
+            tehnik = mCursor.getString(0);
+            //}
+        }
+
+        mDatabase.close();
+        return tehnik;
+    }
+
+    public String getTehnikUporabnikNaziv(String userID)
+    {
+        String tehnik = "0";
+        mDatabase = this.getReadableDatabase();
+        String user_tehnik_id = "select * from sintal_teh_delavci where user_id = "+userID+";";
+        mCursor = mDatabase.rawQuery(user_tehnik_id,null);
+        if (mCursor != null)
+        {
+            mCursor.moveToFirst();
+
+        }
+        if (mCursor.moveToFirst()) {
+            //do {
+            tehnik = mCursor.getString(1);
+            //}
+        }
+
+        mDatabase.close();
+        return tehnik;
+    }
+
     public void insertEmailLog(String user_id, int sn_id, String sn_dn, String email, String datum ) {
 
 

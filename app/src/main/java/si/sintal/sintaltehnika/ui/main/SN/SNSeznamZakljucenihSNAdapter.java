@@ -245,9 +245,6 @@ public class SNSeznamZakljucenihSNAdapter extends ArrayAdapter<ServisniNalog> im
                         bw.close();
                         fw.close();
 
-
-
-                        //json = gson.toJson(jsonArray);
                         JSONArray jsonObj = new JSONArray();
                         jsonObj = db.vrniEmailLog(n.getid(),userID);
                         json = jsonObj.toString();
@@ -263,29 +260,6 @@ public class SNSeznamZakljucenihSNAdapter extends ArrayAdapter<ServisniNalog> im
                         bw2.append(json);
                         bw2.close();
                         fw2.close();
-
-                        /*
-                        JSONArray jsonObjDD = new JSONArray();
-                        jsonObjDD = db.vrniDDSN(n.getid());
-                        json = jsonObjDD.toString();
-                        //json = gson.toJson(jsonObj);
-                        String storePath3 = getContext().getFilesDir() + "/" + userID + "-sn-dd.json";
-                        File file3 = new File(storePath3);
-                        if (file3.exists() == true)
-                        {
-                            file3.delete();
-                        }
-                        FileWriter fw3 = new FileWriter(file3);
-                        BufferedWriter bw3 = new BufferedWriter(fw3);
-                        bw3.append(json);
-                        bw3.close();
-                        fw3.close();
-                        */
-                        //ArrayList<String> parameters = new ArrayList<String>();
-                        //parameters.add(String.valueOf(n.getid()));
-                        //parameters.add("X");
-                        //parameters.add(datum);
-                        //parameters.add(bArray);
 
                         new SNSeznamZakljucenihSNAdapter.SendOnWeb().execute();
 
@@ -660,8 +634,6 @@ public class SNSeznamZakljucenihSNAdapter extends ArrayAdapter<ServisniNalog> im
         }
         return result;
     }
-
-
 
 
     public String refreshSNEmailLogMysql(String myUserID) {

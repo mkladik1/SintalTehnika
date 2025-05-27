@@ -1,5 +1,8 @@
 package si.sintal.sintaltehnika.ui.main.SN;
 
+import static android.content.Context.CONNECTIVITY_SERVICE;
+import static androidx.core.content.ContextCompat.getSystemService;
+
 import android.app.Dialog;
 import android.content.ActivityNotFoundException;
 import android.content.Context;
@@ -13,8 +16,13 @@ import android.graphics.Path;
 import android.graphics.RectF;
 import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
+import android.net.ConnectivityManager;
+import android.net.Network;
+import android.net.NetworkCapabilities;
+import android.net.NetworkInfo;
 import android.net.Uri;
 import android.os.AsyncTask;
+import android.os.Build;
 import android.os.Bundle;
 import android.util.AttributeSet;
 import android.util.Log;
@@ -86,7 +94,6 @@ import si.sintal.sintaltehnika.ui.main.SNPagerAdapter;
 import si.sintal.sintaltehnika.ui.main.SNPetrolActivity;
 import si.sintal.sintaltehnika.ui.main.SendEmailService;
 import si.sintal.sintaltehnika.ui.main.ServisniNalog;
-import si.sintal.sintaltehnika.ui.main.SN.SNDodajServiserjaActivity;
 
 public class obrazecSNFragment extends Fragment {
 
@@ -557,6 +564,7 @@ public class obrazecSNFragment extends Fragment {
 
         test = (TextView) getView().findViewById(R.id.tvSNKontaktnaOseba);
         test.setText(sn.getOdgovornaOseba());
+
         test = (TextView) getView().findViewById(R.id.tvSNTelefon);
         test.setText("");
 
@@ -602,7 +610,7 @@ public class obrazecSNFragment extends Fragment {
         }
 
         test = (TextView) getView().findViewById(R.id.tvSNNapaka);
-        test.setText(sn.getOpisOkvare());
+        test.setText(sn.getOpis() + " " + sn.getOpisOkvare());
         test = (TextView) getView().findViewById(R.id.etSNUrePrevoz);
         if (sn.getUrePrevoz() == 0.0)
         {

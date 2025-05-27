@@ -82,6 +82,14 @@ public class seznamSNFragment extends Fragment {
         izbraniServiser = (Spinner) v.findViewById(R.id.spinner_user_SN);
         izbraniServiser.setAdapter(dataAdapter);
 
+        tehnikID = db.getTehnikUporabnik(userID);
+        tehnikNaziv = db.getTehnikUporabnikNaziv(userID);
+        int sppos = dataAdapter.getPosition(tehnikNaziv);
+        if (sppos > 0) {
+            izbraniServiser.setSelection(sppos);
+        }
+
+
         izbraniStatus = (Spinner) v.findViewById(R.id.spinner_LM_DN_SN);
 
 
@@ -157,6 +165,13 @@ public class seznamSNFragment extends Fragment {
         dataAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         izbraniServiser = (Spinner) getView().findViewById(R.id.spinner_user_SN);
         izbraniServiser.setAdapter(dataAdapter);
+
+        tehnikID = db.getTehnikUporabnik(userID);
+        tehnikNaziv = db.getTehnikUporabnikNaziv(userID);
+        int sppos = dataAdapter.getPosition(tehnikNaziv);
+        if (sppos > 0) {
+            izbraniServiser.setSelection(sppos);
+        }
 
         izbraniStatus = (Spinner) getView().findViewById(R.id.spinner_LM_DN_SN);
 
