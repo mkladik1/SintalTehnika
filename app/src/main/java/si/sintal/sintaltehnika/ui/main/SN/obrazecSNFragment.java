@@ -235,11 +235,20 @@ public class obrazecSNFragment extends Fragment {
                 etSNStKm = etSNStKm.replace(',','.');
                 test = (TextView) getView().findViewById(R.id.tvSNNapaka2);
                 String tvSNNapaka2 = test.getText().toString();
+
+                test = (TextView) getView().findViewById(R.id.tvSNNarocilTelefon);
+                String tvSNNarocilTelefon = test.getText().toString();
+
+                test = (TextView) getView().findViewById(R.id.tvSNTelefon);
+                String tvSNTelefon = test.getText().toString();
+
                 if ((isValidFormat("yyyy-MM-dd",tvSNDatumMontaze) == true)
                     || (tvSNDatumMontaze.equals("")))
                 {
                     DatabaseHandler db = new DatabaseHandler(getContext());
-                    db.updateSNDN(String.valueOf(snID), tipNarocila, tipVzdrzevanja, tvSNDatumMontaze, tvSNGarancija, tvSNNapaka, etSNUrePrevoz, etSNUreDelo, etSNStKm, tvSNNapaka2);
+                    db.updateSNDN(String.valueOf(snID), tipNarocila, tipVzdrzevanja, tvSNDatumMontaze, tvSNGarancija, tvSNNapaka,
+                            etSNUrePrevoz, etSNUreDelo, etSNStKm, tvSNNapaka2, tvSNNarocilTelefon, tvSNTelefon
+                    );
                     Toast.makeText(getView().getContext(),"Podatki o servisnem nalogu uspešno shranjeni",Toast.LENGTH_LONG).show();
                 }
                 else

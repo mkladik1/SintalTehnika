@@ -142,9 +142,17 @@ public class DatabaseHandler extends SQLiteOpenHelper {
                 "PODPIS_SERVISER IMAGEDATA BLOB, " +
                 "DATUM_PODPISA date  NULL, " +
                 "PRENOS INT  DEFAULT 0, " +
-                "DATUM_PRENOSA datetime  NULL " +
+                "DATUM_PRENOSA datetime  NULL" +
         ") " ;
         mDatabase.execSQL(CREATE_TEHNIKA_SN);
+
+        if (tableHasColumn(mDatabase,"sintal_teh_sn","SERVIS_NAROCIL") == false)
+        {
+            mDatabase.execSQL("alter table sintal_teh_sn add column  SERVIS_NAROCIL nvarchar(100) null");
+            mDatabase.execSQL("alter table sintal_teh_sn add column SERVIS_NAROCIL_TELEFON nvarchar(50) null");
+        }
+        //mDatabase.execSQL("alter table sintal_teh_sn add column if not exists SERVIS_NAROCIL nvarchar(100) null");
+        //mDatabase.execSQL("alter table sintal_teh_sn add column if not exists SERVIS_NAROCIL_TELEFON nvarchar(50) null");
 
         String CREATE_TEHNIKA_UPO_DELAVEC = "CREATE TABLE IF NOT EXISTS " +
         " sintal_teh_upo_delavci (" +
@@ -435,6 +443,20 @@ public class DatabaseHandler extends SQLiteOpenHelper {
 
         mDatabase.close();
 
+    }
+
+    public boolean tableHasColumn(SQLiteDatabase db, String tableName, String columnName) {
+        boolean isExist = false;
+        Cursor cursor = db.rawQuery("PRAGMA table_info("+tableName+")",null);
+        int cursorCount = cursor.getCount();
+        for (int i = 1; i < cursorCount; i++ ) {
+            cursor.moveToPosition(i);
+            String storedSqlColumnName = cursor.getString(cursor.getColumnIndex("name"));
+            if (columnName.equals(storedSqlColumnName)) {
+                isExist = true;
+            }
+        }
+        return isExist;
     }
 
 
@@ -2692,7 +2714,9 @@ public class DatabaseHandler extends SQLiteOpenHelper {
         //return myList;
     }
 
-    public void updateSNDN(String snID, int tipNarocila, int tipVzdrzevanja,String tvSNDatumMontaze,String tvSNGarancija,String tvSNNapaka,String etSNUrePrevoz,String etSNUreDelo,String etSNStKm,String tvSNNapaka2 ) {
+    public void updateSNDN(String snID, int tipNarocila, int tipVzdrzevanja,String tvSNDatumMontaze,
+                           String tvSNGarancija,String tvSNNapaka,String etSNUrePrevoz,String etSNUreDelo,String etSNStKm,
+                           String tvSNNapaka2, String tvSNNarocil, String tvSNTelefon ) {
 
         //ArrayList<NadzorXML> myList=new ArrayList<NadzorXML>();
         //List<Nadzor> myList=new ArrayList<Nadzor>();
@@ -2724,6 +2748,8 @@ public class DatabaseHandler extends SQLiteOpenHelper {
             values.put("datum_izvedbe",tvSNDatumMontaze);
             values.put("opis_okvare",tvSNNapaka);
             values.put("opis_postopka",tvSNNapaka2);
+            values.put("ODGOVORNA_OSEBA",tvSNNarocil);
+            //values.put(,tvSNNarocilSN);
             if (tvSNGarancija.equals("0"))
             {
                 values.putNull("garancija");

@@ -312,7 +312,7 @@
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
                     android:ems="5"
-                    android:enabled="true"
+                    android:enabled="false"
                     android:inputType="textPersonName" />
 
                 <TextView
@@ -377,7 +377,7 @@
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
                     android:duplicateParentState="false"
-                    android:enabled="false"
+                    android:enabled="true"
                     android:ems="10"
                     android:inputType="text" />
 
@@ -392,7 +392,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
-                    android:enabled="false"
+                    android:enabled="true"
                     android:ems="10"
                     android:inputType="text" />
             </LinearLayout>

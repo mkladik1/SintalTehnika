@@ -152,6 +152,7 @@ public class ServisFragment extends Fragment {
     @Override
     public void onResume() {
         super.onResume();
+
         ConnectivityManager connMgr = (ConnectivityManager) getActivity()
                 .getSystemService(Context.CONNECTIVITY_SERVICE);
 
@@ -249,6 +250,7 @@ public class ServisFragment extends Fragment {
             // display error
             Toast.makeText(getContext(),"Brez povezave!",LENGTH_SHORT).show();
         }
+
 
 
     }
