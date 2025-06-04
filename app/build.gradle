@@ -22,8 +22,8 @@ android {
         }
     }
     compileOptions {
-        sourceCompatibility JavaVersion.VERSION_1_8
-        targetCompatibility JavaVersion.VERSION_1_8
+        sourceCompatibility JavaVersion.VERSION_11
+        targetCompatibility JavaVersion.VERSION_11
     }
     namespace 'si.sintal.sintaltehnika'
 }
@@ -36,11 +36,11 @@ dependencies {
     implementation 'androidx.lifecycle:lifecycle-livedata-ktx:2.2.0'
     implementation 'androidx.lifecycle:lifecycle-viewmodel-ktx:2.2.0'
     implementation 'androidx.legacy:legacy-support-v4:1.0.0'
-    implementation files('C:\\Users\\matejk\\Documents\\GitHub\\SintalTehnika\\app\\libs\\mail.jar')
-    implementation files('C:\\Users\\matejk\\Documents\\GitHub\\SintalTehnika\\app\\libs\\activation.jar')
-    implementation files('C:\\Users\\matejk\\Documents\\GitHub\\SintalTehnika\\app\\libs\\additionnal.jar')
-    implementation files('C:\\Users\\matejk\\Documents\\GitHub\\SintalTehnika\\app\\libs\\gson-2.10.1.jar')
-    implementation files('C:\\Users\\matejk\\Documents\\GitHub\\SintalTehnika\\app\\libs\\jboss-common-jdbc-wrapper-3.2.3.jar')
+    implementation files('C:\\Users\\matejkl\\AndroidStudioProjects\\SintalTehnika\\app\\libs\\mail.jar')
+    implementation files('C:\\Users\\matejkl\\AndroidStudioProjects\\SintalTehnika\\app\\libs\\activation.jar')
+    implementation files('C:\\Users\\matejkl\\AndroidStudioProjects\\SintalTehnika\\app\\libs\\additionnal.jar')
+    implementation files('C:\\Users\\matejkl\\AndroidStudioProjects\\SintalTehnika\\app\\libs\\gson-2.10.1.jar')
+    implementation files('C:\\Users\\matejkl\\AndroidStudioProjects\\SintalTehnika\\app\\libs\\jboss-common-jdbc-wrapper-3.2.3.jar')
     //implementation 'com.google.android.gms:play-services-maps:19.1.0'
     //implementation 'androidx.wear:wear:1.2.0'
     testImplementation 'junit:junit:4.+'
@@ -55,6 +55,6 @@ dependencies {
 }
 java {
     toolchain {
-        languageVersion = JavaLanguageVersion.of(17)
+        languageVersion = JavaLanguageVersion.of(24)
     }
 }

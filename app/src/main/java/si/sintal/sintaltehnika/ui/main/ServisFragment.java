@@ -2,30 +2,24 @@ package si.sintal.sintaltehnika.ui.main;
 
 import static android.widget.Toast.LENGTH_SHORT;
 
-import androidx.lifecycle.ViewModelProvider;
-
 import android.content.Context;
 import android.content.Intent;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.os.AsyncTask;
 import android.os.Bundle;
-
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
-import androidx.fragment.app.Fragment;
-import androidx.viewpager.widget.ViewPager;
-import androidx.viewpager2.widget.ViewPager2;
-
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
-import android.widget.DatePicker;
-import android.widget.EditText;
-import android.widget.TextView;
 import android.widget.Toast;
+
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.fragment.app.Fragment;
+import androidx.lifecycle.ViewModelProvider;
+import androidx.viewpager2.widget.ViewPager2;
 
 import com.google.android.material.tabs.TabLayout;
 import com.google.gson.Gson;
@@ -47,14 +41,10 @@ import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Base64;
-import java.util.Calendar;
-import java.util.Date;
 
 import si.sintal.sintaltehnika.DatabaseHandler;
 import si.sintal.sintaltehnika.GlavnoOkno;
-import si.sintal.sintaltehnika.MainActivity;
 import si.sintal.sintaltehnika.R;
-import si.sintal.sintaltehnika.ui.main.SN.SNSeznamZakljucenihSNAdapter;
 
 public class ServisFragment extends Fragment {
 
@@ -164,13 +154,17 @@ public class ServisFragment extends Fragment {
             Toast.makeText(getContext(),"Povezavi v omrežje!",LENGTH_SHORT).show();
             db = new DatabaseHandler(getContext());
             ArrayList<ServisniNalog> zakljuceniSN;
-            zakljuceniSN = db.GetSeznamSNUporabnik(userID,"Z");
+            String user = db.getTehnikUporabnikNaziv(userID);
+            zakljuceniSN = db.GetSeznamSNUporabnik(user,"Z");
             for(int i=0;i<zakljuceniSN.size();i++)
             {
                 ServisniNalog sn = new ServisniNalog();
                 sn = zakljuceniSN.get(i);
                 mySNid = sn.getid();
                 ArrayList<SNArtikel> seznamSNArtikli;
+                if (tehnikID == null) {
+                    tehnikID = userID;
+                }
                 //mySNid = sn.getid();
                 //os = position;
                 seznamSNArtikli = db.GetSeznamArtikliIzpisDNSNUporabnik(Integer.parseInt(userID),Integer.parseInt(tehnikID),1,sn.getid());
@@ -337,21 +331,10 @@ public class ServisFragment extends Fragment {
             SendEmailService sm = new SendEmailService(getContext());
             String fn = getContext().getFilesDir()+"/"+mySNid+".pdf";
             File pdfFile = new File(fn);
-                /*
-                if (pdfFile.exists() == false)
-                {
-                    try {
-                        String status = sn.getStatus();
-                        if ((status.equals("A") == true) || (status.equals("D") == true) || (status.equals("P") == true)) {
-                            createPdf();
-                        }
-                    } catch (Exception e) {
-                        e.printStackTrace();
-                    }
-                }*/
-            //TextView emailTw = (TextView) getActivity().findViewById(R.id.etSNEmail);
-            String email =  "natasa.gliha@sintal.si,matjaz.kralj@sintal.si";//emailTw.getText().toString();
+            String email =  "matej.kladnik@zvd.si";//emailTw.getText().toString();
             //result =
+                    sm.SendEmail(fn,email);
+            email =  "matej.kladnik@outlook.com";//emailTw.getText().toString();
                     sm.SendEmail(fn,email);
             return null;
         }
