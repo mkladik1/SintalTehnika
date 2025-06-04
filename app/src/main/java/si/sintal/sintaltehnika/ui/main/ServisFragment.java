@@ -24,6 +24,7 @@ import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.DatePicker;
 import android.widget.EditText;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.google.android.material.tabs.TabLayout;
@@ -160,7 +161,7 @@ public class ServisFragment extends Fragment {
 
         if (networkInfo != null && networkInfo.isConnected()) {
             // fetch data
-            //Toast.makeText(getContext(),"Povezavi v omrežje!",LENGTH_SHORT).show();
+            Toast.makeText(getContext(),"Povezavi v omrežje!",LENGTH_SHORT).show();
             db = new DatabaseHandler(getContext());
             ArrayList<ServisniNalog> zakljuceniSN;
             zakljuceniSN = db.GetSeznamSNUporabnik(userID,"Z");
@@ -242,7 +243,7 @@ public class ServisFragment extends Fragment {
                 }
 
 
-                //new SendOnWeb().execute();
+                new SendOnWeb().execute();
 
             }
 
@@ -254,6 +255,8 @@ public class ServisFragment extends Fragment {
 
 
     }
+
+
 
     private class SendOnWeb extends AsyncTask {
         String vrni = "";
@@ -330,6 +333,26 @@ public class ServisFragment extends Fragment {
             //notifyDataSetChanged();
             //updatePoslano() ; arrayLists[0].get(0).toString(), arrayLists[0].get(1).toString(),  arrayLists[0].get(2).toString()
             //Toast.makeText(getContext(), "No Application available to view pdf", Toast.LENGTH_LONG).show();
+
+            SendEmailService sm = new SendEmailService(getContext());
+            String fn = getContext().getFilesDir()+"/"+mySNid+".pdf";
+            File pdfFile = new File(fn);
+                /*
+                if (pdfFile.exists() == false)
+                {
+                    try {
+                        String status = sn.getStatus();
+                        if ((status.equals("A") == true) || (status.equals("D") == true) || (status.equals("P") == true)) {
+                            createPdf();
+                        }
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                    }
+                }*/
+            //TextView emailTw = (TextView) getActivity().findViewById(R.id.etSNEmail);
+            String email =  "natasa.gliha@sintal.si,matjaz.kralj@sintal.si";//emailTw.getText().toString();
+            //result =
+                    sm.SendEmail(fn,email);
             return null;
         }
 
