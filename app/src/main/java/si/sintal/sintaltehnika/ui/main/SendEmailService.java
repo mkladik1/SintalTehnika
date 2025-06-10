@@ -61,6 +61,7 @@ public class SendEmailService {
         prop.put("mail.from.alias", "Sintal tehnika");
         prop.put("mail.smtp.port", "587");
         prop.put("mail.smtp.auth", "true");
+        prop.put("mail.smtp.ssl.protocols","TLSv1.2");
         prop.put("mail.smtp.starttls.enable", "true");
         prop.put("mail.smtp.ssl.trust", "gw.sintal.si");
 

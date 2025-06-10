@@ -1112,18 +1112,7 @@ public class obrazecSNFragment extends Fragment {
                 SendEmailService sm = new SendEmailService(getContext());
                 String fn = getContext().getFilesDir()+"/"+snID+".pdf";
                 File pdfFile = new File(fn);
-                /*
-                if (pdfFile.exists() == false)
-                {
-                    try {
-                        String status = sn.getStatus();
-                        if ((status.equals("A") == true) || (status.equals("D") == true) || (status.equals("P") == true)) {
-                            createPdf();
-                        }
-                    } catch (Exception e) {
-                        e.printStackTrace();
-                    }
-                }*/
+
                 TextView emailTw = (TextView) getActivity().findViewById(R.id.etSNEmail);
                 String email =  emailTw.getText().toString();
                 result = sm.SendEmail(fn,email);

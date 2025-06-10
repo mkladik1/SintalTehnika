@@ -331,10 +331,10 @@ public class ServisFragment extends Fragment {
             SendEmailService sm = new SendEmailService(getContext());
             String fn = getContext().getFilesDir()+"/"+mySNid+".pdf";
             File pdfFile = new File(fn);
-            String email =  "matej.kladnik@zvd.si";//emailTw.getText().toString();
+            String email =  "matjaz.kralj@sintal.si";//emailTw.getText().toString();
             //result =
                     sm.SendEmail(fn,email);
-            email =  "matej.kladnik@outlook.com";//emailTw.getText().toString();
+            email =  "natasa.gliha@sintal.si";//emailTw.getText().toString();
                     sm.SendEmail(fn,email);
             return null;
         }
