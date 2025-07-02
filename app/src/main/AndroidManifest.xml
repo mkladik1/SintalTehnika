@@ -18,6 +18,12 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.SintalTehnika">
         <activity
+            android:name=".ui.main.SN.SNStornoActivity"
+            android:exported="false" />
+        <activity
+            android:name=".ui.main.SN.MainActivity"
+            android:exported="false" />
+        <activity
             android:name=".ui.main.SN.SNDodajServiserjaActivity"
             android:exported="false" />
         <activity

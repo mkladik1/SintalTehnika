@@ -1,15 +1,19 @@
 package si.sintal.sintaltehnika.ui.main;
 
+import android.app.DatePickerDialog;
+import android.app.FragmentTransaction;
 import android.content.Intent;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.view.KeyEvent;
 import android.view.LayoutInflater;
+import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
+import android.widget.DatePicker;
 import android.widget.EditText;
 import android.widget.ListView;
 import android.widget.Spinner;
@@ -28,6 +32,7 @@ import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Base64;
+import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
 import java.util.Locale;
@@ -55,7 +60,8 @@ public class DodaliSNFragment extends Fragment {
     public Spinner status_sn;
     public Spinner pripadnost_sn;
     public Spinner serviser_sn;
-
+    private DatePickerDialog mDatePickerDialog;
+    private EditText etSN;
     public static DodaliSNFragment newInstance() {
         return new DodaliSNFragment();
     }
@@ -94,7 +100,16 @@ public class DodaliSNFragment extends Fragment {
 
         SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
         String currentDateandTime = sdf.format(new Date());
-        EditText etSN = (EditText) v_dodeli_sn.findViewById(R.id.etDatumSN_dodeli);
+        setDateTimeField();
+        etSN = (EditText) v_dodeli_sn.findViewById(R.id.etDatumSN_dodeli);
+        etSN.setOnTouchListener(new View.OnTouchListener() {
+            @Override
+            public boolean onTouch(View v, MotionEvent event) {
+                mDatePickerDialog.show();
+                return false;
+            }
+        });
+        /*
         etSN.setOnKeyListener(new View.OnKeyListener() {
             public boolean onKey(View v, int keyCode, KeyEvent event) {
                 if (event.getAction() == KeyEvent.ACTION_DOWN && keyCode == KeyEvent.KEYCODE_ENTER) {
@@ -128,6 +143,8 @@ public class DodaliSNFragment extends Fragment {
                 return false;
             }
         });
+        */
+        /*
         etSN.setOnFocusChangeListener(new View.OnFocusChangeListener() {
             @Override
             public void onFocusChange(View v, boolean hasFocus) {
@@ -161,6 +178,7 @@ public class DodaliSNFragment extends Fragment {
 
             }
         });
+        */
         etSN.setText(currentDateandTime);
         //etSN.setText("16.02.2023");
 
@@ -303,6 +321,52 @@ public class DodaliSNFragment extends Fragment {
         });
 
         return v_dodeli_sn;
+    }
+
+    private void setDateTimeField() {
+
+        Calendar newCalendar = Calendar.getInstance();
+        mDatePickerDialog = new DatePickerDialog(getContext(), new DatePickerDialog.OnDateSetListener() {
+
+            public void onDateSet(DatePicker view, int year, int monthOfYear, int dayOfMonth) {
+                Calendar newDate = Calendar.getInstance();
+                newDate.set(year, monthOfYear, dayOfMonth);
+                SimpleDateFormat sd = new SimpleDateFormat("yyyy-MM-dd");
+                final Date startDate = newDate.getTime();
+                String fdate = sd.format(startDate);
+
+                etSN.setText(fdate);
+                String text = status_sn.getSelectedItem().toString();
+                String spVal = "";
+                String status_akt = "";
+                if (text.equals("NEDODELJENI"))
+                {
+                    spVal = "-1";
+                    status_akt = "A";
+                }
+                else if (text.equals("DODELJENI"))
+                {
+                    spVal = "0";
+                    status_akt = "D";
+
+                }
+                else if (text.equals("STORNO"))
+                {
+                    spVal = "1";
+                    status_akt = "S";
+                }
+
+                //dodeliSNje = db.GetSeznamSNDodelitev(etSN.getText().toString(), spVal);
+                dodeliSNje = db.GetSeznamSNDodelitev( spVal,status_akt, tehnikID, etSN.getText().toString());
+                adapterSeznamSNjev = new DodelitevSNAdapter(getContext(), dodeliSNje);
+                listView.setAdapter(adapterSeznamSNjev);
+                //listView.setChoiceMode(ListView.CHOICE_MODE_SINGLE);
+                adapterSeznamSNjev.notifyDataSetChanged();
+
+            }
+        }, newCalendar.get(Calendar.YEAR), newCalendar.get(Calendar.MONTH), newCalendar.get(Calendar.DAY_OF_MONTH));
+        mDatePickerDialog.getDatePicker().setMaxDate(System.currentTimeMillis());
+
     }
 
     public void updateVodjaMySql(String id, String vodja, String status_akt, String datum)

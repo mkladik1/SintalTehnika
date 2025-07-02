@@ -23,6 +23,7 @@ import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.Window;
+import android.webkit.URLUtil;
 import android.widget.Button;
 import android.widget.LinearLayout;
 import android.widget.ListAdapter;
@@ -44,6 +45,7 @@ import com.itextpdf.kernel.font.PdfFontFactory;
 import com.itextpdf.kernel.geom.PageSize;
 import com.itextpdf.kernel.pdf.PdfDocument;
 import com.itextpdf.kernel.pdf.PdfWriter;
+import com.itextpdf.kernel.pdf.xobject.PdfImageXObject;
 import com.itextpdf.layout.Document;
 import com.itextpdf.layout.borders.Border;
 import com.itextpdf.layout.element.Cell;
@@ -57,6 +59,7 @@ import com.itextpdf.layout.properties.TextAlignment;
 import com.itextpdf.layout.properties.UnitValue;
 import com.itextpdf.layout.properties.VerticalAlignment;
 
+import java.io.BufferedInputStream;
 import java.io.BufferedReader;
 import java.io.ByteArrayOutputStream;
 import java.io.DataOutputStream;
@@ -64,10 +67,12 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.net.URLConnection;
 import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -234,12 +239,15 @@ public class obrazecSNFragment extends Fragment {
                 test = (TextView) getView().findViewById(R.id.tvSNNarocilTelefon);
                 String tvSNTelefon = test.getText().toString();
 
+                test = (TextView) getView().findViewById(R.id.tvSNPodpisnik);
+                String tvSNPodpisnikNarocnika = test.getText().toString();
+
                 if ((isValidFormat("yyyy-MM-dd",tvSNDatumMontaze) == true)
                     || (tvSNDatumMontaze.equals("")))
                 {
                     DatabaseHandler db = new DatabaseHandler(getContext());
                     db.updateSNDN(String.valueOf(snID), tipNarocila, tipVzdrzevanja, tvSNDatumMontaze, tvSNGarancija, tvSNNapaka,
-                            etSNUrePrevoz, etSNUreDelo, etSNStKm, tvSNNapaka2, tvSNNarocilTelefon, tvSNTelefon
+                            etSNUrePrevoz, etSNUreDelo, etSNStKm, tvSNNapaka2, tvSNNarocilTelefon, tvSNTelefon, tvSNPodpisnikNarocnika
                     );
                     Toast.makeText(getView().getContext(),"Podatki o servisnem nalogu uspešno shranjeni",Toast.LENGTH_LONG).show();
                 }
@@ -570,7 +578,14 @@ public class obrazecSNFragment extends Fragment {
         test.setText("");
 
         test = (TextView) getView().findViewById(R.id.tvSNNarocil);
-        test.setText(sn.getOdgovornaOseba());
+        //test.setText(sn.getServisNarocil());
+        if (sn.getServisNarocil() == null)
+        {
+            test.setText(sn.getOdgovornaOseba());
+        }
+        else {
+            test.setText(sn.getServisNarocil());
+        }
         test = (TextView) getView().findViewById(R.id.tvSNNarocilTelefon);
         test.setText("");
 
@@ -701,6 +716,9 @@ public class obrazecSNFragment extends Fragment {
             test = (TextView) getView().findViewById(R.id.twNazivServiserja);
             test.setText(dodatniServiser.get(1).toString());
         }
+
+        test = (TextView) getView().findViewById(R.id.tvSNPodpisnik);
+        test.setText(sn.getPodpisnik());
 
         //methodA(); // this is called ...
     }
@@ -847,7 +865,15 @@ public class obrazecSNFragment extends Fragment {
             String sektorNaslov = sn.getSektroNaslov().split(",",2)[0];
             if (sn.getSektroNaslov().length() > 0)
             {
-                sektorKraj = sn.getSektroNaslov().split(",",2)[1];
+                try
+                {
+                    sektorKraj = sn.getSektroNaslov().split(",",2)[1];
+                }
+                catch (Exception e)
+                {
+                    sektorNaslov = sn.getSektroNaslov().split(",",2)[0];
+                }
+
             }
             else
             {
@@ -902,7 +928,7 @@ public class obrazecSNFragment extends Fragment {
             table2.setFixedLayout();
             table2.setFont(font);
             table2.addCell(new Cell(1,1).add(new Paragraph("SERVIS NAROČIL")));//.setBorder(Border.NO_BORDER);
-            table2.addCell(new Cell(1,1).add(new Paragraph(sn.getOdgovornaOseba())));//.setBorder(Border.NO_BORDER);
+            table2.addCell(new Cell(1,1).add(new Paragraph(sn.getServisNarocil())));//.setBorder(Border.NO_BORDER);
             table2.addCell(new Cell(1,1).add(new Paragraph("TELEFON")));//.setBorder(Border.NO_BORDER);
             table2.addCell(new Cell(1,1).add(new Paragraph("")));//.setBorder(Border.NO_BORDER);
             document.add(table2);
@@ -1011,10 +1037,25 @@ public class obrazecSNFragment extends Fragment {
             table6.addCell(new Cell(1,1).add(new Paragraph("IZVAJALEC")));//.setBorder(Border.NO_BORDER);
             table6.addCell(new Cell(1,1).add(new Paragraph(sn.getVodjaNaloga())));//.setBorder(Border.NO_BORDER);
             table6.addCell(new Cell(1,1).add(new Paragraph(datum)));//.setBorder(Border.NO_BORDER);
-            table6.addCell(new Cell(1,1).add(new Paragraph("")));//.setBorder(Border.NO_BORDER);
+            //table6.addCell(new Cell(1,1).add(new Paragraph("")));//.setBorder(Border.NO_BORDER);
+
+            String url = getContext().getFilesDir()+"/"+userID+"-podpis.png";
+            File filePodpis = new File(url);
+
+            if (filePodpis.exists()) {
+                //Image podpis = new Image(ImageDataFactory.create(podpisServiser));
+                Image podpis = new Image(ImageDataFactory.create(url));
+                podpis.setAutoScale(true);
+
+                table6.addCell(new Cell(1,1).add(podpis));//.setBorder(Border.NO_BORDER);
+            }
+            else
+            {
+                table6.addCell(new Cell(1,1).add(new Paragraph("")));
+            }
 
             table6.addCell(new Cell(1,1).add(new Paragraph("NAROČNIK")).setVerticalAlignment(VerticalAlignment.MIDDLE));
-            table6.addCell(new Cell(1,1).add(new Paragraph(sn.getOdgovornaOseba())).setVerticalAlignment(VerticalAlignment.MIDDLE));
+            table6.addCell(new Cell(1,1).add(new Paragraph(sn.getPodpisnik())).setVerticalAlignment(VerticalAlignment.MIDDLE));
             table6.addCell(new Cell(1,1).add(new Paragraph(sn.getDatumPodpisa().toString())).setVerticalAlignment(VerticalAlignment.MIDDLE));
             byte[] podpisNarocnika = sn.getPodpis();
             if (podpisNarocnika != null) {
@@ -1045,6 +1086,9 @@ public class obrazecSNFragment extends Fragment {
         }
 
     }
+
+
+
 
     private static void RemoveBorder(Table table)
     {

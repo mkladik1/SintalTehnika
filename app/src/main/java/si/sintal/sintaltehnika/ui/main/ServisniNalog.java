@@ -44,6 +44,9 @@ public class ServisniNalog {
     String opisPostopka;
     String datumPodpisa;
     byte[] podpis;
+    String servisNarocil;
+    String servisTelefon;
+    String podpisnik;
 
     public int getid() {
         return id;
@@ -72,6 +75,13 @@ public class ServisniNalog {
     }
     public void setDelovniNalog(String newDelovniNalog) {
         this.delovniNalog = newDelovniNalog;
+    }
+
+    public String getPodpisnik() {
+        return podpisnik;
+    }
+    public void setPodpisnik(String newPodpisnik) {
+        this.podpisnik = newPodpisnik;
     }
 
     public String getDNaziv() {
@@ -130,6 +140,13 @@ public class ServisniNalog {
     }
     public void setOpis(String newOpis) {
         this.opis = newOpis;
+    }
+
+    public String getServisNarocil() {
+        return servisNarocil;
+    }
+    public void setServisNarocil(String newServisNarocil) {
+        this.servisNarocil = newServisNarocil;
     }
 
     public String getNarocnikNaziv() {

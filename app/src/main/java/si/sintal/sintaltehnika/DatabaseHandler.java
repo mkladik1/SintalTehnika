@@ -150,6 +150,11 @@ public class DatabaseHandler extends SQLiteOpenHelper {
         {
             mDatabase.execSQL("alter table sintal_teh_sn add column  SERVIS_NAROCIL nvarchar(100) null");
             mDatabase.execSQL("alter table sintal_teh_sn add column SERVIS_NAROCIL_TELEFON nvarchar(50) null");
+
+        }
+        if (tableHasColumn(mDatabase,"sintal_teh_sn","PODPISNIK") == false)
+        {
+            mDatabase.execSQL("alter table sintal_teh_sn add column PODPISNIK nvarchar(100) null");
         }
         //mDatabase.execSQL("alter table sintal_teh_sn add column if not exists SERVIS_NAROCIL nvarchar(100) null");
         //mDatabase.execSQL("alter table sintal_teh_sn add column if not exists SERVIS_NAROCIL_TELEFON nvarchar(50) null");
@@ -1047,7 +1052,8 @@ public class DatabaseHandler extends SQLiteOpenHelper {
                                String OPIS_POSTOPKA,
                                String URE_PREVOZ,
                                String URE_DELO,
-                               String STEVILO_KM
+                               String STEVILO_KM,
+                               String PODPISNIK
 
 
 
@@ -1114,6 +1120,7 @@ public class DatabaseHandler extends SQLiteOpenHelper {
             values.put("URE_PREVOZ", URE_PREVOZ);
             values.put("URE_DELO", URE_DELO);
             values.put("STEVILO_KM", STEVILO_KM);
+            values.put("PODPISNIK", PODPISNIK);
             mDatabase.update("sintal_teh_sn", values, "id=?", new String[]{id});
 
         }
@@ -1169,6 +1176,7 @@ public class DatabaseHandler extends SQLiteOpenHelper {
             values.put("URE_PREVOZ", URE_PREVOZ);
             values.put("URE_DELO", URE_DELO);
             values.put("STEVILO_KM", STEVILO_KM);
+            values.put("PODPISNIK", PODPISNIK);
             //values.put("OZNACI",OZNACI);
             mDatabase.insert("sintal_teh_sn",null, values);
         }
@@ -2654,6 +2662,8 @@ public class DatabaseHandler extends SQLiteOpenHelper {
             sn.setDatumDodelitve(mCursor.getString(mCursor.getColumnIndex("DATUM_DODELITVE")));
             sn.setDatumKonec(mCursor.getString(mCursor.getColumnIndex("DATUM_KONEC")));
             sn.setDatumIzvedbe(mCursor.getString(mCursor.getColumnIndex("DATUM_IZVEDBE")));
+            sn.setServisNarocil(mCursor.getString(mCursor.getColumnIndex("SERVIS_NAROCIL")));
+            sn.setPodpisnik(mCursor.getString(mCursor.getColumnIndex("PODPISNIK")));
             //sn.setOznacen(0);
 
         }
@@ -2716,7 +2726,7 @@ public class DatabaseHandler extends SQLiteOpenHelper {
 
     public void updateSNDN(String snID, int tipNarocila, int tipVzdrzevanja,String tvSNDatumMontaze,
                            String tvSNGarancija,String tvSNNapaka,String etSNUrePrevoz,String etSNUreDelo,String etSNStKm,
-                           String tvSNNapaka2, String tvSNNarocil, String tvSNTelefon ) {
+                           String tvSNNapaka2, String tvSNNarocil, String tvSNTelefon, String podpisnik ) {
 
         //ArrayList<NadzorXML> myList=new ArrayList<NadzorXML>();
         //List<Nadzor> myList=new ArrayList<Nadzor>();
@@ -2748,7 +2758,7 @@ public class DatabaseHandler extends SQLiteOpenHelper {
             values.put("datum_izvedbe",tvSNDatumMontaze);
             values.put("opis_okvare",tvSNNapaka);
             values.put("opis_postopka",tvSNNapaka2);
-            values.put("ODGOVORNA_OSEBA",tvSNNarocil);
+            values.put("SERVIS_NAROCIL",tvSNNarocil);
             //values.put(,tvSNNarocilSN);
             if (tvSNGarancija.equals("0"))
             {
@@ -2819,7 +2829,7 @@ public class DatabaseHandler extends SQLiteOpenHelper {
             {
                 values.put("stevilo_km",etSNStKm);
             }
-            //values.put("stevilo_km",etSNStKm);
+            values.put("PODPISNIK",podpisnik);
 
             mDatabase.update("sintal_teh_sn", values, "id=?", new String[]{snID});
 

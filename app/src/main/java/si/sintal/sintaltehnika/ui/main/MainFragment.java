@@ -20,6 +20,8 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.BufferedReader;
+import java.io.FileOutputStream;
+import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
 import java.net.URL;
@@ -58,6 +60,7 @@ public class MainFragment extends Fragment {
             new LoadFromWeb().execute();
         }
 
+
         Button login;
         login = (Button) getActivity().findViewById(R.id.bLogin);
 
@@ -95,6 +98,7 @@ public class MainFragment extends Fragment {
                     intent.putExtra("servis",servis);
                     intent.putExtra("montaza",montaza);
                     intent.putExtra("vzdrzevanje",vzdrzevanje);
+                    new LoadFromImagesWeb().execute(userID);
                     startActivity(intent);
                 }
 
@@ -179,10 +183,46 @@ public class MainFragment extends Fragment {
                 } catch (JSONException e) {
                     e.printStackTrace();
                 }
-
-
-
             }
+
+
+            return null;
+        }
+
+    }
+
+    private class LoadFromImagesWeb extends AsyncTask<String,String,String> {
+
+        @Override
+        protected String doInBackground(String... arg0) {
+            //MySQLDatabase.mysqlConnect();
+            String ud = arg0[0];
+            String url = "https://www.sintal.si/tehnika/podpisi/"+ud+"-podpis.png";
+            String filename = getContext().getFilesDir()+"/"+ud+"-podpis.png";
+
+            try {
+                URL imageUrl = new URL(url);
+                HttpURLConnection connection = (HttpURLConnection) imageUrl.openConnection();
+                connection.setRequestMethod("GET");
+
+                InputStream inputStream = connection.getInputStream();
+                FileOutputStream outputStream = new FileOutputStream(filename);
+
+                byte[] buffer = new byte[4096];
+                int bytesRead;
+                while ((bytesRead = inputStream.read(buffer)) != -1) {
+                    outputStream.write(buffer, 0, bytesRead);
+                }
+
+                outputStream.close();
+                inputStream.close();
+                connection.disconnect();
+
+                System.out.println("Image downloaded successfully: " + filename);
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+
 
             return null;
         }

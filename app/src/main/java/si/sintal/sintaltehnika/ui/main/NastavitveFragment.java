@@ -1343,7 +1343,8 @@ public class NastavitveFragment extends Fragment {
                                 OPIS_POSTOPKA,
                                 URE_PREVOZ,
                                 URE_DELO,
-                                STEVILO_KM
+                                STEVILO_KM,
+                                ""
                         );
                     }
                     //getString("user_id");//.getString("user_id");

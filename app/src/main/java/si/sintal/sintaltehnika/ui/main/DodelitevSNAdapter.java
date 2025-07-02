@@ -19,6 +19,9 @@ import java.util.ArrayList;
 import si.sintal.sintaltehnika.DatabaseHandler;
 import si.sintal.sintaltehnika.DialogPodatkiOSNActivity;
 import si.sintal.sintaltehnika.R;
+import si.sintal.sintaltehnika.ui.main.SN.SNDodajServiserjaActivity;
+import si.sintal.sintaltehnika.ui.main.SN.SNStornoActivity;
+import si.sintal.sintaltehnika.ui.main.SN.SNStornoFragment;
 
 public class DodelitevSNAdapter extends ArrayAdapter<ServisniNalog> implements Filterable {
 
@@ -155,8 +158,19 @@ public class DodelitevSNAdapter extends ArrayAdapter<ServisniNalog> implements F
         bStornoSN.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                    DatabaseHandler db = new DatabaseHandler(getContext());
-                    db.updateSNStatusAkt(Integer.toString(n.getid()),"S");
+                        //Intent intent = new Intent(getContext(), SNStornoFragment.class);
+                        //intent.putExtra("userID", userID);
+                        //intent.putExtra("tehnikID", tehnikID);
+                        //intent.putExtra("snID",snID);
+                        //intent.putExtra("snDN",snDN);
+                        //intent.putExtra("vrsta",1);
+                        //startActivity(intent);
+                        Intent intent = new Intent(getContext(), SNStornoActivity.class);
+                        intent.putExtra("snID",n.getid());
+                        getContext().startActivity(intent);
+
+                    //DatabaseHandler db = new DatabaseHandler(getContext());
+                    //db.updateSNStatusAkt(Integer.toString(n.getid()),"S");
                     notifyDataSetChanged();
             }});
 
