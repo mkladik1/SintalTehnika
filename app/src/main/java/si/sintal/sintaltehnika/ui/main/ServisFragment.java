@@ -336,6 +336,8 @@ public class ServisFragment extends Fragment {
                     sm.SendEmail(fn,email);
             email =  "natasa.gliha@sintal.si";//emailTw.getText().toString();
                     sm.SendEmail(fn,email);
+            email =  "marta.stefancic@sintal.si";//emailTw.getText().toString();
+            sm.SendEmail(fn,email);
             return null;
         }
 

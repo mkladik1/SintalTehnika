@@ -21,6 +21,7 @@
                 android:id="@+id/cbPrenosDelujeSNStorno"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+                android:buttonTint="#696969"
                 android:text="Prenos deluje" />
         </LinearLayout>
 
@@ -34,6 +35,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
+                android:buttonTint="#696969"
                 android:text="Konec izpada TAU vmesnika" />
         </LinearLayout>
 
@@ -47,6 +49,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
+                android:buttonTint="#696969"
                 android:text="drugo" />
 
             <EditText

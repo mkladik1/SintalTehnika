@@ -76,7 +76,7 @@ public class seznamSNFragment extends Fragment {
         SimpleDateFormat sdf = new SimpleDateFormat("dd.MM.yyyy");
         String currentDateandTime = sdf.format(new Date());
 
-        List<String> lables = db.getTehnikiFromUserInString(Integer.parseInt(userID), 1);
+        List<String> lables = db.getTehnikiFromUserInString(Integer.parseInt(userID), 1, 1);
         final ArrayAdapter<String> dataAdapter = new ArrayAdapter<String>(getActivity(),android.R.layout.test_list_item,lables);
         dataAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         izbraniServiser = (Spinner) v.findViewById(R.id.spinner_user_SN);
@@ -160,7 +160,7 @@ public class seznamSNFragment extends Fragment {
         SimpleDateFormat sdf = new SimpleDateFormat("dd.MM.yyyy");
         String currentDateandTime = sdf.format(new Date());
 
-        List<String> lables = db.getTehnikiFromUserInString(Integer.parseInt(userID), 1);
+        List<String> lables = db.getTehnikiFromUserInString(Integer.parseInt(userID), 1, 1);
         final ArrayAdapter<String> dataAdapter = new ArrayAdapter<String>(getActivity(),android.R.layout.test_list_item,lables);
         dataAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         izbraniServiser = (Spinner) getView().findViewById(R.id.spinner_user_SN);

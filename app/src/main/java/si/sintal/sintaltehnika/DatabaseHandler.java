@@ -1607,16 +1607,29 @@ public class DatabaseHandler extends SQLiteOpenHelper {
         return userList;
     }
 
-    public List<String> getTehnikiFromUserInString(int userID, int svm) {
+    public List<String> getTehnikiFromUserInString(int userID, int svm, int kljicatelj) {
         List<String> userList = new ArrayList<String>();
         // Select All Query
         //seznam serviserjev
         String selectQuery = "";
         if (svm == 1) {
-            selectQuery = "SELECT  sintal_teh_delavci.* FROM sintal_teh_upo " +
-                    "left join sintal_teh_upo_delavci on sintal_teh_upo.user_id = sintal_teh_upo_delavci.user_id " +
-                    "left join sintal_teh_delavci on  sintal_teh_delavci.tehnik_id = sintal_teh_upo_delavci.tehnik_id " +
-                    "where sintal_teh_upo.user_id = " + String.valueOf(userID) +  " and seznam_servis = 1 order by naziv ";
+            if (kljicatelj == 0)
+            {
+                selectQuery = "SELECT  sintal_teh_delavci.* FROM sintal_teh_upo " +
+                        "left join sintal_teh_upo_delavci on sintal_teh_upo.user_id = sintal_teh_upo_delavci.user_id " +
+                        "left join sintal_teh_delavci on  sintal_teh_delavci.tehnik_id = sintal_teh_upo_delavci.tehnik_id " +
+                        "where sintal_teh_upo.user_id = " + String.valueOf(userID) +  " and seznam_servis = 1 "+
+                        " union select 0, '- vrni nalog',0,0,0,0,'','' order by naziv ";
+            }
+            else {
+                selectQuery = "SELECT  sintal_teh_delavci.* FROM sintal_teh_upo " +
+                        "left join sintal_teh_upo_delavci on sintal_teh_upo.user_id = sintal_teh_upo_delavci.user_id " +
+                        "left join sintal_teh_delavci on  sintal_teh_delavci.tehnik_id = sintal_teh_upo_delavci.tehnik_id " +
+                        "where sintal_teh_upo.user_id = " + String.valueOf(userID) +  " and seznam_servis = 1 "+
+                        //" union select 0, '- vrni nalog',0,0,0,0,'','' " +
+                        " order by naziv ";
+            }
+
 
         }
         else if (svm == 2)
@@ -1654,9 +1667,13 @@ public class DatabaseHandler extends SQLiteOpenHelper {
     public ArrayList<Serviser> GetServiserjeUporabnik(String userID){
         ArrayList<Serviser> serviserList = new ArrayList<Serviser>();
         String selectQuery = "";
-               selectQuery = "select td.tehnik_id, td.naziv from sintal_teh_upo_delavci ud " +
-                             "left join sintal_teh_delavci td on ud.tehnik_id = td.tehnik_id " +
-                              "where ud.user_id = " + String.valueOf(userID) +  " and td.user_id <> " + String.valueOf(userID) + " order by td.naziv;";
+
+
+            selectQuery = "select td.tehnik_id, td.naziv from sintal_teh_upo_delavci ud " +
+                    "left join sintal_teh_delavci td on ud.tehnik_id = td.tehnik_id " +
+                    "where ud.user_id = " + String.valueOf(userID) + " and td.user_id <> "
+                    + String.valueOf(userID) + " order by td.naziv;";
+
         mDatabase = this.getReadableDatabase();
         mCursor = mDatabase.rawQuery(selectQuery, null);
 
@@ -1793,8 +1810,17 @@ public class DatabaseHandler extends SQLiteOpenHelper {
             //String UPDATE_USER ="";
             ContentValues values = new ContentValues();
             //values.put("id", id);
-            values.put("STATUS_AKT", status_akt);
-            values.put("VODJA_NALOGA", serviser);
+            if ( serviser.equals("- vrni nalog") )
+            {
+                values.put("VODJA_NALOGA", "");
+                values.put("STATUS_AKT", "A");
+            }
+            else
+            {
+                values.put("VODJA_NALOGA", serviser);
+                values.put("STATUS_AKT", "D");            }
+
+
             values.put("DATUM_DODELITVE", datumDodelitve);
             mDatabase.update("sintal_teh_sn", values, "id=?", new String[]{id});
 
@@ -1879,6 +1905,31 @@ public class DatabaseHandler extends SQLiteOpenHelper {
             //String UPDATE_USER ="";
             ContentValues values = new ContentValues();
             values.put("STATUS_AKT", statusAkt);
+            values.put("OZNACI", 0);
+            mDatabase.update("sintal_teh_sn", values, "id=?", new String[]{id});
+
+        }
+        mCursor.close();
+        mDatabase.close();
+    }
+
+    public void updateSNDescriptionAkt(String id, String OPIS_POSTOPKA, String DATUM_IZVEDBE, String tehnik) {
+        String GET_USER = "SELECT * FROM sintal_teh_sn where id ='" + id+"'";
+        mDatabase = this.getReadableDatabase();
+        mCursor = mDatabase.rawQuery(GET_USER, null);
+        //NadzorXML n;
+        if (mCursor != null) {
+            mCursor.moveToFirst();
+        }
+        if (mCursor.moveToFirst()) {
+            //String UPDATE_USER ="";
+            ContentValues values = new ContentValues();
+            values.put("OPIS_POSTOPKA", OPIS_POSTOPKA);
+            values.put("DATUM_KONEC", DATUM_IZVEDBE);
+            values.put("DATUM_IZVEDBE", DATUM_IZVEDBE);
+            values.put("STATUS_AKT", "Z");
+            values.put("VODJA_NALOGA", tehnik);
+
             values.put("OZNACI", 0);
             mDatabase.update("sintal_teh_sn", values, "id=?", new String[]{id});
 

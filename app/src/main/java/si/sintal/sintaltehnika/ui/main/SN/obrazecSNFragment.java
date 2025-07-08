@@ -553,6 +553,7 @@ public class obrazecSNFragment extends Fragment {
 
         tehnikID = db.getTehnikId(sn.getVodjaNaloga());
         this.tehnikID = tehnikID;
+        this.tehnikID = tehnikID;
         TextView test = (TextView) getView().findViewById(R.id.idObrazecSN);
         test.setText(Integer.toString(sn.getid()));
         test = (TextView) getView().findViewById(R.id.idObrazecSNTehnikID);

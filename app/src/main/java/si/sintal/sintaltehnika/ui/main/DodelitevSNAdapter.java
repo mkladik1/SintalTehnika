@@ -36,26 +36,17 @@ public class DodelitevSNAdapter extends ArrayAdapter<ServisniNalog> implements F
     public int id;
     public String servnisniNalog;
     public String datumZacetek;
-    public String vodjaNaloga;
+    public String userID;
 
-/*
-    public class ViewHolder{
-        TextView tvStNadzora;
-        TextView tvOpis;
-        Button bBrisiNadzor;
-        Button bUrediNadzor;
-        Button bKopirajNadzor;
-    }
-*/
-
-
-    public DodelitevSNAdapter(Context context, ArrayList<ServisniNalog> seznamSNjev) {
+    public DodelitevSNAdapter(Context context, ArrayList<ServisniNalog> seznamSNjev, String upoId) {
         super(context, 0, seznamSNjev);
         this.context = context;
         this.seznamSNjev = new ArrayList<ServisniNalog>();
         this.seznamSNjev.addAll(seznamSNjev);
         this.originalData = new ArrayList<ServisniNalog>();
         this.originalData.addAll(seznamSNjev);
+        this.userID = upoId;
+
 
     }
 
@@ -88,7 +79,6 @@ public class DodelitevSNAdapter extends ArrayAdapter<ServisniNalog> implements F
         if (convertView == null) {
             inflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
             convertView = inflater.inflate(R.layout.seznamdodelisn, null);
-
             holder = new ViewHolder();
             holder.stSNja = (TextView) convertView.findViewById(R.id.labelstevilkaSN);
             holder.idSNja = (TextView) convertView.findViewById(R.id.labelidSN);
@@ -124,8 +114,7 @@ public class DodelitevSNAdapter extends ArrayAdapter<ServisniNalog> implements F
                 // TODO Auto-generated method stub
 
                 if (buttonView.isChecked()) {
-                    //if (n.getOznacen() == 1) {
-                        //n.setOznacen(1);
+
                         DatabaseHandler db = new DatabaseHandler(getContext());
                         db.updateSNOznaci(Integer.toString(n.getid()), 1);
                         db.close();
@@ -133,15 +122,12 @@ public class DodelitevSNAdapter extends ArrayAdapter<ServisniNalog> implements F
                     //}
                 }
                 else {
-                    //if (n.getOznacen() == 0) {
-                        //n.setOznacen(0);
                         DatabaseHandler db = new DatabaseHandler(getContext());
                         db.updateSNOznaci(Integer.toString(n.getid()), 0);
                         db.close();
                         n.setOznacen(0);
                     //}
                 }
-                //notifyDataSetChanged();
 
             }
         });
@@ -158,15 +144,10 @@ public class DodelitevSNAdapter extends ArrayAdapter<ServisniNalog> implements F
         bStornoSN.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                        //Intent intent = new Intent(getContext(), SNStornoFragment.class);
-                        //intent.putExtra("userID", userID);
-                        //intent.putExtra("tehnikID", tehnikID);
-                        //intent.putExtra("snID",snID);
-                        //intent.putExtra("snDN",snDN);
-                        //intent.putExtra("vrsta",1);
-                        //startActivity(intent);
+
                         Intent intent = new Intent(getContext(), SNStornoActivity.class);
                         intent.putExtra("snID",n.getid());
+                        intent.putExtra("userID", userID);
                         getContext().startActivity(intent);
 
                     //DatabaseHandler db = new DatabaseHandler(getContext());
